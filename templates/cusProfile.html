@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Profile — YummyEatery</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../CSS/style_cusProfile.css" />
+  </head>
+  <body>
+    <nav class="topbar">
+      <a href="#" class="topbar-logo">YummyEatery</a>
+      <div class="topbar-nav">
+        <a href="#">Discover</a>
+        <a href="#">Near Me</a>
+
+        <a href="#" style="color: var(--gold)"
+          ><i class="bi bi-person-circle"></i> Me</a
+        >
+      </div>
+    </nav>
+
+    <div class="profile-hero">
+      <button class="hero-edit-btn" onclick="openModal()">
+        <i class="bi bi-pencil me-1"></i>Edit Profile
+      </button>
+    </div>
+
+    <div class="profile-card-wrapper">
+      <div class="profile-identity">
+        <div class="avatar-ring" onclick="openModal()">
+          <img
+            src="https://static.voices.com/wp-content/uploads/2025/01/shrek-scaled.jpg"
+            alt="Avatar"
+          />
+          <div class="avatar-overlay"><i class="bi bi-camera-fill"></i></div>
+        </div>
+        <div class="identity-text">
+          <h1 id="displayName">Ben Nguyen</h1>
+          <div class="handle" id="displayHandle">@benj.02sep</div>
+          <div class="location-tag">
+            <i class="bi bi-geo-alt-fill"></i
+            ><span id="displayLocation">Perth, AU</span>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-outline-custom">
+            <i class="bi bi-share me-1"></i>Share
+          </button>
+          <button class="btn-primary-custom" onclick="openModal()">
+            <i class="bi bi-pencil me-1"></i>Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-cell">
+          <div class="stat-num">148</div>
+          <div class="stat-label">Reviews</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">3.2k</div>
+          <div class="stat-label">Followers</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">219</div>
+          <div class="stat-label">Following</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">47</div>
+          <div class="stat-label">Saved</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">4.2★</div>
+          <div class="stat-label">Avg Rating</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-layout">
+      <aside>
+        <div class="sidebar-block">
+          <h3>About</h3>
+          <p class="bio-text" id="displayBio">
+            Food writer & relentless brunch-seeker. I chase perfect croissants
+            across cities and rate every espresso I drink. Obsessed with natural
+            wine and hole-in-the-wall gems.
+          </p>
+        </div>
+        <div class="sidebar-block">
+          <h3>Cuisine Passions</h3>
+          <span class="cuisine-tag">Japanese</span
+          ><span class="cuisine-tag">French</span
+          ><span class="cuisine-tag">Vietnamese</span
+          ><span class="cuisine-tag">Brunch</span
+          ><span class="cuisine-tag">Natural Wine</span
+          ><span class="cuisine-tag">Ramen</span>
+        </div>
+        <div class="sidebar-block">
+          <h3>Badges Earned</h3>
+          <div class="badge-item">
+            <div class="badge-icon gold">🏆</div>
+            <div>
+              <strong>Top Reviewer</strong><br /><span
+                style="font-size: 0.75rem; color: var(--muted)"
+                >100+ reviews written</span
+              >
+            </div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon silver">⭐</div>
+            <div>
+              <strong>Trusted Critic</strong><br /><span
+                style="font-size: 0.75rem; color: var(--muted)"
+                >500+ helpful votes</span
+              >
+            </div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon bronze">🍜</div>
+            <div>
+              <strong>Noodle Nerd</strong><br /><span
+                style="font-size: 0.75rem; color: var(--muted)"
+                >50 ramen reviews</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-block">
+          <h3>Member Since</h3>
+          <p class="bio-text"><i class="bi bi-calendar3 me-1"></i>March 2026</p>
+        </div>
+      </aside>
+
+      <main>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('reviews', this)">
+            Reviews
+          </button>
+          <button class="tab-btn" onclick="switchTab('saved', this)">
+            Saved
+          </button>
+          <button class="tab-btn" onclick="switchTab('photos', this)">
+            Photos
+          </button>
+        </div>
+
+        <div class="tab-panel active" id="tab-reviews">
+          <div class="review-card">
+            <div class="review-restaurant">
+              <img
+                class="rest-thumb"
+                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=100&q=80"
+                alt="r"
+              />
+              <div>
+                <div class="rest-name">Umami Den</div>
+                <div class="rest-meta">
+                  Japanese · Fitzroy · visited 2 weeks ago
+                </div>
+                <div class="stars">★★★★★</div>
+              </div>
+              <span
+                class="ms-auto badge"
+                style="
+                  background: var(--blush);
+                  color: var(--caramel);
+                  font-size: 0.7rem;
+                "
+                >Ramen</span
+              >
+            </div>
+            <p class="review-body">
+              The tonkotsu broth here is a revelation — 18 hours of simmering
+              produce something that tastes almost meditative. The chashu pork
+              melts, the egg is custard-perfect, and the hand-pulled noodles
+              have incredible chew. Easily the best bowl in Melbourne.
+            </p>
+            <div class="review-footer">
+              <span><i class="bi bi-clock me-1"></i>Jan 15, 2026</span>
+              <span class="review-action liked" onclick="toggleLike(this)"
+                ><i class="bi bi-heart-fill"></i> 84</span
+              >
+              <span class="review-action"><i class="bi bi-chat"></i> 12</span>
+              <span class="review-action"
+                ><i class="bi bi-bookmark"></i> Save</span
+              >
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-restaurant">
+              <img
+                class="rest-thumb"
+                src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=100&q=80"
+                alt="r"
+              />
+              <div>
+                <div class="rest-name">Café Renard</div>
+                <div class="rest-meta">
+                  French · Collingwood · visited last month
+                </div>
+                <div class="stars">★★★★<span style="color: #ccc">★</span></div>
+              </div>
+              <span
+                class="ms-auto badge"
+                style="
+                  background: var(--blush);
+                  color: var(--caramel);
+                  font-size: 0.7rem;
+                "
+                >Brunch</span
+              >
+            </div>
+            <p class="review-body">
+              A tiny room with mismatched chairs and the smell of good butter
+              from the kitchen. Their croque madame is outrageous — thick
+              sourdough, gruyère that stretches forever, a perfectly runny egg
+              on top. The coffee arrives with a tiny madeleine. Absolute magic.
+            </p>
+            <div class="review-footer">
+              <span><i class="bi bi-clock me-1"></i>Dec 28, 2025</span>
+              <span class="review-action" onclick="toggleLike(this)"
+                ><i class="bi bi-heart"></i> 61</span
+              >
+              <span class="review-action"><i class="bi bi-chat"></i> 7</span>
+              <span class="review-action"
+                ><i class="bi bi-bookmark"></i> Save</span
+              >
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-restaurant">
+              <img
+                class="rest-thumb"
+                src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=100&q=80"
+                alt="r"
+              />
+              <div>
+                <div class="rest-name">Pho Saigon</div>
+                <div class="rest-meta">
+                  Vietnamese · Richmond · visited 6 weeks ago
+                </div>
+                <div class="stars">★★★★★</div>
+              </div>
+              <span
+                class="ms-auto badge"
+                style="
+                  background: var(--blush);
+                  color: var(--caramel);
+                  font-size: 0.7rem;
+                "
+                >Pho</span
+              >
+            </div>
+            <p class="review-body">
+              No frills, plastic stools, giant bowls. The broth is clear amber
+              and deeply spiced — star anise forward, with a sweetness that
+              lingers. Rare beef, fresh basil, a squeeze of lime. Honest,
+              perfect, ten dollars. This is what I live for.
+            </p>
+            <div class="review-footer">
+              <span><i class="bi bi-clock me-1"></i>Nov 30, 2025</span>
+              <span class="review-action" onclick="toggleLike(this)"
+                ><i class="bi bi-heart"></i> 47</span
+              >
+              <span class="review-action"><i class="bi bi-chat"></i> 5</span>
+              <span class="review-action"
+                ><i class="bi bi-bookmark"></i> Save</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-saved">
+          <div
+            style="
+              background: var(--warm-white);
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 1.3rem;
+            "
+          >
+            <div class="saved-item">
+              <img
+                class="saved-thumb"
+                src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=100&q=80"
+                alt="r"
+              />
+              <div class="saved-info">
+                <div class="saved-name">Le Petit Bistro</div>
+                <div class="saved-sub">French · Fitzroy · $$$</div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--muted)">
+                <span style="color: var(--gold)">★</span> 4.7
+              </div>
+            </div>
+            <div class="saved-item">
+              <img
+                class="saved-thumb"
+                src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=100&q=80"
+                alt="r"
+              />
+              <div class="saved-info">
+                <div class="saved-name">Sakura Omakase</div>
+                <div class="saved-sub">Japanese · CBD · $$$$</div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--muted)">
+                <span style="color: var(--gold)">★</span> 4.9
+              </div>
+            </div>
+            <div class="saved-item">
+              <img
+                class="saved-thumb"
+                src="https://images.unsplash.com/photo-1559847844-5315695dadae?w=100&q=80"
+                alt="r"
+              />
+              <div class="saved-info">
+                <div class="saved-name">Mercado de la Calle</div>
+                <div class="saved-sub">Mexican · Brunswick · $$</div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--muted)">
+                <span style="color: var(--gold)">★</span> 4.5
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-photos">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 0.6rem;
+            "
+          >
+            <img
+              src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&q=80"
+              style="
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '.75'"
+              onmouseout="this.style.opacity = '1'"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300&q=80"
+              style="
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '.75'"
+              onmouseout="this.style.opacity = '1'"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1582169296194-e4d644c48063?w=300&q=80"
+              style="
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '.75'"
+              onmouseout="this.style.opacity = '1'"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&q=80"
+              style="
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '.75'"
+              onmouseout="this.style.opacity = '1'"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1519984388953-d2406bc725e1?w=300&q=80"
+              style="
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '.75'"
+              onmouseout="this.style.opacity = '1'"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&q=80"
+              style="
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '.75'"
+              onmouseout="this.style.opacity = '1'"
+            />
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay" id="editModal">
+      <div class="modal-box">
+        <h2>Edit Your Profile</h2>
+        <label class="form-label-custom">Display Name</label>
+        <input class="form-control-custom" id="inputName" />
+        <label class="form-label-custom">Username</label>
+        <input class="form-control-custom" id="inputHandle" />
+        <label class="form-label-custom">Location</label>
+        <input class="form-control-custom" id="inputLocation" />
+        <label class="form-label-custom">Bio</label>
+        <textarea
+          class="form-control-custom"
+          id="inputBio"
+          rows="3"
+          style="resize: vertical"
+        ></textarea>
+        <div class="modal-actions">
+          <button class="btn-outline-custom" onclick="closeModal()">
+            Cancel
+          </button>
+          <button class="btn-primary-custom" onclick="saveProfile()">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 999">
+      <div
+        id="toastEl"
+        class="toast align-items-center text-bg-dark border-0"
+        role="alert"
+      >
+        <div class="d-flex">
+          <div class="toast-body" id="toastMsg">Profile updated!</div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Just to navigate to resProfile, will be deleted later -->
+    <a href="resProfile.html">For Restaurants</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function switchTab(name, btn) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab-" + name).classList.add("active");
+        btn.classList.add("active");
+      }
+      function toggleLike(el) {
+        const icon = el.querySelector("i");
+        const parts = el.textContent.trim().split(" ");
+        let count = parseInt(parts[parts.length - 1]);
+        if (el.classList.contains("liked")) {
+          el.classList.remove("liked");
+          icon.className = "bi bi-heart";
+          count--;
+        } else {
+          el.classList.add("liked");
+          icon.className = "bi bi-heart-fill";
+          count++;
+        }
+        el.innerHTML = `<i class="${icon.className}"></i> ${count}`;
+      }
+      function openModal() {
+        document.getElementById("editModal").classList.add("show");
+      }
+      function closeModal() {
+        document.getElementById("editModal").classList.remove("show");
+      }
+      function saveProfile() {
+        document.getElementById("displayName").textContent =
+          document.getElementById("inputName").value;
+        document.getElementById("displayHandle").textContent =
+          document.getElementById("inputHandle").value;
+        document.getElementById("displayLocation").textContent =
+          document.getElementById("inputLocation").value;
+        document.getElementById("displayBio").textContent =
+          document.getElementById("inputBio").value;
+        closeModal();
+        const toast = new bootstrap.Toast(document.getElementById("toastEl"), {
+          delay: 2500,
+        });
+        document.getElementById("toastMsg").textContent =
+          "✓ Profile updated successfully!";
+        toast.show();
+      }
+      document
+        .getElementById("editModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+    </script>
+  </body>
+</html>

@@ -95,7 +95,7 @@ body {
   display: flex;
   align-items: flex-end;
   gap: 1.5rem;
-  margin-top: -60px;
+  margin-top: -20px;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
@@ -135,11 +135,12 @@ body {
   padding-bottom: 0.4rem;
 }
 .identity-text h1 {
-  font-family: "Playfair Display", serif;
+  font-family: fantasy;
   font-size: 1.9rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--espresso);
   line-height: 1.1;
+  position: relative;
 }
 .identity-text .handle {
   color: var(--muted);
