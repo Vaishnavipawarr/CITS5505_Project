@@ -18,8 +18,12 @@ def signup():
 def profile():
     return render_template('customer-profile.html')
 
-@app.route('/resProfile')
-def resProfile():
+@app.route('/restaurantOverview')
+def restaurantOverview():
+    return render_template('restaurant-overview.html')
+
+@app.route('/restaurantProfile')
+def restaurantProfile():
     return render_template('restaurant-profile.html')
 
 @app.route('/review')
