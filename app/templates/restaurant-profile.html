@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Restaurant Profile — YummyEatery</title>
+    <title>FoodHub - Restaurant Profile</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <link
@@ -18,633 +18,255 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/restaurant-profile.css') }}"
+      href="{{ url_for('static', filename='css/customer-profile.css') }}"
     />
   </head>
+
   <body>
-    <nav class="topbar">
-      <a href="#" class="topbar-logo">YummyEatery</a>
-      <div class="topbar-nav">
-        <a href="#">Discover</a>
-        <a href="#">Near Me</a>
-        <a href="#" style="color: var(--gold)"
-          ><i class="bi bi-shop"></i> Dashboard</a
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="/home">FoodHub</a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#nav"
+          aria-controls="nav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+          <div class="navbar-nav ms-auto gap-2">
+            <a class="btn btn-outline-light" href="/home">Home</a>
+            <a class="btn btn-warning" href="/restaurantProfile">My Profile</a>
+            <a class="btn btn-outline-light" href="/login">Logout</a>
+          </div>
+        </div>
       </div>
     </nav>
 
-    <!-- HERO -->
-    <div class="restaurant-hero">
-      <img
-        src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1400&q=80"
-        alt="restaurant interior"
-      />
-      <div class="hero-gradient"></div>
-      <div style="position: absolute; bottom: 0; left: 0; right: 0">
-        <div
-          class="hero-content-inner"
-          style="
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 2rem 2.5rem;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
-          "
-        >
-          <div
-            style="
-              display: flex;
-              align-items: flex-end;
-              gap: 1rem;
-              flex-wrap: wrap;
-            "
-          >
-            <div class="restaurant-logo-ring">
-              <img
-                src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&q=80"
-                alt="logo"
-              />
-            </div>
-            <div>
-              <div class="verified-badge">
-                <i class="bi bi-patch-check-fill"></i>Verified Restaurant
-              </div>
-              <h1
-                style="
-                  font-family: &quot;Cormorant Garamond&quot;, serif;
-                  font-size: 2.4rem;
-                  font-weight: 600;
-                  color: var(--cream);
-                  line-height: 1;
-                "
-              >
-                Mama Mia
-              </h1>
-              <div
-                style="
-                  font-size: 0.85rem;
-                  color: rgba(232, 223, 200, 0.7);
-                  margin-top: 0.3rem;
-                "
-              >
-                Contemporary Italian · Crawley, WA · $$$ ·
-                <span
-                  class="open-badge"
-                  style="margin-left: 0.4rem; vertical-align: middle"
-                  ><span class="open-dot"></span>Open Now</span
-                >
-              </div>
-            </div>
+    <div class="profile-hero">
+      <button class="hero-edit-btn" onclick="showToast('Edit restaurant info (demo).')">
+        <i class="bi bi-pencil me-1"></i>Edit Restaurant
+      </button>
+    </div>
+
+    <div class="profile-card-wrapper">
+      <div class="profile-identity">
+        <div class="avatar-ring" onclick="showToast('Change logo (demo).')">
+          <img
+            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=240&q=80"
+            alt="Restaurant logo"
+          />
+          <div class="avatar-overlay"><i class="bi bi-camera-fill"></i></div>
+        </div>
+        <div class="identity-text">
+          <h1 id="displayName">Mama Mia</h1>
+          <div class="handle" id="displayHandle">@mamamia</div>
+          <div class="location-tag">
+            <i class="bi bi-geo-alt-fill"></i><span id="displayLocation">Crawley, WA</span>
           </div>
-          <div class="hero-actions">
-            <button class="btn-ghost" onclick="toggleFollow(this)">
-              <i class="bi bi-bookmark me-1"></i>Follow
-            </button>
-            <button class="btn-ghost">
-              <i class="bi bi-share me-1"></i>Share
-            </button>
-            <button class="btn-gold" onclick="openReviewModal()">
-              <i class="bi bi-pencil-square me-1"></i>Write a Review
-            </button>
+          <div class="location-tag mt-2">
+            <i class="bi bi-star-fill" style="color: var(--gold)"></i>
+            <span><strong>4.7</strong> · <span id="statReviewsInline">284</span> reviews</span>
           </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-outline-custom" id="openCloseBtn" onclick="toggleOpenClose(this)">
+            <i class="bi bi-door-open me-1"></i>Open
+          </button>
+          <label class="btn-primary-custom mb-0" style="cursor: pointer">
+            <i class="bi bi-upload me-1"></i>Upload Photos
+            <input id="photoInput" type="file" accept="image/*" multiple hidden />
+          </label>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-cell">
+          <div class="stat-num" id="statReviews">284</div>
+          <div class="stat-label">Reviews</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num" id="statLikes">34</div>
+          <div class="stat-label">Likes</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num" id="statPhotos">0</div>
+          <div class="stat-label">Photos</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num" id="statDishes">8</div>
+          <div class="stat-label">Dishes</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">$$$</div>
+          <div class="stat-label">Price</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num" id="statOpen">Open</div>
+          <div class="stat-label">Status</div>
         </div>
       </div>
     </div>
 
-    <!-- RATING BANNER -->
-    <div class="rating-banner">
-      <div class="rating-banner-inner">
-        <div style="text-align: center">
-          <div class="big-score">4.7</div>
-          <div class="stars-row">★★★★<span class="empty">★</span></div>
-          <div
-            style="font-size: 0.73rem; color: var(--muted); margin-top: 0.2rem"
-          >
-            284 reviews
-          </div>
-        </div>
-        <div class="rating-breakdown">
-          <div class="rb-row">
-            <span style="width: 14px">5</span>
-            <div class="rb-bar">
-              <div class="rb-fill" style="width: 72%"></div>
-            </div>
-            <span>72%</span>
-          </div>
-          <div class="rb-row">
-            <span style="width: 14px">4</span>
-            <div class="rb-bar">
-              <div class="rb-fill" style="width: 18%"></div>
-            </div>
-            <span>18%</span>
-          </div>
-          <div class="rb-row">
-            <span style="width: 14px">3</span>
-            <div class="rb-bar">
-              <div class="rb-fill" style="width: 6%"></div>
-            </div>
-            <span>6%</span>
-          </div>
-          <div class="rb-row">
-            <span style="width: 14px">2</span>
-            <div class="rb-bar">
-              <div class="rb-fill" style="width: 2%"></div>
-            </div>
-            <span>2%</span>
-          </div>
-          <div class="rb-row">
-            <span style="width: 14px">1</span>
-            <div class="rb-bar">
-              <div class="rb-fill" style="width: 2%"></div>
-            </div>
-            <span>2%</span>
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 0.6rem">
-          <div class="info-pill">
-            <i class="bi bi-geo-alt-fill"></i>1 Crawley, WA 6009
-          </div>
-          <div class="info-pill">
-            <i class="bi bi-telephone-fill"></i>(03) 9412 8800
-          </div>
-          <div class="info-pill">
-            <i class="bi bi-globe2"></i>mamamiawa.com.au
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem">
-          <div class="info-pill">
-            <i class="bi bi-currency-dollar"></i>Average main $28–$42
-          </div>
-          <div class="info-pill">
-            <i class="bi bi-people-fill"></i>Accepts reservations
-          </div>
-          <div class="info-pill">
-            <i class="bi bi-wifi"></i>Free WiFi · Outdoor seating
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAIN LAYOUT -->
     <div class="main-layout">
+      <aside>
+        <div class="sidebar-block">
+          <h3>About</h3>
+          <p class="bio-text" id="displayBio">
+            Contemporary Italian · house-made pasta · warm service.
+          </p>
+        </div>
+
+        <div class="sidebar-block">
+          <h3>Quick actions</h3>
+          <button class="btn-outline-custom w-100 mb-2" onclick="showToast('Add dish (demo).')">
+            <i class="bi bi-plus-lg me-1"></i>Add Dish
+          </button>
+          <button class="btn-primary-custom w-100" onclick="window.location.href='/restaurantOverview'">
+            <i class="bi bi-box-arrow-up-right me-1"></i>Preview Public Page
+          </button>
+        </div>
+
+        <div class="sidebar-block">
+          <h3>Owner since</h3>
+          <p class="bio-text"><i class="bi bi-calendar3 me-1"></i>March 2026</p>
+        </div>
+      </aside>
+
       <main>
         <div class="tab-bar">
           <button class="tab-btn active" onclick="switchTab('reviews', this)">
             Reviews
           </button>
-          <button class="tab-btn" onclick="switchTab('menu', this)">
-            Menu
-          </button>
+          <button class="tab-btn" onclick="switchTab('menu', this)">Menu</button>
           <button class="tab-btn" onclick="switchTab('photos', this)">
             Photos
           </button>
         </div>
 
-        <!-- REVIEWS -->
         <div class="tab-panel active" id="tab-reviews">
           <div class="review-card">
-            <div class="reviewer-row">
-              <img
-                class="reviewer-avatar"
-                src="https://i.pravatar.cc/80?img=47"
-                alt="reviewer"
-              />
+            <div class="review-restaurant">
+              <img class="rest-thumb" src="https://i.pravatar.cc/100?img=47" alt="customer" />
               <div>
-                <div class="reviewer-name">
-                  Margot Leclair
-                  <span
-                    style="
-                      font-size: 0.75rem;
-                      color: var(--muted);
-                      font-weight: 400;
-                      margin-left: 4px;
-                    "
-                    >· Top Reviewer</span
-                  >
-                </div>
-                <div class="reviewer-meta">
-                  <span class="review-stars">★★★★★</span> · Jan 15, 2026
-                </div>
+                <div class="rest-name">Margot Leclair</div>
+                <div class="rest-meta">visited 2 weeks ago</div>
+                <div class="stars">★★★★★</div>
               </div>
+              <span class="ms-auto badge" style="background: var(--blush); color: var(--caramel); font-size: 0.7rem;">
+                Pasta
+              </span>
             </div>
-            <p class="review-text">
-              Quite simply the finest dinner I've had in Perth this year. The
-              pasta is made in-house and you can taste the difference — silky
-              ribbons of tagliolini in a black truffle butter that had me
-              scraping the bowl clean. The service is warm without being fussy,
-              the wine list is deeply considered, and the room is beautiful in
-              that candlelit, let-the-conversation-run-long sort of way.
+            <p class="review-body">
+              Incredible pasta and warm service. Truffle tagliolini is a must.
             </p>
-            <div class="review-tags">
-              <span>In-house pasta</span><span>Black truffle</span
-              ><span>Great service</span><span>Romantic</span>
-            </div>
-            <div class="review-footer-row">
-              <span class="review-action liked" onclick="toggleLike(this)"
-                ><i class="bi bi-heart-fill"></i> 124</span
+            <div class="review-footer">
+              <span><i class="bi bi-clock me-1"></i>Apr 20, 2026</span>
+              <span class="review-action" onclick="showToast('Reply (demo).')"
+                ><i class="bi bi-reply"></i> Reply</span
               >
-              <span class="review-action"><i class="bi bi-chat"></i> 18</span>
-              <span class="review-action"><i class="bi bi-flag"></i></span>
-            </div>
-            <div class="owner-reply">
-              <strong>Owner's response</strong><br />
-              Thank you, Margot — your words made our team's night. We hope to
-              welcome you back for our truffle season menu this winter. See you
-              soon!
+              <span class="review-action like-action" onclick="toggleLike(this)"
+                ><i class="bi bi-heart"></i> 12</span
+              >
             </div>
           </div>
 
           <div class="review-card">
-            <div class="reviewer-row">
-              <img
-                class="reviewer-avatar"
-                src="https://i.pravatar.cc/80?img=32"
-                alt="reviewer"
-              />
+            <div class="review-restaurant">
+              <img class="rest-thumb" src="https://i.pravatar.cc/100?img=32" alt="customer" />
               <div>
-                <div class="reviewer-name">David Kim</div>
-                <div class="reviewer-meta">
-                  <span class="review-stars"
-                    >★★★★<span class="empty">★</span></span
-                  >
-                  · Jan 3, 2026
-                </div>
+                <div class="rest-name">David Kim</div>
+                <div class="rest-meta">visited last month</div>
+                <div class="stars">★★★★<span style="color: #ccc">★</span></div>
               </div>
+              <span class="ms-auto badge" style="background: var(--blush); color: var(--caramel); font-size: 0.7rem;">
+                Service
+              </span>
             </div>
-            <p class="review-text">
-              Superb food, four stars only because the wait for a table was
-              longer than our booking suggested (almost 25 minutes). Once
-              seated, the burrata with roasted tomatoes was extraordinary —
-              creamy and lush — and the osso buco fell off the bone. Would
-              absolutely come back, would just call ahead about the wait
-              situation.
+            <p class="review-body">
+              Great food overall. The wait was a bit longer than expected, but
+              the burrata was incredible and we’d definitely come back.
             </p>
-            <div class="review-tags">
-              <span>Burrata</span><span>Osso buco</span
-              ><span>Worth the wait</span>
-            </div>
-            <div class="review-footer-row">
-              <span class="review-action" onclick="toggleLike(this)"
-                ><i class="bi bi-heart"></i> 67</span
+            <div class="review-footer">
+              <span><i class="bi bi-clock me-1"></i>Apr 14, 2026</span>
+              <span class="review-action" onclick="showToast('Reply (demo).')"
+                ><i class="bi bi-reply"></i> Reply</span
               >
-              <span class="review-action"><i class="bi bi-chat"></i> 9</span>
-              <span class="review-action"><i class="bi bi-flag"></i></span>
+              <span class="review-action like-action" onclick="toggleLike(this)"
+                ><i class="bi bi-heart"></i> 7</span
+              >
             </div>
           </div>
 
           <div class="review-card">
-            <div class="reviewer-row">
-              <img
-                class="reviewer-avatar"
-                src="https://i.pravatar.cc/80?img=25"
-                alt="reviewer"
-              />
+            <div class="review-restaurant">
+              <img class="rest-thumb" src="https://i.pravatar.cc/100?img=25" alt="customer" />
               <div>
-                <div class="reviewer-name">Priya Mehta</div>
-                <div class="reviewer-meta">
-                  <span class="review-stars">★★★★★</span> · Dec 20, 2025
-                </div>
+                <div class="rest-name">Priya Mehta</div>
+                <div class="rest-meta">special occasion</div>
+                <div class="stars">★★★★★</div>
               </div>
+              <span class="ms-auto badge" style="background: var(--blush); color: var(--caramel); font-size: 0.7rem;">
+                Romantic
+              </span>
             </div>
-            <p class="review-text">
-              Anniversary dinner and it was perfect in every way. They
-              remembered we'd mentioned a special occasion and the table had a
-              tiny card waiting for us. The pappardelle with wild boar ragù was
-              incredible — rich and deeply savoury. We ended with the tiramisu,
-              which tasted like it was made by someone who actually loved the
-              dish.
+            <p class="review-body">
+              Anniversary dinner was perfect. Loved the pappardelle and the
+              tiramisu. Thank you for making it special!
             </p>
-            <div class="review-tags">
-              <span>Special occasion</span><span>Pappardelle</span
-              ><span>Tiramisu</span>
-            </div>
-            <div class="review-footer-row">
-              <span class="review-action" onclick="toggleLike(this)"
-                ><i class="bi bi-heart"></i> 89</span
+            <div class="review-footer">
+              <span><i class="bi bi-clock me-1"></i>Mar 30, 2026</span>
+              <span class="review-action" onclick="showToast('Reply (demo).')"
+                ><i class="bi bi-reply"></i> Reply</span
               >
-              <span class="review-action"><i class="bi bi-chat"></i> 14</span>
-              <span class="review-action"><i class="bi bi-flag"></i></span>
-            </div>
-            <div class="owner-reply">
-              <strong>Owner's response</strong><br />
-              Happy anniversary, Priya! It was our pleasure to be part of your
-              celebration. Please come back to us anytime.
+              <span class="review-action like-action" onclick="toggleLike(this)"
+                ><i class="bi bi-heart"></i> 15</span
+              >
             </div>
           </div>
         </div>
 
-        <!-- MENU -->
         <div class="tab-panel" id="tab-menu">
-          <div class="menu-category">
-            <div class="menu-cat-title">Antipasti</div>
-            <div class="menu-item">
+          <div class="review-card">
+            <div class="review-restaurant">
               <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&q=80"
+                class="rest-thumb"
+                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=120&q=80"
                 alt="dish"
               />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Burrata & Roasted Tomato</div>
-                <div class="menu-item-desc">
-                  House-made burrata, slow-roasted cherry tomatoes, aged
-                  balsamic, sourdough crisp
-                </div>
+              <div>
+                <div class="rest-name">Burrata & Roasted Tomato</div>
+                <div class="rest-meta">Antipasti</div>
+                <div class="stars">$24</div>
               </div>
-              <div class="menu-item-price">$24</div>
+              <button class="btn-outline-custom ms-auto" onclick="showToast('Edit dish (demo).')">
+                <i class="bi bi-pencil"></i>
+              </button>
             </div>
-            <div class="menu-item">
-              <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=100&q=80"
-                alt="dish"
-              />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Beef Carpaccio</div>
-                <div class="menu-item-desc">
-                  Hand-sliced wagyu, capers, parmesan shavings, lemon oil,
-                  rocket
-                </div>
-              </div>
-              <div class="menu-item-price">$29</div>
-            </div>
-          </div>
-          <div class="menu-category">
-            <div class="menu-cat-title">Pasta</div>
-            <div class="menu-item">
-              <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100&q=80"
-                alt="dish"
-              />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Tagliolini al Tartufo Nero</div>
-                <div class="menu-item-desc">
-                  Fresh tagliolini, black truffle butter, aged pecorino, micro
-                  herbs
-                </div>
-              </div>
-              <div class="menu-item-price">$42</div>
-            </div>
-            <div class="menu-item">
-              <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=100&q=80"
-                alt="dish"
-              />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Pappardelle al Cinghiale</div>
-                <div class="menu-item-desc">
-                  Wild boar ragù, hand-rolled pappardelle, gremolata, parmesan
-                </div>
-              </div>
-              <div class="menu-item-price">$36</div>
-            </div>
-          </div>
-          <div class="menu-category">
-            <div class="menu-cat-title">Secondi</div>
-            <div class="menu-item">
-              <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1544025162-d76694265947?w=100&q=80"
-                alt="dish"
-              />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Osso Buco alla Milanese</div>
-                <div class="menu-item-desc">
-                  Braised veal shank, saffron risotto, gremolata
-                </div>
-              </div>
-              <div class="menu-item-price">$52</div>
-            </div>
-          </div>
-          <div class="menu-category">
-            <div class="menu-cat-title">Dolci</div>
-            <div class="menu-item">
-              <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=100&q=80"
-                alt="dish"
-              />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Tiramisù della Casa</div>
-                <div class="menu-item-desc">
-                  House recipe, savoiardi, mascarpone, espresso, dark chocolate
-                </div>
-              </div>
-              <div class="menu-item-price">$18</div>
-            </div>
-            <div class="menu-item">
-              <img
-                class="menu-item-thumb"
-                src="https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=100&q=80"
-                alt="dish"
-              />
-              <div class="menu-item-info">
-                <div class="menu-item-name">Panna Cotta</div>
-                <div class="menu-item-desc">
-                  Vanilla bean panna cotta, seasonal berry compote, pistachio
-                  crumble
-                </div>
-              </div>
-              <div class="menu-item-price">$16</div>
-            </div>
+            <p class="review-body">House-made burrata, aged balsamic, sourdough crisp.</p>
           </div>
         </div>
 
-        <!-- PHOTOS -->
         <div class="tab-panel" id="tab-photos">
-          <div class="photos-grid">
-            <img
-              src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1551218808-94e220e084d2?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=300&q=80"
-              alt="photo"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&q=80"
-              alt="photo"
-            />
+          <div
+            id="photosWrap"
+            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;"
+          ></div>
+          <div class="text-muted" style="margin-top: 0.75rem; font-size: 0.85rem;">
+            Demo upload: photos stay only until refresh.
           </div>
         </div>
       </main>
-
-      <!-- SIDEBAR -->
-      <aside>
-        <div class="sidebar-card">
-          <h3>Hours</h3>
-          <div class="hours-row">
-            <span class="day">Monday</span><span class="time">Closed</span>
-          </div>
-          <div class="hours-row">
-            <span class="day">Tuesday</span><span class="time">6pm – 10pm</span>
-          </div>
-          <div class="hours-row">
-            <span class="day">Wednesday</span
-            ><span class="time">6pm – 10pm</span>
-          </div>
-          <div class="hours-row today">
-            <span class="day">Thursday ←</span
-            ><span class="time">6pm – 10:30pm</span>
-          </div>
-          <div class="hours-row">
-            <span class="day">Friday</span
-            ><span class="time">12pm – 3pm, 6pm – 11pm</span>
-          </div>
-          <div class="hours-row">
-            <span class="day">Saturday</span
-            ><span class="time">12pm – 3pm, 6pm – 11pm</span>
-          </div>
-          <div class="hours-row">
-            <span class="day">Sunday</span><span class="time">12pm – 3pm</span>
-          </div>
-        </div>
-
-        <div class="sidebar-card">
-          <h3>Location</h3>
-          <div
-            style="
-              background: var(--surface);
-              border: 1px solid var(--border);
-              border-radius: 8px;
-              height: 130px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-bottom: 1rem;
-              color: var(--muted);
-              font-size: 0.8rem;
-            "
-          >
-            <i class="bi bi-map me-2"></i>1 Crawley, WA
-          </div>
-          <div class="info-row">
-            <i class="bi bi-bus-front"></i><span>3 min walk from UWA</span>
-          </div>
-          <div class="info-row">
-            <i class="bi bi-p-circle"></i
-            ><span>Street parking available after 6pm</span>
-          </div>
-        </div>
-
-        <div class="sidebar-card">
-          <h3>At a Glance</h3>
-          <div class="info-row">
-            <i class="bi bi-check-circle"></i><span>Accepts reservations</span>
-          </div>
-          <div class="info-row">
-            <i class="bi bi-check-circle"></i><span>Outdoor seating</span>
-          </div>
-          <div class="info-row">
-            <i class="bi bi-check-circle"></i><span>Vegetarian-friendly</span>
-          </div>
-          <div class="info-row">
-            <i class="bi bi-check-circle"></i><span>BYO wine (Mon–Wed)</span>
-          </div>
-          <div class="info-row">
-            <i class="bi bi-x-circle" style="color: var(--muted)"></i
-            ><span style="color: var(--muted)">No takeaway</span>
-          </div>
-        </div>
-
-        <div class="sidebar-card" style="text-align: center">
-          <h3>Reserve a Table</h3>
-          <button
-            class="btn-gold"
-            style="width: 100%; margin-bottom: 0.6rem"
-            onclick="showToast('Redirecting to reservations...')"
-          >
-            <i class="bi bi-calendar-check me-1"></i>Book Now
-          </button>
-          <button
-            class="btn-ghost"
-            style="width: 100%"
-            onclick="showToast('Phone: (03) 9412 8800')"
-          >
-            <i class="bi bi-telephone me-1"></i>Call
-          </button>
-        </div>
-      </aside>
-    </div>
-
-    <!-- REVIEW MODAL -->
-    <div class="modal-overlay" id="reviewModal">
-      <div class="modal-box">
-        <h2>Write a Review</h2>
-        <label class="form-label-dark">Your Rating</label>
-        <div class="star-picker" id="starPicker">
-          <span class="star-pick" onclick="setStars(1)">★</span>
-          <span class="star-pick" onclick="setStars(2)">★</span>
-          <span class="star-pick" onclick="setStars(3)">★</span>
-          <span class="star-pick" onclick="setStars(4)">★</span>
-          <span class="star-pick" onclick="setStars(5)">★</span>
-        </div>
-        <label class="form-label-dark">Visit Date</label>
-        <input type="date" class="form-control-dark" id="visitDate" />
-        <label class="form-label-dark">Your Review</label>
-        <textarea
-          class="form-control-dark"
-          id="reviewText"
-          rows="4"
-          placeholder="Tell us about your experience..."
-          style="resize: vertical"
-        ></textarea>
-        <label class="form-label-dark">Tags (optional)</label>
-        <input
-          class="form-control-dark"
-          id="reviewTags"
-          placeholder="e.g. romantic, great pasta, good service"
-        />
-        <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeReviewModal()">
-            Cancel
-          </button>
-          <button class="btn-gold" onclick="submitReview()">
-            <i class="bi bi-send me-1"></i>Post Review
-          </button>
-        </div>
-      </div>
     </div>
 
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 999">
-      <div
-        id="toastEl"
-        class="toast align-items-center border-0"
-        role="alert"
-        style="
-          background: var(--card);
-          border: 1px solid var(--border) !important;
-          color: var(--text);
-        "
-      >
+      <div id="toastEl" class="toast align-items-center text-bg-dark border-0" role="alert">
         <div class="d-flex">
           <div class="toast-body" id="toastMsg"></div>
           <button
@@ -656,95 +278,17 @@
       </div>
     </div>
 
-    <!-- Just to navigate to cusProfile, will be delete later -->
-    <a href="cusProfile.html">For customer</a>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='JS/restaurant-profile.js') }}"></script>
     <script>
-      let selectedStars = 0;
-
-      function switchTab(name, btn) {
-        document
-          .querySelectorAll(".tab-panel")
-          .forEach((p) => p.classList.remove("active"));
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
-        document.getElementById("tab-" + name).classList.add("active");
-        btn.classList.add("active");
-      }
-
-      function toggleLike(el) {
-        const icon = el.querySelector("i");
-        const parts = el.textContent.trim().split(" ");
-        let count = parseInt(parts[parts.length - 1]);
-        if (el.classList.contains("liked")) {
-          el.classList.remove("liked");
-          icon.className = "bi bi-heart";
-          count--;
-        } else {
-          el.classList.add("liked");
-          icon.className = "bi bi-heart-fill";
-          count++;
-        }
-        el.innerHTML = `<i class="${icon.className}"></i> ${count}`;
-      }
-
-      function toggleFollow(btn) {
-        if (btn.dataset.following) {
-          delete btn.dataset.following;
-          btn.innerHTML = '<i class="bi bi-bookmark me-1"></i>Follow';
-          showToast("Unfollowed Osteria Notte");
-        } else {
-          btn.dataset.following = true;
-          btn.innerHTML = '<i class="bi bi-bookmark-fill me-1"></i>Following';
-          btn.style.background = "rgba(212,168,83,0.15)";
-          btn.style.borderColor = "var(--gold)";
-          btn.style.color = "var(--gold)";
-          showToast("You're now following Osteria Notte!");
-        }
-      }
-
-      function setStars(n) {
-        selectedStars = n;
-        document.querySelectorAll(".star-pick").forEach((s, i) => {
-          s.classList.toggle("active", i < n);
-        });
-      }
-
-      function openReviewModal() {
-        document.getElementById("reviewModal").classList.add("show");
-      }
-      function closeReviewModal() {
-        document.getElementById("reviewModal").classList.remove("show");
-      }
-
-      function submitReview() {
-        const text = document.getElementById("reviewText").value.trim();
-        if (!selectedStars || !text) {
-          showToast("Please add a rating and review text.");
-          return;
-        }
-        closeReviewModal();
-        showToast("✓ Your review has been posted — thank you!");
-        document.getElementById("reviewText").value = "";
-        document.getElementById("reviewTags").value = "";
-        setStars(0);
-      }
-
       function showToast(msg) {
         document.getElementById("toastMsg").textContent = msg;
-        const toast = new bootstrap.Toast(document.getElementById("toastEl"), {
-          delay: 3000,
-        });
+        const toast = bootstrap.Toast.getOrCreateInstance(
+          document.getElementById("toastEl"),
+          { delay: 2200 }
+        );
         toast.show();
       }
-
-      document
-        .getElementById("reviewModal")
-        .addEventListener("click", function (e) {
-          if (e.target === this) closeReviewModal();
-        });
     </script>
   </body>
 </html>
