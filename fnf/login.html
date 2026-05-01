@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Log In — Fork &amp; Flame</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <style>
+    body{min-height:100vh;display:flex;overflow-x:hidden;}
+    .visual{flex:1;position:relative;overflow:hidden;display:none;}
+    @media(min-width:768px){.visual{display:block;}}
+    .visual img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+    .visual-ov{position:absolute;inset:0;background:linear-gradient(160deg,rgba(14,12,9,.72) 0%,rgba(212,134,58,.18) 100%);}
+    .visual-txt{position:absolute;bottom:3rem;left:2.5rem;right:2.5rem;}
+    .visual-txt blockquote{font-family:var(--font-d);font-size:1.8rem;font-style:italic;color:#fff;line-height:1.35;margin-bottom:.8rem;}
+    .visual-txt blockquote em{color:var(--amber-light);font-style:normal;}
+    .visual-txt cite{font-size:.73rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);}
+    .form-side{width:100%;max-width:480px;background:var(--surface);display:flex;align-items:center;justify-content:center;padding:2.5rem 2rem;flex-shrink:0;min-height:100vh;}
+    .form-inner{width:100%;max-width:380px;}
+    @keyframes aIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+    .brand{font-family:var(--font-d);font-size:1.55rem;font-style:italic;color:var(--amber-light);display:block;margin-bottom:2.2rem;animation:aIn .5s .1s ease both;}
+    .auth-h1{font-family:var(--font-d);font-size:1.9rem;color:var(--cream);margin-bottom:.3rem;animation:aIn .5s .2s ease both;}
+    .auth-sub{font-size:.86rem;color:var(--muted);margin-bottom:1.8rem;animation:aIn .5s .3s ease both;}
+
+    /* Role selector tabs */
+    .role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.5rem;animation:aIn .5s .4s ease both;}
+    .role-tab{border:1.5px solid var(--border);border-radius:var(--r-sm);padding:1rem .7rem;text-align:center;cursor:pointer;transition:all .22s;background:transparent;}
+    .role-tab:hover{border-color:var(--amber);}
+    .role-tab.active{border-color:var(--amber);background:rgba(212,134,58,.09);box-shadow:0 0 0 3px rgba(212,134,58,.1);}
+    .role-tab .icon{font-size:1.6rem;margin-bottom:.3rem;}
+    .role-tab .label{font-size:.8rem;font-weight:600;color:var(--cream);}
+    .role-tab .desc{font-size:.67rem;color:var(--muted);margin-top:.08rem;}
+
+    .demo-hint{background:rgba(212,134,58,.07);border:1px solid rgba(212,134,58,.2);border-radius:var(--r-sm);padding:.75rem 1rem;margin-bottom:1.2rem;font-size:.78rem;color:var(--muted);}
+    .demo-hint strong{color:var(--amber-light);}
+
+    .submit-btn{width:100%;background:var(--amber);color:#fff;border:none;border-radius:var(--r-sm);padding:.82rem;font-family:var(--font-b);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(212,134,58,.3);}
+    .submit-btn:hover{background:var(--amber-light);transform:translateY(-2px);}
+    .submit-btn:active{transform:translateY(0);}
+    .switch{text-align:center;font-size:.84rem;color:var(--muted);margin-top:1.2rem;}
+    .switch a{color:var(--amber);font-weight:500;}
+    .err{background:rgba(192,74,46,.12);border:1px solid rgba(192,74,46,.25);border-radius:var(--r-sm);padding:.6rem .9rem;font-size:.8rem;color:#e07060;margin-bottom:1rem;display:none;}
+    .err.show{display:block;}
+  </style>
+</head>
+<body>
+<div class="visual">
+  <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85" alt=""/>
+  <div class="visual-ov"></div>
+  <div class="visual-txt">
+    <blockquote>"Every great meal begins with a <em>moment of intention.</em>"</blockquote>
+    <cite>— Fork &amp; Flame</cite>
+  </div>
+</div>
+<div class="form-side">
+  <div class="form-inner">
+    <a href="index.html" class="brand">Fork &amp; Flame</a>
+    <h1 class="auth-h1">Welcome back</h1>
+    <p class="auth-sub">Sign in to your account to continue.</p>
+
+    <div class="role-tabs">
+      <div class="role-tab active" id="tab-customer" onclick="selectRole('customer')">
+        <div class="icon">🍽️</div>
+        <div class="label">Food Lover</div>
+        <div class="desc">Browse &amp; review restaurants</div>
+      </div>
+      <div class="role-tab" id="tab-owner" onclick="selectRole('owner')">
+        <div class="icon">🏠</div>
+        <div class="label">Restaurant Owner</div>
+        <div class="desc">Manage your restaurant</div>
+      </div>
+    </div>
+
+    <div class="demo-hint" id="demoHint">
+      Demo: <strong>customer@demo.com</strong> / <strong>demo123</strong>
+    </div>
+
+    <div id="errMsg" class="err"><i class="fas fa-exclamation-circle"></i> <span id="errTxt">Invalid email or password.</span></div>
+
+    <div class="field"><label class="ff-label">Email Address</label><input class="ff-input" type="email" id="email" placeholder="you@example.com"/></div>
+    <div class="field"><label class="ff-label">Password</label>
+      <div style="position:relative;">
+        <input class="ff-input" type="password" id="password" placeholder="Your password" style="padding-right:2.8rem;"/>
+        <button onclick="togglePw()" style="position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;color:var(--muted);font-size:.9rem;transition:color .2s;" onmouseenter="this.style.color='var(--amber-light)'" onmouseleave="this.style.color='var(--muted)'"><i class="far fa-eye" id="eyeIcon"></i></button>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="doLogin()">Sign In</button>
+
+    <p class="switch">Don't have an account? <a href="signup.html">Sign Up</a></p>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  let selectedRole = 'customer';
+
+  // Redirect if already logged in
+  const u = Session.load();
+  if(u) window.location.href = u.role==='customer'?'customer-dashboard.html':'owner-dashboard.html';
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.getElementById('tab-customer').classList.toggle('active', role==='customer');
+    document.getElementById('tab-owner').classList.toggle('active', role==='owner');
+    document.getElementById('demoHint').innerHTML = role==='customer'
+      ? 'Demo: <strong>customer@demo.com</strong> / <strong>demo123</strong>'
+      : 'Demo: <strong>owner@demo.com</strong> / <strong>demo123</strong>';
+  }
+
+  function togglePw() {
+    const inp = document.getElementById('password');
+    const ico = document.getElementById('eyeIcon');
+    inp.type = inp.type==='password'?'text':'password';
+    ico.className = inp.type==='password'?'far fa-eye':'far fa-eye-slash';
+  }
+
+  function doLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errBox   = document.getElementById('errMsg');
+    const errTxt   = document.getElementById('errTxt');
+
+    if(!email||!password){
+      errTxt.textContent='Please fill in all fields.';
+      errBox.classList.add('show'); return;
+    }
+
+    const account = DUMMY.accounts.find(a => a.email===email && a.password===password && a.role===selectedRole);
+    if(!account){
+      errTxt.textContent='Invalid credentials. Try the demo credentials shown above.';
+      errBox.classList.add('show'); return;
+    }
+
+    errBox.classList.remove('show');
+    Session.save(account);
+    window.location.href = account.role==='customer'?'customer-dashboard.html':'owner-dashboard.html';
+  }
+
+  // Allow Enter key
+  document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

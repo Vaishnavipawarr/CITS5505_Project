@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Restaurant Dashboard — Fork &amp; Flame</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <style>
+    /* OWNER THEME — teal/slate palette */
+    :root {
+      --ot:    #2a9d8f;
+      --ot-lt: #3bbcae;
+      --ot-dim:rgba(42,157,143,.13);
+      --ot-bg: #08100f;
+      --ot-sf: #0d1816;
+      --ot-cd: #111f1d;
+      --ot-br: #1a2e2a;
+      --ot-cr: #d8f0ec;
+      --ot-mu: #5a7a76;
+      --ot-tx: #c8e0dc;
+    }
+    body { background:var(--ot-bg); color:var(--ot-tx); }
+    ::-webkit-scrollbar-track{background:var(--ot-bg);}
+    ::-webkit-scrollbar-thumb{background:var(--ot-br);}
+    ::-webkit-scrollbar-thumb:hover{background:var(--ot);}
+
+    /* NAVBAR override */
+    .nav{background:rgba(8,16,15,.92);border-bottom-color:rgba(42,157,143,.1);}
+    .nav-brand{color:var(--ot-lt);}
+    .nav-links a:hover,.nav-links a.active{color:var(--ot-lt);}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh;padding-top:60px;}
+
+    /* SIDEBAR */
+    .sidebar{background:var(--ot-sf);border-right:1px solid var(--ot-br);padding:0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;display:flex;flex-direction:column;}
+    .sb-rest{padding:1.4rem;border-bottom:1px solid var(--ot-br);background:linear-gradient(135deg,rgba(42,157,143,.1) 0%,transparent 100%);}
+    .sb-rest-thumb{width:58px;height:58px;border-radius:var(--r-md);object-fit:cover;border:2px solid var(--ot);margin-bottom:.7rem;}
+    .sb-rest-name{font-family:var(--font-d);font-size:1rem;color:var(--ot-cr);font-weight:600;}
+    .sb-rest-type{font-size:.7rem;color:var(--ot-mu);margin-top:.1rem;}
+    .open-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(90,140,82,.15);border:1px solid rgba(90,140,82,.28);color:#7db86e;border-radius:20px;padding:.18rem .6rem;font-size:.66rem;margin-top:.5rem;}
+    .open-dot{width:6px;height:6px;border-radius:50%;background:#7db86e;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    .sb-nav{list-style:none;padding:.7rem;flex:1;}
+    .sb-nav li{margin-bottom:.15rem;}
+    .sb-nav a{display:flex;align-items:center;gap:.65rem;padding:.62rem .88rem;border-radius:var(--r-sm);font-size:.82rem;font-weight:500;color:var(--ot-mu);transition:all .2s;}
+    .sb-nav a i{width:15px;text-align:center;font-size:.83rem;}
+    .sb-nav a:hover{background:rgba(42,157,143,.08);color:var(--ot-lt);}
+    .sb-nav a.active{background:rgba(42,157,143,.13);color:var(--ot-lt);border-left:2px solid var(--ot);}
+    .notif-dot{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--ot);animation:pulse 2s infinite;}
+    .sb-bottom{padding:.7rem;border-top:1px solid var(--ot-br);}
+
+    /* MAIN */
+    .main{padding:2rem 2.5rem;background:var(--ot-bg);}
+    .page-head{margin-bottom:1.8rem;}
+    .page-head h1{font-family:var(--font-d);font-size:clamp(1.6rem,3vw,2.1rem);color:var(--ot-cr);font-weight:600;}
+    .page-head h1 em{font-style:italic;color:var(--ot-lt);}
+    .page-head p{font-size:.87rem;color:var(--ot-mu);margin-top:.3rem;}
+
+    /* KPI CARDS */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.8rem;}
+    .kpi{background:var(--ot-cd);border:1px solid var(--ot-br);border-radius:var(--r-md);padding:1.2rem 1.3rem;position:relative;overflow:hidden;transition:all .25s;}
+    .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ot),var(--ot-lt));}
+    .kpi:hover{border-color:rgba(42,157,143,.25);box-shadow:0 4px 18px rgba(0,0,0,.3);}
+    .kpi .n{font-family:var(--font-d);font-size:2.1rem;font-weight:700;color:var(--ot-lt);line-height:1;}
+    .kpi .l{font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ot-mu);margin-top:.2rem;}
+
+    /* TABS */
+    .tab-bar{display:flex;gap:0;border-bottom:1px solid var(--ot-br);margin-bottom:1.8rem;}
+    .tab-btn{background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;padding:.68rem 1.2rem;font-family:var(--font-b);font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ot-mu);cursor:pointer;transition:color .2s;white-space:nowrap;}
+    .tab-btn.active{color:var(--ot-lt);border-bottom-color:var(--ot);}
+    .tab-btn:hover:not(.active){color:var(--ot-tx);}
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;}
+
+    /* REVIEW CARD — owner */
+    .orev{background:var(--ot-cd);border:1px solid var(--ot-br);border-radius:var(--r-md);padding:1.4rem;margin-bottom:1rem;transition:all .28s;animation:cardIn .32s ease both;}
+    .orev:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.35);}
+    .orev.needs-reply{border-left:2px solid var(--gold);}
+    .orev.has-reply{border-left:2px solid var(--ot);}
+    @keyframes cardIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+    .reviewer-av{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--ot-br);flex-shrink:0;}
+    .reviewer-name{font-weight:600;font-size:.9rem;color:var(--ot-cr);}
+    .reviewer-meta{font-size:.73rem;color:var(--ot-mu);}
+    .rev-body{font-size:.86rem;line-height:1.72;color:var(--ot-tx);margin-bottom:.85rem;}
+    .rev-tag{display:inline-block;background:rgba(42,157,143,.1);border:1px solid rgba(42,157,143,.18);color:var(--ot-lt);border-radius:4px;padding:.17rem .52rem;font-size:.7rem;margin:0 .2rem .2rem 0;}
+
+    /* STATUS PILL */
+    .status-pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.67rem;font-weight:600;padding:.2rem .62rem;border-radius:20px;}
+    .status-replied{background:rgba(42,157,143,.14);color:var(--ot-lt);border:1px solid rgba(42,157,143,.22);}
+    .status-pending{background:rgba(201,153,61,.14);color:#d4a853;border:1px solid rgba(201,153,61,.22);}
+
+    /* OWNER REPLY DISPLAY */
+    .reply-display{background:rgba(42,157,143,.06);border-left:3px solid var(--ot);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.85rem 1rem;margin-top:.9rem;}
+    .reply-display .lbl{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ot);font-weight:600;margin-bottom:.25rem;display:flex;align-items:center;justify-content:space-between;}
+    .reply-display p{font-size:.83rem;color:var(--ot-mu);line-height:1.65;}
+
+    /* REPLY COMPOSE */
+    .reply-compose{background:rgba(42,157,143,.04);border:1px dashed rgba(42,157,143,.28);border-radius:var(--r-sm);padding:1rem;margin-top:.9rem;display:none;animation:fadeIn .25s ease both;}
+    .reply-compose.open{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+    .reply-compose textarea{width:100%;background:var(--ot-sf);border:1.5px solid var(--ot-br);border-radius:var(--r-sm);padding:.68rem 1rem;color:var(--ot-tx);font-family:var(--font-b);font-size:.86rem;outline:none;resize:vertical;min-height:88px;transition:border-color .2s;}
+    .reply-compose textarea:focus{border-color:var(--ot);}
+    .reply-compose textarea::placeholder{color:var(--ot-mu);}
+
+    /* TEAL BUTTONS */
+    .btn-teal{background:var(--ot);color:#fff;box-shadow:0 4px 16px rgba(42,157,143,.28);}
+    .btn-teal:hover{background:var(--ot-lt);transform:translateY(-2px);}
+    .btn-teal-outline{background:transparent;color:var(--ot-lt);border:1px solid rgba(42,157,143,.32);}
+    .btn-teal-outline:hover{background:rgba(42,157,143,.1);border-color:var(--ot);}
+    .btn-ghost-ot{background:transparent;color:var(--ot-tx);border:1px solid var(--ot-br);}
+    .btn-ghost-ot:hover{border-color:var(--ot);color:var(--ot-lt);}
+
+    /* FILTER */
+    .fbar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem;background:var(--ot-cd);border:1px solid var(--ot-br);border-radius:var(--r-md);padding:.75rem 1rem;}
+    .fbar .ff-select{width:auto;padding:.4rem 2rem .4rem .8rem;font-size:.8rem;background:var(--ot-sf);border-color:var(--ot-br);color:var(--ot-tx);}
+    .fbar .ff-select:focus{border-color:var(--ot);box-shadow:0 0 0 3px rgba(42,157,143,.1);}
+    .fbar .ff-input{flex:1;min-width:160px;padding:.4rem .85rem;font-size:.82rem;background:var(--ot-sf);border-color:var(--ot-br);color:var(--ot-tx);}
+    .fbar .ff-input:focus{border-color:var(--ot);box-shadow:0 0 0 3px rgba(42,157,143,.1);}
+
+    /* ANALYTICS */
+    .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.8rem;}
+    .a-card{background:var(--ot-cd);border:1px solid var(--ot-br);border-radius:var(--r-md);padding:1.3rem;}
+    .a-card h4{font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ot-mu);margin-bottom:1rem;}
+    .rb-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;font-size:.8rem;color:var(--ot-tx);}
+    .rb-track{flex:1;height:5px;background:var(--ot-br);border-radius:2px;overflow:hidden;}
+    .rb-fill{height:100%;background:var(--ot);border-radius:2px;transition:width .8s;}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:3.5rem 2rem;}
+    .empty .icon{font-size:3rem;margin-bottom:.8rem;opacity:.4;}
+    .empty h3{font-family:var(--font-d);font-size:1.35rem;color:var(--ot-cr);margin-bottom:.5rem;}
+    .empty p{font-size:.84rem;color:var(--ot-mu);}
+
+    /* RATING OVERVIEW */
+    .rating-overview{background:var(--ot-cd);border:1px solid var(--ot-br);border-radius:var(--r-md);padding:1.4rem;margin-bottom:1.8rem;}
+    .rating-overview h3{font-family:var(--font-d);font-size:1.1rem;color:var(--ot-cr);margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--ot-br);}
+    .big-score{font-family:var(--font-d);font-size:3.5rem;font-weight:700;color:var(--ot-lt);line-height:1;}
+    .big-stars{font-size:1.2rem;color:var(--gold);margin:.3rem 0;}
+    .review-count{font-size:.78rem;color:var(--ot-mu);}
+
+    @media(max-width:991px){.layout{grid-template-columns:1fr;}.sidebar{position:relative;height:auto;top:0;border-right:none;border-bottom:1px solid var(--ot-br);}.kpis{grid-template-columns:repeat(2,1fr);}.main{padding:1.5rem;}.analytics-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+<div id="toast"></div>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="wrap">
+    <a href="index.html" class="nav-brand">Fork &amp; Flame<span>Restaurant Portal</span></a>
+    <ul class="nav-links">
+      <li><a href="owner-dashboard.html" class="active">Dashboard</a></li>
+    </ul>
+    <div class="nav-right">
+      <div style="display:flex;align-items:center;gap:.55rem;background:rgba(42,157,143,.08);border:1px solid rgba(42,157,143,.2);border-radius:30px;padding:.28rem .85rem .28rem .55rem;font-size:.78rem;color:var(--ot-cr);">
+        <i class="fas fa-store" style="color:var(--ot);font-size:.8rem;"></i>
+        <span id="navName">Owner</span>
+      </div>
+      <button class="btn btn-ghost-ot btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-rest">
+      <img class="sb-rest-thumb" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=120&q=70" alt="" id="sbRestImg"/>
+      <div class="sb-rest-name" id="sbRestName">Ember &amp; Oak</div>
+      <div class="sb-rest-type">Steakhouse · The Rocks, Sydney</div>
+      <div class="open-badge"><div class="open-dot"></div> Open Now</div>
+    </div>
+    <ul class="sb-nav">
+      <li><a href="#" class="active" onclick="showTab('overview',this)"><i class="fas fa-chart-bar"></i> Overview</a></li>
+      <li><a href="#" onclick="showTab('reviews',this)" id="reviewsLink"><i class="fas fa-comments"></i> Reviews <div class="notif-dot"></div></a></li>
+    </ul>
+    <div class="sb-bottom">
+      <button class="btn btn-danger btn-sm btn-full" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="page-head">
+      <h1 id="ownerHead">Restaurant <em>Dashboard</em></h1>
+      <p id="ownerSubhead">Manage your reviews and respond to customers.</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Total Reviews</div></div>
+      <div class="kpi"><div class="n" id="kpiAvg">0</div><div class="l">Average Rating</div></div>
+      <div class="kpi"><div class="n" id="kpiReplied">0</div><div class="l">Replied</div></div>
+      <div class="kpi"><div class="n" id="kpiPending">0</div><div class="l">Awaiting Reply</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tbtn-overview" onclick="showTab('overview',this)">Overview</button>
+      <button class="tab-btn" id="tbtn-reviews" onclick="showTab('reviews',this)">All Reviews</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="rating-overview">
+        <h3>Rating Summary</h3>
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+          <div>
+            <div class="big-score" id="ovAvg">4.8</div>
+            <div class="big-stars" id="ovStars">★★★★★</div>
+            <div class="review-count" id="ovCount">based on 0 reviews</div>
+          </div>
+          <div style="flex:1;min-width:180px;" id="ovBars"></div>
+        </div>
+      </div>
+      <div class="analytics-grid">
+        <div class="a-card">
+          <h4>Most Mentioned Tags</h4>
+          <div id="tagBars"></div>
+        </div>
+        <div class="a-card">
+          <h4>Quick Actions</h4>
+          <div class="d-flex flex-column gap-2">
+            <button class="btn btn-teal btn-sm text-start" onclick="showTab('reviews',document.getElementById('tbtn-reviews'));scrollTo(0,0)"><i class="fas fa-comments"></i> View All Reviews</button>
+            <button class="btn btn-teal-outline btn-sm text-start" onclick="filterPending()"><i class="fas fa-clock"></i> Show Pending Replies</button>
+            <button class="btn btn-ghost-ot btn-sm text-start" onclick="toast('Feature coming soon','🔔')"><i class="fas fa-bell"></i> Notification Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS TAB -->
+    <div class="tab-pane" id="tab-reviews">
+      <div class="fbar">
+        <input class="ff-input" type="text" id="revSearch" placeholder="Search reviews…" oninput="renderReviews()"/>
+        <select class="ff-select" id="revFilterRating" onchange="renderReviews()">
+          <option value="all">All Ratings</option>
+          <option value="5">★★★★★ 5 Stars</option>
+          <option value="4">★★★★ 4 Stars</option>
+          <option value="3">★★★ 3 Stars</option>
+          <option value="1">★★ 1-2 Stars</option>
+        </select>
+        <select class="ff-select" id="revFilterStatus" onchange="renderReviews()">
+          <option value="all">All Replies</option>
+          <option value="pending">Needs Reply</option>
+          <option value="replied">Already Replied</option>
+        </select>
+      </div>
+      <div id="revList"></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  /* AUTH */
+  const user = requireAuth('owner');
+  if(!user) throw 0;
+
+  /* For demo: match owner to restaurant r1 (Ember & Oak) */
+  const ownerRestId = user.restaurantId || 'r1';
+  const ownerRest   = DUMMY.restaurants.find(r => r.id === ownerRestId) || DUMMY.restaurants[0];
+
+  /* SET UI */
+  document.getElementById('navName').textContent     = ownerRest.name;
+  document.getElementById('sbRestName').textContent  = ownerRest.name;
+  document.getElementById('ownerHead').innerHTML     = `${ownerRest.name} <em>Dashboard</em>`;
+  document.getElementById('ownerSubhead').textContent= `Manage and respond to customer reviews for ${ownerRest.name}.`;
+
+  /* TABS */
+  function showTab(id, el) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sb-nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    if(el && el.classList.contains('tab-btn')) el.classList.add('active');
+    document.getElementById('tbtn-'+id)?.classList.add('active');
+    if(id==='overview') document.querySelectorAll('.sb-nav a')[0].classList.add('active');
+    if(id==='reviews')  { document.querySelectorAll('.sb-nav a')[1].classList.add('active'); renderReviews(); }
+  }
+
+  /* GET THIS RESTAURANT'S REVIEWS */
+  function getMyReviews() {
+    return getReviews().filter(r => r.restaurantId === ownerRestId);
+  }
+
+  /* LOAD KPIs */
+  function loadKPIs() {
+    const reviews = getMyReviews();
+    const total    = reviews.length;
+    const avg      = total ? (reviews.reduce((s,r)=>s+r.rating,0)/total).toFixed(1) : '0';
+    const replied  = reviews.filter(r=>r.ownerReply).length;
+    const pending  = total - replied;
+    document.getElementById('kpiTotal').textContent   = total;
+    document.getElementById('kpiAvg').textContent     = avg;
+    document.getElementById('kpiReplied').textContent = replied;
+    document.getElementById('kpiPending').textContent = pending;
+
+    /* Rating summary */
+    document.getElementById('ovAvg').textContent   = avg;
+    document.getElementById('ovCount').textContent = `based on ${total} review${total!==1?'s':''}`;
+    const full = Math.round(+avg);
+    document.getElementById('ovStars').textContent = '★'.repeat(full)+'☆'.repeat(5-full);
+
+    /* Rating bars */
+    const bars = document.getElementById('ovBars');
+    bars.innerHTML = [5,4,3,2,1].map(n => {
+      const cnt = reviews.filter(r=>r.rating===n).length;
+      const pct = total ? Math.round(cnt/total*100) : 0;
+      return `<div class="rb-row"><span style="min-width:22px">${n}★</span><div class="rb-track"><div class="rb-fill" style="width:${pct}%"></div></div><span style="min-width:24px;font-size:.74rem;color:var(--ot-mu)">${cnt}</span></div>`;
+    }).join('');
+
+    /* Tag bars */
+    const tagCount = {};
+    reviews.forEach(r => (r.tags||[]).forEach(t => tagCount[t]=(tagCount[t]||0)+1));
+    const sorted = Object.entries(tagCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const maxT = sorted[0]?.[1]||1;
+    document.getElementById('tagBars').innerHTML = sorted.length
+      ? sorted.map(([t,c]) => `<div class="rb-row"><span style="min-width:110px;font-size:.78rem">${t}</span><div class="rb-track"><div class="rb-fill" style="width:${Math.round(c/maxT*100)}%"></div></div><span style="font-size:.72rem;color:var(--ot-mu)">${c}</span></div>`).join('')
+      : '<p style="font-size:.82rem;color:var(--ot-mu);">No tags yet.</p>';
+  }
+
+  /* RENDER REVIEWS */
+  function renderReviews() {
+    const search   = (document.getElementById('revSearch')?.value||'').toLowerCase();
+    const rFilter  = document.getElementById('revFilterRating')?.value||'all';
+    const stFilter = document.getElementById('revFilterStatus')?.value||'all';
+
+    let reviews = getMyReviews();
+    if(search)         reviews = reviews.filter(r=>r.customerName.toLowerCase().includes(search)||r.text.toLowerCase().includes(search));
+    if(rFilter!=='all') reviews = reviews.filter(r => rFilter==='1' ? r.rating<=2 : r.rating===parseInt(rFilter));
+    if(stFilter==='pending') reviews = reviews.filter(r=>!r.ownerReply);
+    if(stFilter==='replied') reviews = reviews.filter(r=>!!r.ownerReply);
+
+    const el = document.getElementById('revList');
+    if(!reviews.length) {
+      el.innerHTML=`<div class="empty"><div class="icon">💬</div><h3>No reviews found</h3><p>Adjust your filters or wait for customers to leave reviews.</p></div>`;
+      return;
+    }
+
+    el.innerHTML = reviews.map(r => `
+      <div class="orev ${r.ownerReply?'has-reply':'needs-reply'}" id="orev-${r.id}">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <img class="reviewer-av" src="${r.customerAvatar}" alt=""/>
+          <div class="flex-1">
+            <div class="reviewer-name">${r.customerName}</div>
+            <div class="reviewer-meta">${r.date}</div>
+          </div>
+          <div class="ms-auto d-flex align-items-center gap-2">
+            ${renderStars(r.rating)}
+            <span class="status-pill ${r.ownerReply?'status-replied':'status-pending'}">${r.ownerReply?'✓ Replied':'⏳ Pending'}</span>
+          </div>
+        </div>
+        <p class="rev-body">${r.text}</p>
+        ${(r.tags||[]).length?`<div style="margin-bottom:.85rem">${r.tags.map(t=>`<span class="rev-tag">${t}</span>`).join('')}</div>`:''}
+
+        ${r.ownerReply ? `
+          <div class="reply-display" id="reply-display-${r.id}">
+            <div class="lbl">
+              <span>✦ Your Reply · ${r.ownerReplyDate||''}</span>
+              <button class="btn btn-teal-outline btn-sm" style="font-size:.7rem;padding:.2rem .6rem;" onclick="editReply(${r.id})">Edit</button>
+            </div>
+            <p id="reply-text-${r.id}">${r.ownerReply}</p>
+          </div>
+        ` : ''}
+
+        <div class="reply-compose ${r.ownerReply?'':'open'}" id="compose-${r.id}">
+          <textarea id="replyInput-${r.id}" placeholder="Write a professional, helpful reply to this review…">${r.ownerReply||''}</textarea>
+          <div class="d-flex gap-2 mt-2">
+            ${r.ownerReply?`<button class="btn btn-ghost-ot btn-sm" onclick="cancelEdit(${r.id})">Cancel</button>`:''}
+            <button class="btn btn-teal btn-sm ms-auto" onclick="submitReply(${r.id})"><i class="fas fa-reply"></i> ${r.ownerReply?'Update Reply':'Post Reply'}</button>
+          </div>
+        </div>
+
+        ${!r.ownerReply?`
+          <div class="d-flex mt-2" id="reply-btn-row-${r.id}">
+            <!-- compose already open for no-reply cards -->
+          </div>
+        `:(!document.getElementById(`compose-${r.id}`)?.classList.contains('open')?`
+          <div class="mt-2" id="reply-btn-row-${r.id}"></div>
+        `:'')}
+      </div>
+    `).join('');
+  }
+
+  /* SUBMIT REPLY */
+  function submitReply(id) {
+    const text = document.getElementById(`replyInput-${id}`).value.trim();
+    if(!text){toast('Please write a reply first','⚠️');return;}
+    const reviews = getReviews().map(r => r.id===id ? {...r, ownerReply:text, ownerReplyDate:'Just now'} : r);
+    saveReviews(reviews);
+    toast('Reply posted!','✓');
+    loadKPIs();
+    renderReviews();
+  }
+
+  /* EDIT REPLY */
+  function editReply(id) {
+    const comp = document.getElementById(`compose-${id}`);
+    const disp = document.getElementById(`reply-display-${id}`);
+    if(comp) comp.classList.add('open');
+    if(disp) disp.style.display='none';
+  }
+  function cancelEdit(id) {
+    const comp = document.getElementById(`compose-${id}`);
+    const disp = document.getElementById(`reply-display-${id}`);
+    if(comp) comp.classList.remove('open');
+    if(disp) disp.style.display='';
+  }
+
+  /* FILTER PENDING SHORTCUT */
+  function filterPending() {
+    showTab('reviews', document.getElementById('tbtn-reviews'));
+    document.getElementById('revFilterStatus').value='pending';
+    renderReviews();
+  }
+
+  /* INIT */
+  loadKPIs();
+</script>
+</body>
+</html>
