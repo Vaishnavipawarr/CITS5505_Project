@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sign Up — Fork &amp; Flame</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <style>
+    body{min-height:100vh;display:flex;overflow-x:hidden;}
+    .visual{flex:1;position:relative;overflow:hidden;display:none;}
+    @media(min-width:768px){.visual{display:block;}}
+    .visual img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+    .visual-ov{position:absolute;inset:0;background:linear-gradient(160deg,rgba(14,12,9,.72) 0%,rgba(212,134,58,.18) 100%);}
+    .visual-txt{position:absolute;bottom:3rem;left:2.5rem;right:2.5rem;}
+    .visual-txt blockquote{font-family:var(--font-d);font-size:1.75rem;font-style:italic;color:#fff;line-height:1.35;margin-bottom:.8rem;}
+    .visual-txt blockquote em{color:var(--amber-light);font-style:normal;}
+    .visual-txt cite{font-size:.73rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);}
+    .form-side{width:100%;max-width:500px;background:var(--surface);display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 2rem;flex-shrink:0;overflow-y:auto;}
+    @media(min-width:768px){.form-side{min-height:100vh;align-items:center;}}
+    .form-inner{width:100%;max-width:390px;padding:1rem 0;}
+    @keyframes aIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+    .brand{font-family:var(--font-d);font-size:1.55rem;font-style:italic;color:var(--amber-light);display:block;margin-bottom:2rem;animation:aIn .5s .1s ease both;}
+    .auth-h1{font-family:var(--font-d);font-size:1.9rem;color:var(--cream);margin-bottom:.3rem;animation:aIn .5s .2s ease both;}
+    .auth-sub{font-size:.86rem;color:var(--muted);margin-bottom:1.6rem;animation:aIn .5s .3s ease both;}
+
+    .role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.4rem;animation:aIn .5s .4s ease both;}
+    .role-tab{border:1.5px solid var(--border);border-radius:var(--r-sm);padding:.9rem .7rem;text-align:center;cursor:pointer;transition:all .22s;background:transparent;}
+    .role-tab:hover{border-color:var(--amber);}
+    .role-tab.active{border-color:var(--amber);background:rgba(212,134,58,.09);}
+    .role-tab .icon{font-size:1.5rem;margin-bottom:.25rem;}
+    .role-tab .label{font-size:.78rem;font-weight:600;color:var(--cream);}
+    .role-tab .desc{font-size:.66rem;color:var(--muted);margin-top:.06rem;}
+
+    /* Owner extra field */
+    #ownerFields{display:none;}
+    #ownerFields.show{display:block;}
+
+    .pw-strength{height:3px;border-radius:2px;background:var(--border);margin-top:.4rem;overflow:hidden;}
+    .pw-strength-fill{height:100%;border-radius:2px;width:0;transition:width .3s,background .3s;}
+
+    .submit-btn{width:100%;background:var(--amber);color:#fff;border:none;border-radius:var(--r-sm);padding:.82rem;font-family:var(--font-b);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .25s;margin-top:.3rem;box-shadow:0 4px 16px rgba(212,134,58,.3);}
+    .submit-btn:hover{background:var(--amber-light);transform:translateY(-2px);}
+    .switch{text-align:center;font-size:.84rem;color:var(--muted);margin-top:1.2rem;}
+    .switch a{color:var(--amber);font-weight:500;}
+    .err{background:rgba(192,74,46,.12);border:1px solid rgba(192,74,46,.25);border-radius:var(--r-sm);padding:.6rem .9rem;font-size:.8rem;color:#e07060;margin-bottom:1rem;display:none;}
+    .err.show{display:block;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+  </style>
+</head>
+<body>
+<div class="visual">
+  <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=85" alt=""/>
+  <div class="visual-ov"></div>
+  <div class="visual-txt">
+    <blockquote>"Join a community of <em>passionate palates</em> who believe every meal deserves to be remembered."</blockquote>
+    <cite>— 31,000+ members &amp; counting</cite>
+  </div>
+</div>
+<div class="form-side">
+  <div class="form-inner">
+    <a href="index.html" class="brand">Fork &amp; Flame</a>
+    <h1 class="auth-h1">Create account</h1>
+    <p class="auth-sub">Join thousands discovering remarkable dining experiences.</p>
+
+    <div class="role-tabs">
+      <div class="role-tab active" id="tab-c" onclick="selectRole('customer')">
+        <div class="icon">🍽️</div><div class="label">Food Lover</div><div class="desc">Browse &amp; write reviews</div>
+      </div>
+      <div class="role-tab" id="tab-o" onclick="selectRole('owner')">
+        <div class="icon">🏠</div><div class="label">Restaurant Owner</div><div class="desc">Manage your restaurant</div>
+      </div>
+    </div>
+
+    <div id="errMsg" class="err"><i class="fas fa-exclamation-circle"></i> <span id="errTxt"></span></div>
+
+    <div class="field"><label class="ff-label">Full Name</label><input class="ff-input" type="text" id="name" placeholder="Your full name"/></div>
+    <div class="field"><label class="ff-label">Email Address</label><input class="ff-input" type="email" id="email" placeholder="you@example.com"/></div>
+
+    <!-- Owner-specific fields -->
+    <div id="ownerFields">
+      <div class="field"><label class="ff-label">Restaurant Name</label><input class="ff-input" type="text" id="restName" placeholder="Your restaurant name"/></div>
+      <div class="two-col">
+        <div class="field"><label class="ff-label">Cuisine Type</label><input class="ff-input" type="text" id="cuisine" placeholder="e.g. Italian"/></div>
+        <div class="field"><label class="ff-label">City</label><input class="ff-input" type="text" id="city" placeholder="e.g. Sydney"/></div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label class="ff-label">Password</label>
+        <input class="ff-input" type="password" id="pw" placeholder="Min. 6 chars" oninput="checkStr(this.value)"/>
+        <div class="pw-strength"><div class="pw-strength-fill" id="pwBar"></div></div>
+      </div>
+      <div class="field"><label class="ff-label">Confirm</label><input class="ff-input" type="password" id="pw2" placeholder="Repeat password"/></div>
+    </div>
+
+    <button class="submit-btn" onclick="doSignup()">Create Account</button>
+    <p class="switch">Already have an account? <a href="login.html">Log In</a></p>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  let selectedRole = 'customer';
+
+  function selectRole(r){
+    selectedRole = r;
+    document.getElementById('tab-c').classList.toggle('active', r==='customer');
+    document.getElementById('tab-o').classList.toggle('active', r==='owner');
+    document.getElementById('ownerFields').classList.toggle('show', r==='owner');
+  }
+
+  function checkStr(v){
+    const bar = document.getElementById('pwBar');
+    const s = v.length>9&&/[A-Z]/.test(v)&&/[0-9]/.test(v)?3:v.length>5?2:v.length>0?1:0;
+    bar.style.width=['0%','33%','66%','100%'][s];
+    bar.style.background=['','#c04a2e','#d4a853','#5a8c52'][s]||'';
+  }
+
+  function doSignup(){
+    const name=document.getElementById('name').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const pw=document.getElementById('pw').value;
+    const pw2=document.getElementById('pw2').value;
+    const errBox=document.getElementById('errMsg');
+    const errTxt=document.getElementById('errTxt');
+
+    if(!name||!email||!pw){ errTxt.textContent='Please fill in all fields.'; errBox.classList.add('show'); return; }
+    if(pw.length<6){ errTxt.textContent='Password must be at least 6 characters.'; errBox.classList.add('show'); return; }
+    if(pw!==pw2){ errTxt.textContent='Passwords do not match.'; errBox.classList.add('show'); return; }
+    if(selectedRole==='owner'&&!document.getElementById('restName').value.trim()){ errTxt.textContent='Please enter your restaurant name.'; errBox.classList.add('show'); return; }
+
+    errBox.classList.remove('show');
+
+    // Save new account to localStorage and log in
+    const newUser = {
+      email, password:pw, role:selectedRole,
+      name: selectedRole==='owner' ? document.getElementById('restName').value.trim() : name,
+      id: 'u_'+Date.now(),
+      ...(selectedRole==='owner' && {restaurantId:'r_'+Date.now()})
+    };
+    Session.save(newUser);
+    window.location.href = selectedRole==='customer'?'customer-dashboard.html':'owner-dashboard.html';
+  }
+</script>
+</body>
+</html>
