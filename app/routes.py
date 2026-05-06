@@ -232,3 +232,19 @@ def logout():
         "success": True,
         "message": "Logged out successfully"
     }), 200
+
+# -----------------------------
+# SESSION STATUS ROUTE
+# -----------------------------
+@routes.route('/api/auth/status')
+def auth_status():
+
+    if "user_id" in session:
+        return jsonify({
+            "authenticated": True,
+            "username": session.get("username")
+        }), 200
+
+    return jsonify({
+        "authenticated": False
+    }), 200
