@@ -10,9 +10,9 @@ routes = Blueprint('routes', __name__)
 @routes.route('/api/health')
 def health_check():
     return jsonify({
-        "success": True,
-        "message": "Backend server is running"
-    })
+    "success": True,
+    "message": "Backend server is running"
+}), 200
 
 # -----------------------------
 # FRONTEND PAGES
