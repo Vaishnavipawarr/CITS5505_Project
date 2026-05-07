@@ -80,6 +80,8 @@ CITS5505_Project/
 
 # Setup Instructions
 
+This project uses Flask to serve the frontend pages.
+
 ## 1. Clone the Repository
 
 ```bash
@@ -89,7 +91,7 @@ cd CITS5505_Project
 
 ---
 
-## 2. Create Virtual Environment
+## 2. Create a Virtual Environment
 
 ### Windows
 
@@ -100,12 +102,12 @@ python -m venv venv
 ### Mac/Linux
 
 ```bash
-python3 -m venv venv
+python3 -m venv .venv
 ```
 
 ---
 
-## 3. Activate Virtual Environment
+## 3. Activate the Virtual Environment
 
 ### Windows
 
@@ -116,7 +118,7 @@ venv\Scripts\activate
 ### Mac/Linux
 
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 ---
@@ -135,7 +137,7 @@ pip install flask werkzeug
 
 ---
 
-## 5. Run the Flask Server
+## 5. Run the Flask App
 
 ```bash
 python mainApp.py
@@ -151,7 +153,7 @@ Open this URL in your browser:
 http://127.0.0.1:5000/
 ```
 
-The project should always be opened through Flask instead of opening HTML files directly.
+Please run the project through the Flask server instead of opening HTML files directly, because the navigation links use Flask routes.
 
 ---
 
@@ -329,6 +331,7 @@ These tools help verify:
 - JSON responses
 - session handling
 - backend validation
+
 ---
 
 ## Example Login Test
@@ -516,3 +519,13 @@ Potential future enhancements:
 - Flask sessions manage authentication state.
 - Frontend assets are served through Flask routes.
 - Passwords are securely hashed before storage.
+
+---
+
+# License
+
+This project was developed for:
+
+## CITS5505 — Agile Web Development
+
+The University of Western Australia
