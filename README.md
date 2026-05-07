@@ -324,6 +324,11 @@ Backend APIs can be tested using:
 - Postman
 - Thunder Client (VS Code)
 
+These tools help verify:
+- authentication routes
+- JSON responses
+- session handling
+- backend validation
 ---
 
 ## Example Login Test
