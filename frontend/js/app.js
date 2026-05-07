@@ -157,7 +157,7 @@ function renderStars(n) {
 /* ── AUTH CHECK (redirect if not logged in) ── */
 function requireAuth(role) {
   const user = Session.load();
-  if(!user) { window.location.href='login.html'; return null; }
+  if(!user) { window.location.href='/login'; return null; }
   if(role && user.role !== role) {
     window.location.href = user.role==='customer'?'customer-dashboard.html':'owner-dashboard.html';
     return null;
@@ -168,7 +168,7 @@ function requireAuth(role) {
 /* ── LOGOUT ── */
 function logout() {
   Session.clear();
-  window.location.href = 'login.html';
+  window.location.href = '/login';
 }
 
 /* ── REVIEW STORAGE (localStorage) ── */

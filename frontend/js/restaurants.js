@@ -52,7 +52,7 @@
             <p class="rdesc">${descs[r.id]||''}</p>
             <div class="rfoot">
               <span style="font-size:.75rem;color:var(--muted);">${r.city}</span>
-              <a href="login.html" class="btn btn-amber btn-sm">View &amp; Review</a>
+              <a href="/login" class="btn btn-amber btn-sm">View &amp; Review</a>
             </div>
           </div>
         </div>
