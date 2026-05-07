@@ -16,11 +16,12 @@
 Fork & Flame is a restaurant review web application built using Flask, SQLite, HTML, CSS, and JavaScript.
 
 The platform allows users to:
+
 - Browse restaurants
 - Read restaurant reviews
 - Register and log in securely
 - Access customer and owner dashboards
-- Manage user authentication sessions
+- Manage authentication sessions
 
 The frontend is served through Flask routes instead of opening HTML files directly in the browser.
 
@@ -33,6 +34,7 @@ The frontend is served through Flask routes instead of opening HTML files direct
 - Flask session management
 - Logout functionality
 - Authentication status API
+- Protected dashboard routes
 - Restaurant browsing pages
 - Customer and owner dashboards
 - Flask-based frontend routing
@@ -80,8 +82,6 @@ CITS5505_Project/
 
 # Setup Instructions
 
-This project uses Flask to serve the frontend pages.
-
 ## 1. Clone the Repository
 
 ```bash
@@ -91,7 +91,7 @@ cd CITS5505_Project
 
 ---
 
-## 2. Create a Virtual Environment
+## 2. Create Virtual Environment
 
 ### Windows
 
@@ -102,12 +102,12 @@ python -m venv venv
 ### Mac/Linux
 
 ```bash
-python3 -m venv .venv
+python3 -m venv venv
 ```
 
 ---
 
-## 3. Activate the Virtual Environment
+## 3. Activate Virtual Environment
 
 ### Windows
 
@@ -118,7 +118,7 @@ venv\Scripts\activate
 ### Mac/Linux
 
 ```bash
-source .venv/bin/activate
+source venv/bin/activate
 ```
 
 ---
@@ -137,7 +137,7 @@ pip install flask werkzeug
 
 ---
 
-## 5. Run the Flask App
+## 5. Run the Flask Server
 
 ```bash
 python mainApp.py
@@ -153,13 +153,25 @@ Open this URL in your browser:
 http://127.0.0.1:5000/
 ```
 
-Please run the project through the Flask server instead of opening HTML files directly, because the navigation links use Flask routes.
+The project should always be opened through Flask instead of opening HTML files directly.
+
+---
+
+# Frontend Routes
+
+| Route | Page |
+|------|------|
+| `/` | Home Page |
+| `/login` | Login Page |
+| `/signup` | Signup Page |
+| `/restaurants` | Restaurants Page |
+| `/reviews` | Reviews Page |
+| `/customer-dashboard` | Customer Dashboard |
+| `/owner-dashboard` | Owner Dashboard |
 
 ---
 
 # Backend API Endpoints
-
----
 
 ## Health Check
 
@@ -240,26 +252,39 @@ Please run the project through the Flask server instead of opening HTML files di
 
 ---
 
-## Logout User
+# Session-Based Authentication
 
-### GET
+The project uses Flask session authentication to manage logged-in users securely.
+
+## Authentication Flow
+
+1. User registers using the `/api/auth/register` endpoint
+2. User logs in using the `/api/auth/login` endpoint
+3. Flask stores authenticated user information inside the session
+4. Protected routes verify if the session exists
+5. Unauthenticated users are redirected to the login page
+6. Users can log out using the `/logout` route
+
+---
+
+## Protected Routes
+
+The following routes require authentication:
+
+| Route | Access |
+|------|------|
+| `/customer-dashboard` | Logged-in users only |
+| `/owner-dashboard` | Logged-in users only |
+
+If a user is not authenticated, Flask redirects them to:
 
 ```text
-/logout
-```
-
-### Example Response
-
-```json
-{
-  "success": true,
-  "message": "Logged out successfully"
-}
+/login
 ```
 
 ---
 
-## Authentication Status
+## Authentication Status Endpoint
 
 ### GET
 
@@ -286,6 +311,25 @@ Please run the project through the Flask server instead of opening HTML files di
 
 ---
 
+## Logout Route
+
+### GET
+
+```text
+/logout
+```
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+---
+
 # Authentication Features
 
 The project currently supports:
@@ -293,6 +337,7 @@ The project currently supports:
 - Password hashing using Werkzeug
 - Secure login validation
 - Flask session management
+- Protected dashboard routes
 - Logout support
 - Session status endpoint
 - Basic input validation
@@ -301,32 +346,16 @@ Passwords are never stored as plain text inside the database.
 
 ---
 
-# Frontend Routing
-
-Frontend pages are served using Flask routes.
-
-Example routes:
-
-| Route | Page |
-|------|------|
-| `/` | Home Page |
-| `/login` | Login Page |
-| `/signup` | Signup Page |
-| `/restaurants` | Restaurants Page |
-| `/reviews` | Reviews Page |
-| `/customer-dashboard` | Customer Dashboard |
-| `/owner-dashboard` | Owner Dashboard |
-
----
-
 # Running Backend Tests
 
 Backend APIs can be tested using:
+
 - Browser Developer Console
 - Postman
 - Thunder Client (VS Code)
 
 These tools help verify:
+
 - authentication routes
 - JSON responses
 - session handling
@@ -334,28 +363,9 @@ These tools help verify:
 
 ---
 
-## Example Login Test
+## Example Register Test
 
 Open browser console (`F12`) and run:
-
-```javascript
-fetch('/api/auth/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    username: 'testuser',
-    password: '1234'
-  })
-})
-.then(res => res.json())
-.then(console.log)
-```
-
----
-
-## Example Register Test
 
 ```javascript
 fetch('/api/auth/register', {
@@ -374,9 +384,36 @@ fetch('/api/auth/register', {
 
 ---
 
-# Troubleshooting
+## Example Login Test
+
+```javascript
+fetch('/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    username: 'testuser',
+    password: '1234'
+  })
+})
+.then(res => res.json())
+.then(console.log)
+```
 
 ---
+
+## Example Authentication Status Test
+
+```javascript
+fetch('/api/auth/status')
+.then(res => res.json())
+.then(console.log)
+```
+
+---
+
+# Troubleshooting
 
 ## Flask Server Not Starting
 
@@ -447,6 +484,7 @@ http://127.0.0.1:5000/
 ```
 
 Opening files directly may break:
+
 - navigation
 - CSS loading
 - JavaScript functionality
@@ -467,14 +505,20 @@ CITS5505_Project/
 
 ---
 
-## Login Always Failing
+## Login Always Redirects Back to Login Page
 
-Ensure the user has been registered before login.
+Make sure:
 
-You can test registration using:
-- Browser Console
-- Postman
-- Thunder Client
+- the Flask server is restarted after code changes
+- login requests are sent to `/api/auth/login`
+- the frontend uses Flask routes such as `/login`
+- sessions are enabled using `app.secret_key`
+
+You can verify authentication status here:
+
+```text
+http://127.0.0.1:5000/api/auth/status
+```
 
 ---
 
@@ -501,15 +545,15 @@ This helps reduce merge conflicts between team members.
 
 Potential future enhancements:
 
-- Protected dashboard routes
 - Persistent login sessions
 - Restaurant database integration
 - Review CRUD functionality
 - User profile management
 - Role-based authentication
-- API modularization
 - Better frontend validation
 - Responsive mobile improvements
+- Admin dashboard
+- Password reset functionality
 
 ---
 
@@ -519,13 +563,4 @@ Potential future enhancements:
 - Flask sessions manage authentication state.
 - Frontend assets are served through Flask routes.
 - Passwords are securely hashed before storage.
-
----
-
-# License
-
-This project was developed for:
-
-## CITS5505 — Agile Web Development
-
-The University of Western Australia
+- Protected routes require active user sessions.
