@@ -10,5 +10,29 @@
 | 24726476 | Thanh Nguyen                 | thanhng0209     |
 
 ## Instruction
+This project uses Flask to serve the frontend pages.
 
-Run mainApp.py to start the web server
+### 1. Create a virtual environment
+
+```bash
+python3 -m venv .venv
+```
+### 2. Activate the virtual environment
+```bash
+source .venv/bin/activate
+```
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+### 4. Run the Flask app
+```bash
+python mainApp.py
+```
+### 5. Open the website
+
+Open this URL in your browser:
+```
+http://127.0.0.1:5000/
+```
+Please run the project through the Flask server instead of opening the HTML files directly, because the navigation links use Flask routes.
