@@ -8,5 +8,8 @@ app = Flask(
     static_url_path=""
 )
 
+# Secret key for sessions
+app.secret_key = "dev-secret-key"
+
 # Register blueprint
 app.register_blueprint(routes)

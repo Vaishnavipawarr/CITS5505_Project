@@ -1,10 +1,21 @@
-from flask import Blueprint, request, jsonify, send_from_directory
+from flask import Blueprint, request, jsonify, send_from_directory, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
+from datetime import datetime, UTC
 
 
 routes = Blueprint('routes', __name__)
+
+#API Health Check
+
+@routes.route('/api/health')
+def health_check():
+    return jsonify({
+        "success": True,
+        "message": "Backend server is running",
+        "timestamp": datetime.now(UTC).isoformat()
+    }), 200
 
 # -----------------------------
 # FRONTEND PAGES
@@ -183,6 +194,10 @@ def login():
             "message": "Invalid username or password"
         }), 401
 
+    # Store session data
+    session["user_id"] = user[0]
+    session["username"] = user[1]
+
     return jsonify({
         "success": True,
         "message": "Login successful",
@@ -191,3 +206,32 @@ def login():
             "username": user[1]
         }
     })
+
+# -----------------------------
+# LOGOUT ROUTE
+# -----------------------------
+@routes.route('/logout')
+def logout():
+
+    session.clear()
+
+    return jsonify({
+        "success": True,
+        "message": "Logged out successfully"
+    }), 200
+
+# -----------------------------
+# SESSION STATUS ROUTE
+# -----------------------------
+@routes.route('/api/auth/status')
+def auth_status():
+
+    if "user_id" in session:
+        return jsonify({
+            "authenticated": True,
+            "username": session.get("username")
+        }), 200
+
+    return jsonify({
+        "authenticated": False
+    }), 200
