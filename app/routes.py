@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, send_from_directory, session, red
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
-from datetime import datetime, UTC
+from datetime import datetime
 
 
 routes = Blueprint('routes', __name__)
@@ -11,10 +11,11 @@ routes = Blueprint('routes', __name__)
 
 @routes.route('/api/health')
 def health_check():
+
     return jsonify({
         "success": True,
         "message": "Backend server is running",
-        "timestamp": datetime.now(UTC).isoformat()
+        "timestamp": datetime.now().isoformat()
     }), 200
 
 # -----------------------------
