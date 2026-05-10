@@ -168,28 +168,22 @@ function requireAuth(role) {
 /* ── LOGOUT ── */
 async function logout() {
 
-    // Clear frontend session
     Session.clear();
 
     try {
 
-        // Clear backend Flask session
         await fetch('/logout', {
-
             method: 'GET',
-
             credentials: 'same-origin'
         });
 
-    } catch (err) {
+    } catch (error) {
 
-        console.warn('Server logout failed', err);
+        console.error('Logout failed:', error);
     }
 
-    // Redirect to login
     window.location.href = '/login';
 }
-
 /* ── REVIEW STORAGE (localStorage) ── */
 function getReviews() {
   try { return JSON.parse(localStorage.getItem('fnf_reviews')) || DUMMY.reviews; }
