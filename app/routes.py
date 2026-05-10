@@ -113,11 +113,26 @@ def register():
     username = data.get("username")
     password = data.get("password")
 
+    # Input validation
     if not username or not password:
         return jsonify({
             "success": False,
             "message": "Username and password are required"
-        }), 400
+    }), 400
+
+    username = username.strip()
+
+    if len(username) < 3:
+        return jsonify({
+        "success": False,
+        "message": "Username must be at least 3 characters"
+    }), 400
+
+    if len(password) < 4:
+        return jsonify({
+        "success": False,
+        "message": "Password must be at least 4 characters"
+    }), 400
 
     conn = get_db()
     cursor = conn.cursor()
@@ -165,9 +180,17 @@ def login():
 
     if not username or not password:
         return jsonify({
-            "success": False,
-            "message": "Username and password are required"
-        }), 400
+        "success": False,
+        "message": "Username and password are required"
+    }), 400
+
+    username = username.strip()
+
+    if len(username) < 3:
+        return jsonify({
+        "success": False,
+        "message": "Invalid username"
+    }), 400
 
     conn = get_db()
     cursor = conn.cursor()
