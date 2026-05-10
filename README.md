@@ -301,6 +301,26 @@ Passwords are never stored as plain text inside the database.
 
 ---
 
+## Authentication Validation
+
+The backend authentication system includes validation checks to improve reliability and prevent invalid requests.
+
+Current validation features include:
+
+- Empty username and password validation
+- Minimum username length validation
+- Minimum password length validation
+- Duplicate username detection
+- Invalid login credential handling
+
+All authentication endpoints return consistent JSON responses using the following structure:
+
+```json
+{
+  "success": false,
+  "message": "Error description"
+}
+
 # Frontend Routing
 
 Frontend pages are served using Flask routes.
