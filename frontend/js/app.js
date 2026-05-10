@@ -159,16 +159,35 @@ function requireAuth(role) {
   const user = Session.load();
   if(!user) { window.location.href='/login'; return null; }
   if(role && user.role !== role) {
-    window.location.href = user.role==='customer'?'customer-dashboard.html':'owner-dashboard.html';
+    window.location.href = user.role==='customer'?'/customer-dashboard':'/owner-dashboard';
     return null;
   }
   return user;
 }
 
 /* ── LOGOUT ── */
-function logout() {
-  Session.clear();
-  window.location.href = '/login';
+async function logout() {
+
+    // Clear frontend session
+    Session.clear();
+
+    try {
+
+        // Clear backend Flask session
+        await fetch('/logout', {
+
+            method: 'GET',
+
+            credentials: 'same-origin'
+        });
+
+    } catch (err) {
+
+        console.warn('Server logout failed', err);
+    }
+
+    // Redirect to login
+    window.location.href = '/login';
 }
 
 /* ── REVIEW STORAGE (localStorage) ── */

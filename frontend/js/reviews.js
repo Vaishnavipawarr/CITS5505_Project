@@ -1,6 +1,6 @@
 // reviews.js
   const user = Session.load();
-  if(user) document.getElementById('navRight').innerHTML=`<a href="${user.role==='customer'?'customer-dashboard.html':'owner-dashboard.html'}" class="btn btn-amber btn-sm">Dashboard</a>`;
+  if(user) document.getElementById('navRight').innerHTML=`<a href="${user.role==='customer'?'customer-dashboard.html':'/owner-dashboard'}" class="btn btn-amber btn-sm">Dashboard</a>`;
 
   // Populate rest filter
   const fr = document.getElementById('filterRest');

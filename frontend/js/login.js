@@ -79,6 +79,9 @@ async function doLogin() {
         // Hide error
         errBox.classList.remove('show');
 
+        // Save logged-in user locally
+        Session.save(data.user);
+        
         // Redirect after login
         if (selectedRole === 'customer') {
 

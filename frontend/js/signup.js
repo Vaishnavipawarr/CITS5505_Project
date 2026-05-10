@@ -15,28 +15,67 @@
     bar.style.background=['','#c04a2e','#d4a853','#5a8c52'][s]||'';
   }
 
-  function doSignup(){
-    const name=document.getElementById('name').value.trim();
-    const email=document.getElementById('email').value.trim();
-    const pw=document.getElementById('pw').value;
-    const pw2=document.getElementById('pw2').value;
-    const errBox=document.getElementById('errMsg');
-    const errTxt=document.getElementById('errTxt');
+async function doSignup() {
 
-    if(!name||!email||!pw){ errTxt.textContent='Please fill in all fields.'; errBox.classList.add('show'); return; }
-    if(pw.length<6){ errTxt.textContent='Password must be at least 6 characters.'; errBox.classList.add('show'); return; }
-    if(pw!==pw2){ errTxt.textContent='Passwords do not match.'; errBox.classList.add('show'); return; }
-    if(selectedRole==='owner'&&!document.getElementById('restName').value.trim()){ errTxt.textContent='Please enter your restaurant name.'; errBox.classList.add('show'); return; }
+    const username = document.getElementById('email').value.trim();
 
-    errBox.classList.remove('show');
+    const password = document.getElementById('pw').value;
 
-    // Save new account to localStorage and log in
-    const newUser = {
-      email, password:pw, role:selectedRole,
-      name: selectedRole==='owner' ? document.getElementById('restName').value.trim() : name,
-      id: 'u_'+Date.now(),
-      ...(selectedRole==='owner' && {restaurantId:'r_'+Date.now()})
-    };
-    Session.save(newUser);
-    window.location.href = selectedRole==='customer'?'customer-dashboard.html':'owner-dashboard.html';
-  }
+    const errBox = document.getElementById('errMsg');
+
+    const errTxt = document.getElementById('errTxt');
+
+    if (!username || !password) {
+
+        errTxt.textContent = 'Please fill in all fields';
+
+        errBox.classList.add('show');
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch('/api/auth/register', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            credentials: 'same-origin',
+
+            body: JSON.stringify({
+                username,
+                password,
+                role: selectedRole
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            errTxt.textContent = data.message;
+
+            errBox.classList.add('show');
+
+            return;
+        }
+
+        // SAVE USER LOCALLY
+        Session.save(data.user);
+
+        // Redirect to dashboard
+        window.location.href = '/customer-dashboard';
+
+    } catch (error) {
+
+        errTxt.textContent = 'Server error';
+
+        errBox.classList.add('show');
+
+        console.error(error);
+    }
+}

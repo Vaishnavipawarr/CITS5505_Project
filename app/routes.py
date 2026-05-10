@@ -93,8 +93,10 @@ def owner_dashboard():
     if "user_id" not in session:
         return redirect('/login')
 
-    return send_from_directory(FRONTEND_DIR, 'owner-dashboard.html')
-
+    return send_from_directory(
+        FRONTEND_DIR,
+        'owner-dashboard.html'
+    )
 
 # -----------------------------
 # DATABASE
@@ -118,9 +120,10 @@ def create_users_table():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL
     )
     """)
 
@@ -142,6 +145,7 @@ def register():
 
     username = data.get("username")
     password = data.get("password")
+    role = data.get("role", "customer")
 
     # Validation
     if not username or not password:
@@ -174,17 +178,28 @@ def register():
 
     # Insert user
     cursor.execute(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        (username, hashed_password)
+        "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+        (username, hashed_password, role)
     )
 
     conn.commit()
     conn.close()
 
+    # SAVE SESSION AFTER REGISTER
+    session["user_id"] = cursor.lastrowid
+    session["username"] = username
+
     return jsonify({
-        "success": True,
-        "message": "Registration successful"
-    })
+    "success": True,
+    "message": "Registration successful",
+    "user": {
+        "id": cursor.lastrowid,
+        "username": username,
+        "name": username,
+        "role": "customer",
+        "restaurantId": "r1"
+    }
+})
 
 
 # -----------------------------
@@ -240,13 +255,16 @@ def login():
     session["username"] = user[1]
 
     return jsonify({
-        "success": True,
-        "message": "Login successful",
-        "user": {
-            "id": user[0],
-            "username": user[1]
-        }
-    })
+    "success": True,
+    "message": "Login successful",
+    "user": {
+    "id": user[0],
+    "username": user[1],
+    "name": user[1],
+    "role": user[3],
+    "restaurantId": "r1"
+    }
+})
 
 
 # -----------------------------

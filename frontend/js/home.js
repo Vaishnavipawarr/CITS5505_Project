@@ -3,7 +3,7 @@
   const u = Session.load();
   if(u) {
     const logInBtn = document.querySelector('.nav-right');
-    if(logInBtn) logInBtn.innerHTML = `<a href="${u.role==='customer'?'customer-dashboard.html':'owner-dashboard.html'}" class="btn btn-amber btn-sm">Dashboard</a>`;
+    if(logInBtn) logInBtn.innerHTML = `<a href="${u.role==='customer'?'customer-dashboard.html':'/owner-dashboard'}" class="btn btn-amber btn-sm">Dashboard</a>`;
   }
   // Category filter
   document.querySelectorAll('.cat-pill').forEach(p => {
