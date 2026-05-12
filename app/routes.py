@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, send_from_directory, session, red
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
-from datetime import datetime, UTC
+from datetime import datetime
 
 routes = Blueprint('routes', __name__)
 
@@ -12,10 +12,11 @@ routes = Blueprint('routes', __name__)
 
 @routes.route('/api/health')
 def health_check():
+
     return jsonify({
         "success": True,
         "message": "Backend server is running",
-        "timestamp": datetime.now(UTC).isoformat()
+        "timestamp": datetime.now().isoformat()
     }), 200
 
 
@@ -156,11 +157,26 @@ def register():
         "message": "Name is required"
         }), 400
 
+    # Input validation
     if not username or not password:
         return jsonify({
             "success": False,
             "message": "Username and password are required"
-        }), 400
+    }), 400
+
+    username = username.strip()
+
+    if len(username) < 3:
+        return jsonify({
+        "success": False,
+        "message": "Username must be at least 3 characters"
+    }), 400
+
+    if len(password) < 4:
+        return jsonify({
+        "success": False,
+        "message": "Password must be at least 4 characters"
+    }), 400
 
     conn = get_db()
     cursor = conn.cursor()
@@ -225,9 +241,17 @@ def login():
     # Validation
     if not username or not password:
         return jsonify({
-            "success": False,
-            "message": "Username and password are required"
-        }), 400
+        "success": False,
+        "message": "Username and password are required"
+    }), 400
+
+    username = username.strip()
+
+    if len(username) < 3:
+        return jsonify({
+        "success": False,
+        "message": "Invalid username"
+    }), 400
 
     conn = get_db()
     cursor = conn.cursor()
