@@ -4,10 +4,11 @@ import sqlite3
 import os
 from datetime import datetime
 
-
 routes = Blueprint('routes', __name__)
 
-#API Health Check
+# -----------------------------
+# API HEALTH CHECK
+# -----------------------------
 
 @routes.route('/api/health')
 def health_check():
@@ -18,15 +19,22 @@ def health_check():
         "timestamp": datetime.now().isoformat()
     }), 200
 
+
 # -----------------------------
-# FRONTEND PAGES
+# FRONTEND PATHS
 # -----------------------------
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+
 CSS_DIR = os.path.join(FRONTEND_DIR, 'css')
 JS_DIR = os.path.join(FRONTEND_DIR, 'js')
 
+
+# -----------------------------
+# STATIC FILE ROUTES
+# -----------------------------
 
 @routes.route('/css/<path:filename>')
 def serve_css(filename):
@@ -37,6 +45,10 @@ def serve_css(filename):
 def serve_js(filename):
     return send_from_directory(JS_DIR, filename)
 
+
+# -----------------------------
+# FRONTEND PAGE ROUTES
+# -----------------------------
 
 @routes.route('/')
 def home():
@@ -53,16 +65,6 @@ def signup_page():
     return send_from_directory(FRONTEND_DIR, 'signup.html')
 
 
-@routes.route('/customer-dashboard')
-def customer_dashboard():
-    return send_from_directory(FRONTEND_DIR, 'customer-dashboard.html')
-
-
-@routes.route('/owner-dashboard')
-def owner_dashboard():
-    return send_from_directory(FRONTEND_DIR, 'owner-dashboard.html')
-
-
 @routes.route('/restaurants')
 def restaurants_page():
     return send_from_directory(FRONTEND_DIR, 'restaurants.html')
@@ -72,6 +74,30 @@ def restaurants_page():
 def reviews_page():
     return send_from_directory(FRONTEND_DIR, 'reviews.html')
 
+
+# -----------------------------
+# PROTECTED ROUTES
+# -----------------------------
+
+@routes.route('/customer-dashboard')
+def customer_dashboard():
+
+    if "user_id" not in session:
+        return redirect('/login')
+
+    return send_from_directory(FRONTEND_DIR, 'customer-dashboard.html')
+
+
+@routes.route('/owner-dashboard')
+def owner_dashboard():
+
+    if "user_id" not in session:
+        return redirect('/login')
+
+    return send_from_directory(
+        FRONTEND_DIR,
+        'owner-dashboard.html'
+    )
 
 # -----------------------------
 # DATABASE
@@ -84,15 +110,22 @@ def get_db():
     return sqlite3.connect(DATABASE)
 
 
+# -----------------------------
+# CREATE USERS TABLE
+# -----------------------------
+
 def create_users_table():
+
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL
     )
     """)
 
@@ -109,10 +142,20 @@ create_users_table()
 
 @routes.route('/api/auth/register', methods=['POST'])
 def register():
+
     data = request.get_json()
 
+    name = data.get("name")
     username = data.get("username")
     password = data.get("password")
+    role = data.get("role", "customer")
+
+    # Validation
+    if not name:
+        return jsonify({
+        "success": False,
+        "message": "Name is required"
+        }), 400
 
     # Input validation
     if not username or not password:
@@ -138,6 +181,7 @@ def register():
     conn = get_db()
     cursor = conn.cursor()
 
+    # Check existing user
     cursor.execute(
         "SELECT * FROM users WHERE username = ?",
         (username,)
@@ -147,25 +191,39 @@ def register():
 
     if existing_user:
         conn.close()
+
         return jsonify({
             "success": False,
             "message": "User already exists"
         }), 400
 
+    # Hash password
     hashed_password = generate_password_hash(password)
 
+    # Insert user
     cursor.execute(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        (username, hashed_password)
+        "INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, ?)",
+        (name, username, hashed_password, role)
     )
 
     conn.commit()
     conn.close()
 
+    # SAVE SESSION AFTER REGISTER
+    session["user_id"] = cursor.lastrowid
+    session["username"] = username
+
     return jsonify({
-        "success": True,
-        "message": "Registration successful"
-    })
+    "success": True,
+    "message": "Registration successful",
+    "user": {
+        "id": cursor.lastrowid,
+        "username": username,
+        "name": name,
+        "role": role,
+        "restaurantId": "r1"
+    }
+})
 
 
 # -----------------------------
@@ -174,11 +232,13 @@ def register():
 
 @routes.route('/api/auth/login', methods=['POST'])
 def login():
+
     data = request.get_json()
 
     username = data.get("username")
     password = data.get("password")
 
+    # Validation
     if not username or not password:
         return jsonify({
         "success": False,
@@ -196,14 +256,17 @@ def login():
     conn = get_db()
     cursor = conn.cursor()
 
+    # Find user
     cursor.execute(
         "SELECT * FROM users WHERE username = ?",
         (username,)
     )
 
     user = cursor.fetchone()
+
     conn.close()
 
+    # User not found
     if not user:
         return jsonify({
             "success": False,
@@ -212,28 +275,34 @@ def login():
 
     stored_password = user[2]
 
+    # Check hashed password
     if not check_password_hash(stored_password, password):
         return jsonify({
             "success": False,
             "message": "Invalid username or password"
         }), 401
 
-    # Store session data
+    # SAVE SESSION
     session["user_id"] = user[0]
     session["username"] = user[1]
 
     return jsonify({
-        "success": True,
-        "message": "Login successful",
-        "user": {
-            "id": user[0],
-            "username": user[1]
-        }
-    })
+    "success": True,
+    "message": "Login successful",
+    "user": {
+    "id": user[0],
+    "name": user[1],
+    "username": user[2],
+    "role": user[4],
+    "restaurantId": "r1"
+    }
+})
+
 
 # -----------------------------
 # LOGOUT ROUTE
 # -----------------------------
+
 @routes.route('/logout')
 def logout():
 
@@ -244,9 +313,11 @@ def logout():
         "message": "Logged out successfully"
     }), 200
 
+
 # -----------------------------
-# SESSION STATUS ROUTE
+# AUTH STATUS ROUTE
 # -----------------------------
+
 @routes.route('/api/auth/status')
 def auth_status():
 

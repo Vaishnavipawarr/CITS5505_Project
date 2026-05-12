@@ -1,42 +1,173 @@
 // signup.js
-  let selectedRole = 'customer';
 
-  function selectRole(r){
-    selectedRole = r;
-    document.getElementById('tab-c').classList.toggle('active', r==='customer');
-    document.getElementById('tab-o').classList.toggle('active', r==='owner');
-    document.getElementById('ownerFields').classList.toggle('show', r==='owner');
-  }
+let selectedRole = 'customer';
 
-  function checkStr(v){
+function selectRole(role) {
+
+    selectedRole = role;
+
+    console.log('Selected role:', selectedRole);
+
+    const customerTab =
+        document.getElementById('tab-c');
+
+    const ownerTab =
+        document.getElementById('tab-o');
+
+    const ownerFields =
+        document.getElementById('ownerFields');
+
+    if (role === 'customer') {
+
+        customerTab.classList.add('active');
+
+        ownerTab.classList.remove('active');
+
+        ownerFields.classList.remove('show');
+
+    } else {
+
+        ownerTab.classList.add('active');
+
+        customerTab.classList.remove('active');
+
+        ownerFields.classList.add('show');
+    }
+}
+
+
+// Password strength bar
+function checkStr(value) {
+
     const bar = document.getElementById('pwBar');
-    const s = v.length>9&&/[A-Z]/.test(v)&&/[0-9]/.test(v)?3:v.length>5?2:v.length>0?1:0;
-    bar.style.width=['0%','33%','66%','100%'][s];
-    bar.style.background=['','#c04a2e','#d4a853','#5a8c52'][s]||'';
-  }
 
-  function doSignup(){
-    const name=document.getElementById('name').value.trim();
-    const email=document.getElementById('email').value.trim();
-    const pw=document.getElementById('pw').value;
-    const pw2=document.getElementById('pw2').value;
-    const errBox=document.getElementById('errMsg');
-    const errTxt=document.getElementById('errTxt');
+    const strength =
+        value.length > 9 &&
+        /[A-Z]/.test(value) &&
+        /[0-9]/.test(value)
+            ? 3
+            : value.length > 5
+                ? 2
+                : value.length > 0
+                    ? 1
+                    : 0;
 
-    if(!name||!email||!pw){ errTxt.textContent='Please fill in all fields.'; errBox.classList.add('show'); return; }
-    if(pw.length<6){ errTxt.textContent='Password must be at least 6 characters.'; errBox.classList.add('show'); return; }
-    if(pw!==pw2){ errTxt.textContent='Passwords do not match.'; errBox.classList.add('show'); return; }
-    if(selectedRole==='owner'&&!document.getElementById('restName').value.trim()){ errTxt.textContent='Please enter your restaurant name.'; errBox.classList.add('show'); return; }
+    bar.style.width = ['0%', '33%', '66%', '100%'][strength];
 
-    errBox.classList.remove('show');
+    bar.style.background =
+        ['', '#c04a2e', '#d4a853', '#5a8c52'][strength] || '';
+}
 
-    // Save new account to localStorage and log in
-    const newUser = {
-      email, password:pw, role:selectedRole,
-      name: selectedRole==='owner' ? document.getElementById('restName').value.trim() : name,
-      id: 'u_'+Date.now(),
-      ...(selectedRole==='owner' && {restaurantId:'r_'+Date.now()})
-    };
-    Session.save(newUser);
-    window.location.href = selectedRole==='customer'?'customer-dashboard.html':'owner-dashboard.html';
-  }
+
+async function doSignup() {
+
+    // Basic fields
+    const name =
+        document.getElementById('name')?.value.trim() || '';
+
+    const username =
+        document.getElementById('email')?.value.trim() || '';
+
+    const password =
+        document.getElementById('pw')?.value || '';
+
+    // FIXED CONFIRM PASSWORD ID
+    const confirmPassword =
+        document.getElementById('pw2')?.value || '';
+
+    // Optional owner fields
+    const restaurantName =
+        document.getElementById('restaurantName')?.value.trim() || '';
+
+    const cuisine =
+        document.getElementById('cuisine')?.value.trim() || '';
+
+    const city =
+        document.getElementById('city')?.value.trim() || '';
+
+    // Error UI
+    const errBox = document.getElementById('errMsg');
+
+    const errTxt = document.getElementById('errTxt');
+
+    // Validation
+    if (!name || !username || !password) {
+
+        errTxt.textContent =
+            'Please fill in all required fields';
+
+        errBox.classList.add('show');
+
+        return;
+    }
+
+    if (password !== confirmPassword) {
+
+        errTxt.textContent =
+            'Passwords do not match';
+
+        errBox.classList.add('show');
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch('/api/auth/register', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            credentials: 'same-origin',
+
+            body: JSON.stringify({
+
+                name,
+                username,
+                password,
+                role: selectedRole,
+
+                restaurant_name: restaurantName,
+                cuisine,
+                city
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            errTxt.textContent = data.message;
+
+            errBox.classList.add('show');
+
+            return;
+        }
+
+        // Save session locally
+        Session.save(data.user);
+
+        // Redirect based on role
+        if (data.user.role === 'owner') {
+
+            window.location.href =
+                '/owner-dashboard';
+
+        } else {
+
+            window.location.href =
+                '/customer-dashboard';
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        errTxt.textContent = 'Server error';
+
+        errBox.classList.add('show');
+    }
+}

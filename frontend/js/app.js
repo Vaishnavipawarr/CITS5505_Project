@@ -358,26 +358,33 @@ function escapeHtml(value) {
 /* ── AUTH CHECK (redirect if not logged in) ── */
 function requireAuth(role) {
   const user = Session.load();
-  if (!user) {
-    window.location.href = "login.html";
-    return null;
-  }
-  if (role && user.role !== role) {
-    window.location.href =
-      user.role === "customer"
-        ? "customer-dashboard.html"
-        : "owner-dashboard.html";
+  if(!user) { window.location.href='/login'; return null; }
+  if(role && user.role !== role) {
+    window.location.href = user.role==='customer'?'/customer-dashboard':'/owner-dashboard';
     return null;
   }
   return user;
 }
 
 /* ── LOGOUT ── */
-function logout() {
-  Session.clear();
-  window.location.href = "login.html";
-}
+async function logout() {
 
+    Session.clear();
+
+    try {
+
+        await fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+
+    } catch (error) {
+
+        console.error('Logout failed:', error);
+    }
+
+    window.location.href = '/login';
+}
 /* ── REVIEW STORAGE (localStorage) ── */
 function getReviews() {
   try {
