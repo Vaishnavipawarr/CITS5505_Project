@@ -121,6 +121,7 @@ def create_users_table():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     role TEXT NOT NULL
@@ -143,11 +144,18 @@ def register():
 
     data = request.get_json()
 
+    name = data.get("name")
     username = data.get("username")
     password = data.get("password")
     role = data.get("role", "customer")
 
     # Validation
+    if not name:
+        return jsonify({
+        "success": False,
+        "message": "Name is required"
+        }), 400
+
     if not username or not password:
         return jsonify({
             "success": False,
@@ -178,8 +186,8 @@ def register():
 
     # Insert user
     cursor.execute(
-        "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-        (username, hashed_password, role)
+        "INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, ?)",
+        (name, username, hashed_password, role)
     )
 
     conn.commit()
@@ -195,8 +203,8 @@ def register():
     "user": {
         "id": cursor.lastrowid,
         "username": username,
-        "name": username,
-        "role": "customer",
+        "name": name,
+        "role": role,
         "restaurantId": "r1"
     }
 })
@@ -259,9 +267,9 @@ def login():
     "message": "Login successful",
     "user": {
     "id": user[0],
-    "username": user[1],
     "name": user[1],
-    "role": user[3],
+    "username": user[2],
+    "role": user[4],
     "restaurantId": "r1"
     }
 })
