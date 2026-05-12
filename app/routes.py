@@ -273,7 +273,7 @@ def login():
             "message": "Invalid username or password"
         }), 401
 
-    stored_password = user[2]
+    stored_password = user[3]  # Password is the 4th column on table users (index 3)
 
     # Check hashed password
     if not check_password_hash(stored_password, password):
@@ -284,7 +284,7 @@ def login():
 
     # SAVE SESSION
     session["user_id"] = user[0]
-    session["username"] = user[1]
+    session["username"] = user[2] 
 
     return jsonify({
     "success": True,
