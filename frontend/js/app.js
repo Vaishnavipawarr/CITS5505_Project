@@ -117,203 +117,120 @@ function animCount(el, to, dur) {
 })();
 
 /* ══════════════════════════════════════
-   SESSION  (localStorage simulation)
+   SESSION  (server-backed)
    ══════════════════════════════════════ */
 
 const Session = {
+  user: null,
   save(user) {
-    localStorage.setItem("fnf_user", JSON.stringify(user));
+    this.user = user;
   },
   load() {
-    try {
-      return JSON.parse(localStorage.getItem("fnf_user"));
-    } catch (e) {
-      return null;
-    }
+    return this.user;
   },
   clear() {
-    localStorage.removeItem("fnf_user");
+    this.user = null;
   },
   get role() {
-    const u = this.load();
-    return u ? u.role : null;
+    return this.user ? this.user.role : null;
   },
   get name() {
-    const u = this.load();
-    return u ? u.name : "";
+    return this.user ? this.user.name : "";
+  },
+  async refresh() {
+    try {
+      const response = await fetch("/api/auth/status", {
+        credentials: "same-origin",
+      });
+      const data = await response.json();
+      if (data.authenticated) {
+        this.user = data.user;
+        return this.user;
+      }
+    } catch (error) {
+      console.error("Auth refresh failed:", error);
+    }
+    this.user = null;
+    return null;
   },
 };
 
-/* ══════════════════════════════════════
-   DUMMY DATA
-   ══════════════════════════════════════ */
-const DUMMY = {
-  /* All reviews in the system */
-  reviews: [
-    {
-      id: 1,
-      customerId: "c1",
-      customerName: "Alexandra Chen",
-      customerAvatar: "https://i.pravatar.cc/80?img=47",
-      restaurantId: "r1",
-      restaurantName: "Ember & Oak",
-      restaurantImg:
-        "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=80&q=70",
-      rating: 5,
-      text: "A transcendent dining experience. The wagyu rib eye was brought tableside on smouldering embers — theatrical and delicious. The charcoal crust gave way to the most tender interior I've ever tasted. Impeccable service throughout.",
-      tags: ["Exceptional Wagyu", "Great Wine", "Attentive Service"],
-      date: "2 days ago",
-      ownerReply:
-        "Thank you so much, Alexandra! Our team reads every review — this made their week. Ask for the new dry-aged Tomahawk next time!",
-      ownerReplyDate: "1 day ago",
-    },
-    {
-      id: 2,
-      customerId: "c2",
-      customerName: "James Thornton",
-      customerAvatar: "https://i.pravatar.cc/80?img=33",
-      restaurantId: "r2",
-      restaurantName: "Spice Garden",
-      restaurantImg:
-        "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=80&q=70",
-      rating: 5,
-      text: "I grew up in Chennai and finding food this authentic in Sydney is a miracle. The rasam tasted exactly like my grandmother's recipe. The lamb biryani was perfectly fragrant with layers of flavour that kept revealing themselves.",
-      tags: ["Authentic", "Nostalgic", "Best Biryani"],
-      date: "5 days ago",
-      ownerReply: null,
-    },
-    {
-      id: 3,
-      customerId: "c3",
-      customerName: "Sophie Laurent",
-      customerAvatar: "https://i.pravatar.cc/80?img=12",
-      restaurantId: "r1",
-      restaurantName: "Ember & Oak",
-      restaurantImg:
-        "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=80&q=70",
-      rating: 4,
-      text: "Perfect for a business dinner. The private dining room has great acoustics, lighting is immaculate. My guest ordered the bone-in sirloin and couldn't stop talking about it. Slight deduction for the sparse bread course.",
-      tags: ["Business Dining", "Great Ambience"],
-      date: "1 week ago",
-      ownerReply:
-        "Glad you had a great time, Sophie! We've already upgraded our bread service based on feedback like yours.",
-      ownerReplyDate: "6 days ago",
-    },
-    {
-      id: 4,
-      customerId: "c4",
-      customerName: "Ryan O'Brien",
-      customerAvatar: "https://i.pravatar.cc/80?img=58",
-      restaurantId: "r3",
-      restaurantName: "Kyoto Ramen Bar",
-      restaurantImg:
-        "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=80&q=70",
-      rating: 5,
-      text: "72-hour tonkotsu broth that has made grown adults weep with joy. The soft-boiled egg was perfectly jammy and marinated. Wait time is long but every minute is justified once seated.",
-      tags: ["Best Ramen", "Rich Broth", "Worth the Wait"],
-      date: "1 week ago",
-      ownerReply: null,
-    },
-    {
-      id: 5,
-      customerId: "c5",
-      customerName: "Priya Mehta",
-      customerAvatar: "https://i.pravatar.cc/80?img=25",
-      restaurantId: "r2",
-      restaurantName: "Spice Garden",
-      restaurantImg:
-        "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=80&q=70",
-      rating: 4,
-      text: "Very good butter chicken and naan. The daal makhani was rich and comforting. Service was a bit slow on our visit but the food absolutely made up for it.",
-      tags: ["Great Curry", "Good Naan"],
-      date: "2 weeks ago",
-      ownerReply: null,
-    },
-  ],
+window.appReady = Session.refresh();
 
-  restaurants: [
-    {
-      id: "r1",
-      name: "Ember & Oak",
-      img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
-      cuisine: "Steakhouse",
-      price: "$$$$",
-      rating: 4.7,
-      reviews: 312,
-      city: "The Rocks, Sydney",
-    },
-    {
-      id: "r2",
-      name: "Spice Garden",
-      img: "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=600&q=80",
-      cuisine: "Indian",
-      price: "$$$",
-      rating: 4.8,
-      reviews: 341,
-      city: "Haymarket, Sydney",
-    },
-    {
-      id: "r3",
-      name: "Kyoto Ramen Bar",
-      img: "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&q=80",
-      cuisine: "Japanese",
-      price: "$$",
-      rating: 4.9,
-      reviews: 287,
-      city: "CBD, Sydney",
-    },
-    {
-      id: "r4",
-      name: "Pizza Palace",
-      img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80",
-      cuisine: "Italian",
-      price: "$$",
-      rating: 4.5,
-      reviews: 208,
-      city: "Surry Hills, Sydney",
-    },
-    {
-      id: "r5",
-      name: "Burger Hub",
-      img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=80",
-      cuisine: "American",
-      price: "$$",
-      rating: 4.3,
-      reviews: 176,
-      city: "Newtown, Sydney",
-    },
-    {
-      id: "r6",
-      name: "Sea Salt & Citrus",
-      img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80",
-      cuisine: "Seafood",
-      price: "$$$$",
-      rating: 4.6,
-      reviews: 129,
-      city: "Manly, Sydney",
-    },
-  ],
+async function getRestaurants() {
+  try {
+    const response = await fetch("/api/restaurants");
+    if (!response.ok) return [];
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to load restaurants:", error);
+    return [];
+  }
+}
 
-  /* Demo accounts */
-  accounts: [
-    {
-      email: "customer@demo.com",
-      password: "demo123",
-      role: "customer",
-      name: "Alexandra Chen",
-      id: "c1",
-      avatar: "https://i.pravatar.cc/80?img=47",
+async function getReviews(query = {}) {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.set(key, value);
+    }
+  });
+
+  const url =
+    "/api/reviews" + (params.toString() ? `?${params.toString()}` : "");
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to load reviews:", error);
+    return [];
+  }
+}
+
+async function createReview(review) {
+  const response = await fetch("/api/reviews", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    {
-      email: "owner@demo.com",
-      password: "demo123",
-      role: "owner",
-      name: "Ember & Oak",
-      id: "r1",
-      restaurantId: "r1",
+    credentials: "same-origin",
+    body: JSON.stringify(review),
+  });
+  return await response.json();
+}
+
+async function updateReview(id, payload) {
+  const response = await fetch(`/api/reviews/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
     },
-  ],
-};
+    credentials: "same-origin",
+    body: JSON.stringify(payload),
+  });
+  return await response.json();
+}
+
+async function deleteReview(id) {
+  const response = await fetch(`/api/reviews/${id}`, {
+    method: "DELETE",
+    credentials: "same-origin",
+  });
+  return response.ok;
+}
+
+async function replyReview(id, ownerReply) {
+  const response = await fetch(`/api/reviews/${id}/reply`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+    body: JSON.stringify({ ownerReply }),
+  });
+  return await response.json();
+}
 
 /* ── STAR PICKER ── */
 function initStars(wrapId, hiddenId) {
@@ -358,9 +275,13 @@ function escapeHtml(value) {
 /* ── AUTH CHECK (redirect if not logged in) ── */
 function requireAuth(role) {
   const user = Session.load();
-  if(!user) { window.location.href='/login'; return null; }
-  if(role && user.role !== role) {
-    window.location.href = user.role==='customer'?'/customer-dashboard':'/owner-dashboard';
+  if (!user) {
+    window.location.href = "/login";
+    return null;
+  }
+  if (role && user.role !== role) {
+    window.location.href =
+      user.role === "customer" ? "/customer-dashboard" : "/owner-dashboard";
     return null;
   }
   return user;
@@ -368,31 +289,16 @@ function requireAuth(role) {
 
 /* ── LOGOUT ── */
 async function logout() {
+  Session.clear();
 
-    Session.clear();
-
-    try {
-
-        await fetch('/logout', {
-            method: 'GET',
-            credentials: 'same-origin'
-        });
-
-    } catch (error) {
-
-        console.error('Logout failed:', error);
-    }
-
-    window.location.href = '/login';
-}
-/* ── REVIEW STORAGE (localStorage) ── */
-function getReviews() {
   try {
-    return JSON.parse(localStorage.getItem("fnf_reviews")) || DUMMY.reviews;
-  } catch (e) {
-    return DUMMY.reviews;
+    await fetch("/logout", {
+      method: "GET",
+      credentials: "same-origin",
+    });
+  } catch (error) {
+    console.error("Logout failed:", error);
   }
-}
-function saveReviews(reviews) {
-  localStorage.setItem("fnf_reviews", JSON.stringify(reviews));
+
+  window.location.href = "/login";
 }
