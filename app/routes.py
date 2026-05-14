@@ -9,6 +9,9 @@ routes = Blueprint('routes', __name__)
 def log_info(message):
     print(f"[INFO] {message}")
 
+def log_error(message):
+    print(f"[ERROR] {message}")
+
 # -----------------------------
 # API HEALTH CHECK
 # -----------------------------
@@ -163,6 +166,7 @@ def register():
     
     # Input validation
     if not username or not password:
+        log_error("Registration failed due to missing username or password")
         return jsonify({
             "success": False,
             "message": "Username and password are required"
@@ -194,6 +198,7 @@ def register():
     existing_user = cursor.fetchone()
 
     if existing_user:
+        log_error(f"Duplicate registration attempt: {username}")
         conn.close()
 
         return jsonify({
@@ -250,6 +255,7 @@ def login():
 
     # Validation
     if not username or not password:
+        log_error("Login failed due to missing username or password")
         return jsonify({
         "success": False,
         "message": "Username and password are required"
@@ -278,6 +284,7 @@ def login():
 
     # User not found
     if not user:
+        log_error(f"Invalid login attempt for username: {username}")
         return jsonify({
             "success": False,
             "message": "Invalid username or password"
@@ -287,6 +294,7 @@ def login():
 
     # Check hashed password
     if not check_password_hash(stored_password, password):
+        log_error(f"Invalid login attempt for username: {username}")
         return jsonify({
             "success": False,
             "message": "Invalid username or password"
