@@ -7,10 +7,17 @@ from datetime import datetime
 routes = Blueprint('routes', __name__)
 
 def log_info(message):
-    print(f"[INFO] {message}")
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    print(f"[INFO] [{timestamp}] {message}")
+
 
 def log_error(message):
-    print(f"[ERROR] {message}")
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    print(f"[ERROR] [{timestamp}] {message}")
 
 # -----------------------------
 # API HEALTH CHECK
