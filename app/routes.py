@@ -6,6 +6,9 @@ from datetime import datetime
 
 routes = Blueprint('routes', __name__)
 
+def log_info(message):
+    print(f"[INFO] {message}")
+
 # -----------------------------
 # API HEALTH CHECK
 # -----------------------------
@@ -73,7 +76,6 @@ def restaurants_page():
 @routes.route('/reviews')
 def reviews_page():
     return send_from_directory(FRONTEND_DIR, 'reviews.html')
-
 
 # -----------------------------
 # PROTECTED ROUTES
@@ -150,13 +152,15 @@ def register():
     password = data.get("password")
     role = data.get("role", "customer")
 
+    log_info(f"Registration attempt for username: {username}")
+    
     # Validation
     if not name:
         return jsonify({
         "success": False,
         "message": "Name is required"
         }), 400
-
+    
     # Input validation
     if not username or not password:
         return jsonify({
@@ -165,7 +169,7 @@ def register():
     }), 400
 
     username = username.strip()
-
+    
     if len(username) < 3:
         return jsonify({
         "success": False,
@@ -207,24 +211,28 @@ def register():
     )
 
     conn.commit()
-    conn.close()
 
+    user_id = cursor.lastrowid
+
+    conn.close()
+    
     # SAVE SESSION AFTER REGISTER
     session["user_id"] = cursor.lastrowid
     session["username"] = username
+
+    log_info(f"User registered successfully: {username}")
 
     return jsonify({
     "success": True,
     "message": "Registration successful",
     "user": {
-        "id": cursor.lastrowid,
+        "id": user_id,
         "username": username,
         "name": name,
         "role": role,
         "restaurantId": "r1"
     }
 })
-
 
 # -----------------------------
 # LOGIN API
@@ -237,6 +245,8 @@ def login():
 
     username = data.get("username")
     password = data.get("password")
+
+    log_info(f"Login attempt for username: {username}")
 
     # Validation
     if not username or not password:
@@ -273,7 +283,7 @@ def login():
             "message": "Invalid username or password"
         }), 401
 
-    stored_password = user[2]
+    stored_password = user[3]
 
     # Check hashed password
     if not check_password_hash(stored_password, password):
@@ -285,6 +295,8 @@ def login():
     # SAVE SESSION
     session["user_id"] = user[0]
     session["username"] = user[1]
+
+    log_info(f"Login successful for username: {username}")
 
     return jsonify({
     "success": True,
@@ -306,6 +318,8 @@ def login():
 @routes.route('/logout')
 def logout():
 
+    log_info(f"User logged out and session cleared")
+    
     session.clear()
 
     return jsonify({
