@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Restaurant Dashboard - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/owner-dashboard.css">
+{% endblock %}
+
+{% block content %}
+
+<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+<div id="toast"></div>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="wrap">
+    <a href="/" class="nav-brand">Fork &amp; Flame<span>Restaurant Portal</span></a>
+    <ul class="nav-links">
+      <li><a href="/owner-dashboard" class="active">Dashboard</a></li>
+    </ul>
+    <div class="nav-right">
+      <div style="display:flex;align-items:center;gap:.55rem;background:rgba(42,157,143,.08);border:1px solid rgba(42,157,143,.2);border-radius:30px;padding:.28rem .85rem .28rem .55rem;font-size:.78rem;color:var(--ot-cr);">
+        <i class="fas fa-store" style="color:var(--ot);font-size:.8rem;"></i>
+        <span id="navName">Owner</span>
+      </div>
+      <button class="btn btn-ghost-ot btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-rest">
+      <img class="sb-rest-thumb" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=120&q=70" alt="" id="sbRestImg"/>
+      <div class="sb-rest-name" id="sbRestName">Ember &amp; Oak</div>
+      <div class="sb-rest-type">Steakhouse · The Rocks, Sydney</div>
+      <div class="open-badge"><div class="open-dot"></div> Open Now</div>
+    </div>
+    <ul class="sb-nav">
+      <li><a href="#" class="active" onclick="showTab('overview',this)"><i class="fas fa-chart-bar"></i> Overview</a></li>
+      <li><a href="#" onclick="showTab('reviews',this)" id="reviewsLink"><i class="fas fa-comments"></i> Reviews <div class="notif-dot"></div></a></li>
+    </ul>
+    <div class="sb-bottom">
+      <button class="btn btn-danger btn-sm btn-full" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="page-head">
+      <h1 id="ownerHead">Restaurant <em>Dashboard</em></h1>
+      <p id="ownerSubhead">Manage your reviews and respond to customers.</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Total Reviews</div></div>
+      <div class="kpi"><div class="n" id="kpiAvg">0</div><div class="l">Average Rating</div></div>
+      <div class="kpi"><div class="n" id="kpiReplied">0</div><div class="l">Replied</div></div>
+      <div class="kpi"><div class="n" id="kpiPending">0</div><div class="l">Awaiting Reply</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tbtn-overview" onclick="showTab('overview',this)">Overview</button>
+      <button class="tab-btn" id="tbtn-reviews" onclick="showTab('reviews',this)">All Reviews</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="rating-overview">
+        <h3>Rating Summary</h3>
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+          <div>
+            <div class="big-score" id="ovAvg">4.8</div>
+            <div class="big-stars" id="ovStars">★★★★★</div>
+            <div class="review-count" id="ovCount">based on 0 reviews</div>
+          </div>
+          <div style="flex:1;min-width:180px;" id="ovBars"></div>
+        </div>
+      </div>
+      <div class="analytics-grid">
+        <div class="a-card">
+          <h4>Most Mentioned Tags</h4>
+          <div id="tagBars"></div>
+        </div>
+        <div class="a-card">
+          <h4>Quick Actions</h4>
+          <div class="d-flex flex-column gap-2">
+            <button class="btn btn-teal btn-sm text-start" onclick="showTab('reviews',document.getElementById('tbtn-reviews'));scrollTo(0,0)"><i class="fas fa-comments"></i> View All Reviews</button>
+            <button class="btn btn-teal-outline btn-sm text-start" onclick="filterPending()"><i class="fas fa-clock"></i> Show Pending Replies</button>
+            <button class="btn btn-ghost-ot btn-sm text-start" onclick="toast('Feature coming soon','🔔')"><i class="fas fa-bell"></i> Notification Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS TAB -->
+    <div class="tab-pane" id="tab-reviews">
+      <div class="fbar">
+        <input class="ff-input" type="text" id="revSearch" placeholder="Search reviews…" oninput="renderReviews()"/>
+        <select class="ff-select" id="revFilterRating" onchange="renderReviews()">
+          <option value="all">All Ratings</option>
+          <option value="5">★★★★★ 5 Stars</option>
+          <option value="4">★★★★ 4 Stars</option>
+          <option value="3">★★★ 3 Stars</option>
+          <option value="1">★★ 1-2 Stars</option>
+        </select>
+        <select class="ff-select" id="revFilterStatus" onchange="renderReviews()">
+          <option value="all">All Replies</option>
+          <option value="pending">Needs Reply</option>
+          <option value="replied">Already Replied</option>
+        </select>
+      </div>
+      <div id="revList"></div>
+    </div>
+  </main>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/owner-dashboard.js"></script>
+{% endblock %}

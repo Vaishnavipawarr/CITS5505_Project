@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/customer-dashboard.css">
+{% endblock %}
+
+{% block content %}
+
+
+<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+<div id="toast"></div>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="wrap">
+    <a href="/" class="nav-brand">Fork &amp; Flame<span>Fine Dining Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/customer-dashboard" class="active">My Dashboard</a></li>
+    </ul>
+    <div class="nav-right">
+      <div id="navUser" style="display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:30px;padding:.28rem .85rem .28rem .35rem;font-size:.78rem;color:var(--cream);">
+        <img id="navAvatar" src="https://i.pravatar.cc/40?img=47" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid var(--amber);" alt=""/>
+        <span id="navName"></span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-user">
+      <img class="sb-avatar" src="https://i.pravatar.cc/80?img=47" alt="" id="sbAvatar"/>
+      <div class="sb-name" id="sbName"></div>
+      <div class="sb-role"><i class="fas fa-utensils" style="color:var(--amber);font-size:.7rem;"></i> Food Lover</div>
+    </div>
+    <ul class="sb-nav">
+      <li><a href="#" class="active" onclick="showTab('my-reviews',this)"><i class="fas fa-star"></i> My Reviews</a></li>
+      <li><a href="#" onclick="showTab('browse',this)"><i class="fas fa-globe"></i> Browse All Reviews</a></li>
+      <li><a href="#" onclick="openWriteModal();return false;"><i class="fas fa-pen"></i> Write a Review</a></li>
+    </ul>
+    <div class="sb-bottom">
+      <button class="btn btn-danger btn-sm btn-full" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="page-head">
+      <h1>Welcome back, <em id="headName"></em></h1>
+      <p>Manage your reviews and discover new restaurants.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="c-stats">
+      <div class="c-stat"><div class="n" id="myRevCount">0</div><div class="l">My Reviews</div></div>
+      <div class="c-stat"><div class="n" id="totalRevCount">0</div><div class="l">Total Reviews</div></div>
+      <div class="c-stat"><div class="n" id="replyCount">0</div><div class="l">Owner Replies</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tbtn-my-reviews" onclick="showTab('my-reviews',this)">My Reviews</button>
+      <button class="tab-btn" id="tbtn-browse" onclick="showTab('browse',this)">Browse All Reviews</button>
+    </div>
+
+    <!-- MY REVIEWS TAB -->
+    <div class="tab-pane active" id="tab-my-reviews">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <span style="font-size:.82rem;color:var(--muted);">Your dining stories</span>
+        <button class="btn btn-amber btn-sm" onclick="openWriteModal()"><i class="fas fa-plus"></i> Write Review</button>
+      </div>
+      <div id="myRevList"></div>
+    </div>
+
+    <!-- BROWSE TAB -->
+    <div class="tab-pane" id="tab-browse">
+      <div class="fbar">
+        <input class="ff-input" id="searchInput" type="text" placeholder="Search reviews…" oninput="renderBrowse()"/>
+        <select class="ff-select" id="filterRating" onchange="renderBrowse()">
+          <option value="all">All Ratings</option>
+          <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+          <option value="4">⭐⭐⭐⭐ 4+ Stars</option>
+          <option value="3">⭐⭐⭐ 3+ Stars</option>
+        </select>
+        <select class="ff-select" id="filterRest" onchange="renderBrowse()">
+          <option value="all">All Restaurants</option>
+        </select>
+      </div>
+      <div id="browseList"></div>
+    </div>
+  </main>
+</div>
+
+<!-- WRITE / EDIT REVIEW MODAL -->
+<div class="modal-bg" id="writeModal">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeModal('writeModal')">✕</button>
+    <div class="modal-title" id="modalTitle">Write a Review</div>
+    <input type="hidden" id="editId" value=""/>
+    <div class="field"><label class="ff-label">Restaurant</label>
+      <select class="ff-select" id="modalRest"><option value="">Choose a restaurant…</option></select>
+    </div>
+    <div class="field"><label class="ff-label">Your Rating</label>
+      <div class="sp-wrap" id="spWrap" data-v="0">
+        <span class="sp">★</span><span class="sp">★</span><span class="sp">★</span><span class="sp">★</span><span class="sp">★</span>
+      </div>
+    </div>
+    <div class="field"><label class="ff-label">Your Review</label>
+      <textarea class="ff-textarea" id="modalText" rows="5" placeholder="Tell us about your experience — what did you love? What could be better?"></textarea>
+    </div>
+    <div class="d-flex gap-2 justify-content-end mt-2">
+      <button class="btn btn-ghost" onclick="closeModal('writeModal')">Cancel</button>
+      <button class="btn btn-amber" onclick="submitReview()"><i class="fas fa-paper-plane"></i> <span id="submitLabel">Post Review</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-bg" id="deleteModal">
+  <div class="modal-box" style="max-width:380px;text-align:center;">
+    <button class="modal-x" onclick="closeModal('deleteModal')">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:.8rem;">🗑️</div>
+    <div class="modal-title" style="font-size:1.25rem;">Delete this review?</div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;">This action cannot be undone.</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()"><i class="fas fa-trash"></i> Delete</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/customer-dashboard.js"></script>
+{% endblock %}

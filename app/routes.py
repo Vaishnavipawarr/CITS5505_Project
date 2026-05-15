@@ -86,7 +86,7 @@ def customer_dashboard():
     if "user_id" not in session:
         return redirect('/login')
 
-    return send_from_directory(FRONTEND_DIR, 'customer-dashboard.html')
+    return render_template('customer-dashboard.html')
 
 
 @routes.route('/owner-dashboard')
@@ -95,10 +95,7 @@ def owner_dashboard():
     if "user_id" not in session:
         return redirect('/login')
 
-    return send_from_directory(
-        FRONTEND_DIR,
-        'owner-dashboard.html'
-    )
+    return render_template('owner-dashboard.html')
 
 # -----------------------------
 # DATABASE
