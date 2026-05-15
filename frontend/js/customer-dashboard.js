@@ -14,7 +14,10 @@ async function initCustomerDashboard() {
   document.getElementById("navName").textContent = user.name;
   document.getElementById("sbName").textContent = user.name;
   document.getElementById("headName").textContent = user.name.split(" ")[0];
-
+  if (user.profilePic) {
+    document.getElementById("sbAvatar").src = user.profilePic;
+    document.getElementById("navAvatar").src = user.profilePic;
+  }
   const restSelect = document.getElementById("modalRest");
   const filterRest = document.getElementById("filterRest");
   currentRestaurants = await getRestaurants();
@@ -263,4 +266,24 @@ async function confirmDelete() {
   closeModal("deleteModal");
   toast("Review deleted", "🗑️");
   renderMyReviews();
+}
+
+async function uploadAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const form = new FormData();
+  form.append('avatar', file);
+  const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('sbAvatar').src = data.profilePic;
+    document.getElementById('navAvatar').src = data.profilePic;
+    // Update cached user
+    const stored = JSON.parse(localStorage.getItem('user') || '{}');
+    stored.profilePic = data.profilePic;
+    localStorage.setItem('user', JSON.stringify(stored));
+    toast('Profile picture updated!', '✅');
+  } else {
+    toast(data.message || 'Upload failed', '❌');
+  }
 }
