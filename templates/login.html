@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/login.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="visual">
+  <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85" alt=""/>
+  <div class="visual-ov"></div>
+  <div class="visual-txt">
+    <blockquote>"Every great meal begins with a <em>moment of intention.</em>"</blockquote>
+    <cite>— Fork &amp; Flame</cite>
+  </div>
+</div>
+
+<div class="form-side">
+  <div class="form-inner">
+    <a href="/" class="brand">Fork &amp; Flame</a>
+    <h1 class="auth-h1">Welcome back</h1>
+    <p class="auth-sub">Sign in to your account to continue.</p>
+
+    <div class="role-tabs">
+      <div class="role-tab active" id="tab-customer" onclick="selectRole('customer')">
+        <div class="icon">🍽️</div>
+        <div class="label">Food Lover</div>
+        <div class="desc">Browse &amp; review restaurants</div>
+      </div>
+      <div class="role-tab" id="tab-owner" onclick="selectRole('owner')">
+        <div class="icon">🏠</div>
+        <div class="label">Restaurant Owner</div>
+        <div class="desc">Manage your restaurant</div>
+      </div>
+    </div>
+
+    <div class="demo-hint" id="demoHint">
+      Demo: <strong>customer@demo.com</strong> / <strong>demo123</strong>
+    </div>
+
+    <div id="errMsg" class="err">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errTxt">Invalid email or password.</span>
+    </div>
+
+    <div class="field">
+      <label class="ff-label">Email Address</label>
+      <input class="ff-input" type="email" id="email" placeholder="you@example.com"/>
+    </div>
+
+    <div class="field">
+      <label class="ff-label">Password</label>
+      <div style="position:relative;">
+        <input class="ff-input" type="password" id="password" placeholder="Your password" style="padding-right:2.8rem;"/>
+        <button onclick="togglePw()" style="position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;color:var(--muted);font-size:.9rem;transition:color .2s;" onmouseenter="this.style.color='var(--amber-light)'" onmouseleave="this.style.color='var(--muted)'">
+          <i class="far fa-eye" id="eyeIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="doLogin()">Sign In</button>
+
+    <p class="switch">Don't have an account? <a href="/signup">Sign Up</a></p>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/login.js"></script>
+{% endblock %}
