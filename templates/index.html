@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/home.css">
+{% endblock %}
+
+{% block content %}
+   <div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="wrap">
+    <a href="/" class="nav-brand">Fork &amp; Flame<span>Fine Dining Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="/" class="active">Home</a></li>
+      <li><a href="/restaurants">Restaurants</a></li>
+      <li><a href="/reviews">Reviews</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="/login" class="btn btn-ghost btn-sm">Log In</a>
+      <a href="/signup" class="btn btn-amber btn-sm">Sign Up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ov"></div>
+  <div class="wrap hero-inner">
+    <div class="row"><div class="col-lg-7 col-md-10">
+      <div class="h-badge">✦ Curated Dining Experiences</div>
+      <h1 class="h-title">Discover<br><em>Extraordinary</em><br>Restaurants</h1>
+      <p class="h-sub">Join thousands of food lovers uncovering hidden gems, sharing honest reviews, and finding where the real culinary magic happens.</p>
+      <div class="h-btns">
+        <a href="/restaurants" class="btn btn-amber btn-lg"><i class="fas fa-utensils"></i> Explore Restaurants</a>
+        <a href="/login" class="btn btn-glass btn-lg" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);"><i class="fas fa-pen-nib"></i> Write a Review</a>
+      </div>
+      <div class="h-search">
+        <i class="fas fa-search" style="color:rgba(255,255,255,.35);font-size:.85rem;flex-shrink:0;"></i>
+        <input id="heroSearch" type="text" placeholder="Restaurant, cuisine, city…"/>
+        <button class="btn btn-amber" style="border-radius:22px;padding:.52rem 1.15rem;font-size:.8rem;" onclick="window.location='/restaurants'">Search</button>
+      </div>
+    </div></div>
+  </div>
+  <div class="h-stats wrap">
+    <div class="stat-chip"><div class="n" data-count="12400" data-suffix="+">0</div><div class="l">Restaurants</div></div>
+    <div class="stat-chip"><div class="n" data-count="84000" data-suffix="+">0</div><div class="l">Reviews</div></div>
+    <div class="stat-chip"><div class="n" data-count="31000" data-suffix="+">0</div><div class="l">Members</div></div>
+  </div>
+</section>
+
+<!-- CAT STRIP -->
+<div class="cat-strip">
+  <div class="wrap">
+    <div class="cat-pills" id="cats">
+      <button class="cat-pill active" data-f="all">🍽️ All</button>
+      <button class="cat-pill" data-f="pizza">🍕 Pizza</button>
+      <button class="cat-pill" data-f="burger">🍔 Burgers</button>
+      <button class="cat-pill" data-f="indian">🍛 Indian</button>
+      <button class="cat-pill" data-f="japanese">🍣 Japanese</button>
+      <button class="cat-pill" data-f="italian">🍝 Italian</button>
+      <button class="cat-pill" data-f="seafood">🦞 Seafood</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESTAURANTS -->
+<section class="sec">
+  <div class="wrap">
+    <div class="d-flex align-items-end justify-content-between mb-4 flex-wrap gap-3">
+      <div class="reveal"><div class="sec-eye mb-2">Top Picks</div><h2 class="sec-title">Highly <em>Rated</em> Right Now</h2></div>
+      <a href="/restaurants" class="btn btn-ghost btn-sm reveal d2">View All <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row g-4" id="rGrid">
+      <div class="col-lg-4 col-md-6 reveal d1" data-cat="italian"><div class="r-card">
+        <div class="img-wrap"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🍕 Italian</span></div>
+        <div class="body"><div class="rname">Pizza Palace</div><div class="rmeta"><span class="stars">★★★★<span class="dim">★</span></span><span class="dot"></span><span>4.5 · 208 reviews</span><span class="dot"></span><span>$$</span></div><p class="rdesc">Authentic Neapolitan pies baked in a 900°F wood-fired oven. The margherita alone is worth the trip.</p><div class="rfoot"><span style="font-size:.75rem;color:var(--muted);">Surry Hills</span><a href="/login" class="btn btn-amber btn-sm">View</a></div></div>
+      </div></div>
+      <div class="col-lg-4 col-md-6 reveal d2" data-cat="indian"><div class="r-card">
+        <div class="img-wrap"><img src="https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🍛 Indian</span></div>
+        <div class="body"><div class="rname">Spice Garden</div><div class="rmeta"><span class="stars">★★★★★</span><span class="dot"></span><span>4.8 · 341 reviews</span><span class="dot"></span><span>$$$</span></div><p class="rdesc">Recipes handed down three generations, spices flown weekly from Kerala. A true taste of South India.</p><div class="rfoot"><span style="font-size:.75rem;color:var(--muted);">Haymarket</span><a href="/login" class="btn btn-amber btn-sm">View</a></div></div>
+      </div></div>
+      <div class="col-lg-4 col-md-6 reveal d3" data-cat="japanese"><div class="r-card">
+        <div class="img-wrap"><img src="https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🍣 Japanese</span></div>
+        <div class="body"><div class="rname">Kyoto Ramen Bar</div><div class="rmeta"><span class="stars">★★★★★</span><span class="dot"></span><span>4.9 · 287 reviews</span><span class="dot"></span><span>$$</span></div><p class="rdesc">72-hour tonkotsu broth that has made grown adults weep with joy. The best ramen outside Japan.</p><div class="rfoot"><span style="font-size:.75rem;color:var(--muted);">CBD</span><a href="/login" class="btn btn-amber btn-sm">View</a></div></div>
+      </div></div>
+      <div class="col-lg-4 col-md-6 reveal d1" data-cat="seafood"><div class="r-card">
+        <div class="img-wrap"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🦞 Seafood</span></div>
+        <div class="body"><div class="rname">Sea Salt &amp; Citrus</div><div class="rmeta"><span class="stars">★★★★<span class="dim">★</span></span><span class="dot"></span><span>4.6 · 129 reviews</span><span class="dot"></span><span>$$$$</span></div><p class="rdesc">Daily catch from local harbours. Minimalist preparations that let the ocean speak for itself.</p><div class="rfoot"><span style="font-size:.75rem;color:var(--muted);">Manly</span><a href="/login" class="btn btn-amber btn-sm">View</a></div></div>
+      </div></div>
+      <div class="col-lg-4 col-md-6 reveal d2" data-cat="burger"><div class="r-card">
+        <div class="img-wrap"><img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🍔 Burgers</span></div>
+        <div class="body"><div class="rname">Burger Hub</div><div class="rmeta"><span class="stars">★★★★<span class="dim">★</span></span><span class="dot"></span><span>4.3 · 176 reviews</span><span class="dot"></span><span>$$</span></div><p class="rdesc">Craft burgers with locally sourced beef and house-made sauces. The truffle fries are legendary.</p><div class="rfoot"><span style="font-size:.75rem;color:var(--muted);">Newtown</span><a href="/login" class="btn btn-amber btn-sm">View</a></div></div>
+      </div></div>
+      <div class="col-lg-4 col-md-6 reveal d3" data-cat="italian"><div class="r-card">
+        <div class="img-wrap"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🥩 Steakhouse</span></div>
+        <div class="body"><div class="rname">Ember &amp; Oak</div><div class="rmeta"><span class="stars">★★★★★</span><span class="dot"></span><span>4.7 · 312 reviews</span><span class="dot"></span><span>$$$$</span></div><p class="rdesc">Wood-fired excellence where every cut tells a story of fire and patience. The wagyu is extraordinary.</p><div class="rfoot"><span style="font-size:.75rem;color:var(--muted);">The Rocks</span><a href="/login" class="btn btn-amber btn-sm">View</a></div></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-band">
+  <div class="wrap"><div class="row text-center g-4">
+    <div class="col-6 col-md-3 stat-box reveal d1"><div class="n" data-count="12400" data-suffix="+">0</div><div class="l">Restaurants</div></div>
+    <div class="col-6 col-md-3 stat-box reveal d2"><div class="n" data-count="84000" data-suffix="+">0</div><div class="l">Reviews Written</div></div>
+    <div class="col-6 col-md-3 stat-box reveal d3"><div class="n" data-count="31000" data-suffix="+">0</div><div class="l">Food Lovers</div></div>
+    <div class="col-6 col-md-3 stat-box reveal d4"><div class="n" data-count="48">0</div><div class="l">Cities</div></div>
+  </div></div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-band">
+  <div class="wrap">
+    <blockquote class="reveal">"Food is not just nourishment — it is memory, culture, love, and the most honest expression of a place's soul."</blockquote>
+    <cite class="reveal d2">— The Fork &amp; Flame Philosophy</cite>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div><div class="footer-brand">Fork &amp; Flame</div><p class="footer-sub">The world's most discerning restaurant review platform. Curated by food lovers, for food lovers.</p></div>
+      <div class="footer-col"><h5>Discover</h5><ul><li><a href="/restaurants">Restaurants</a></li><li><a href="/reviews">Reviews</a></li></ul></div>
+      <div class="footer-col"><h5>Account</h5><ul><li><a href="/login">Log In</a></li><li><a href="/signup">Sign Up</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Fork &amp; Flame</span><span>Find · Taste · Review</span></div>
+  </div>
+</footer>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/home.js"></script>
+{% endblock %}

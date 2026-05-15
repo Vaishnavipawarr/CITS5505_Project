@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_from_directory, session, redirect
+from flask import Blueprint, request, jsonify, send_from_directory, session, redirect, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
@@ -53,7 +53,7 @@ def serve_js(filename):
 
 @routes.route('/')
 def home():
-    return send_from_directory(FRONTEND_DIR, 'index.html')
+    return render_template('index.html')
 
 
 @routes.route('/login')
