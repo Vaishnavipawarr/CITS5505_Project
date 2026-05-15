@@ -15,6 +15,14 @@ async function initOwnerDashboard() {
   const ownerRest = restaurants.find((r) => r.id === ownerRestId) ||
     restaurants[0] || { name: "Your Restaurant" };
 
+  if (user.profilePic) {
+    const ownerAv = document.getElementById("ownerAvatar");
+    if (ownerAv) ownerAv.src = user.profilePic;
+  }
+
+  const bioEl = document.getElementById("restBio");
+  if (bioEl) bioEl.textContent = ownerRest.bio || "No bio yet. Click Edit Bio to add one.";
+  document.getElementById("sbRestType").textContent = `${ownerRest.cuisine} · ${ownerRest.city}`;
   document.getElementById("navName").textContent = ownerRest.name;
   document.getElementById("sbRestName").textContent = ownerRest.name;
   document.getElementById("ownerHead").innerHTML =
@@ -232,4 +240,45 @@ function filterPending() {
   const statusFilter = document.getElementById("revFilterStatus");
   if (statusFilter) statusFilter.value = "pending";
   renderReviews();
+}
+
+async function uploadAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const form = new FormData();
+  form.append('avatar', file);
+  const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+  const data = await res.json();
+  if (data.success) {
+    const ownerAv = document.getElementById('ownerAvatar');
+    if (ownerAv) ownerAv.src = data.profilePic;
+    const stored = JSON.parse(localStorage.getItem('user') || '{}');
+    stored.profilePic = data.profilePic;
+    localStorage.setItem('user', JSON.stringify(stored));
+    toast('Profile picture updated!', '✅');
+  } else {
+    toast(data.message || 'Upload failed', '❌');
+  }
+}
+function openBioModal() {
+  const current = document.getElementById("restBio").textContent;
+  document.getElementById("bioInput").value = current === "No bio yet. Click Edit Bio to add one." ? "" : current;
+  document.getElementById("bioModal").classList.add("open");
+}
+
+async function saveBio() {
+  const bio = document.getElementById("bioInput").value.trim();
+  const res = await fetch(`/api/restaurants/${ownerRestId}/bio`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bio })
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById("restBio").textContent = bio || "No bio yet. Click Edit Bio to add one.";
+    closeModal("bioModal");
+    toast("Bio updated!", "✅");
+  } else {
+    toast(data.message || "Failed to save", "❌");
+  }
 }
