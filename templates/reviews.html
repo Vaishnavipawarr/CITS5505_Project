@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/reviews.css">
+{% endblock %}
+
+{% block content %}
+
+<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="wrap">
+    <a href="/" class="nav-brand">Fork &amp; Flame<span>Fine Dining Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/restaurants">Restaurants</a></li>
+      <li><a href="/reviews" class="active">Reviews</a></li>
+    </ul>
+    <div class="nav-right" id="navRight">
+      <a href="/login" class="btn btn-ghost btn-sm">Log In</a>
+      <a href="/signup" class="btn btn-amber btn-sm">Sign Up</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-ov"></div>
+  <div class="wrap page-hero-content">
+    <div class="sec-eye mb-2 reveal">Community Reviews</div>
+    <h1 class="sec-title reveal d1">Honest Reviews from <em>Real Food Lovers</em></h1>
+  </div>
+</div>
+
+<section style="padding:3rem 0 5rem;">
+  <div class="wrap" style="max-width:820px;">
+
+    <div class="cta-band">
+      <div>
+        <h3>Share Your Dining Story</h3>
+        <p>Your review helps others find their next favourite restaurant.</p>
+      </div>
+      <a href="/login" class="btn btn-amber"><i class="fas fa-pen-nib"></i> Write a Review</a>
+    </div>
+
+    <div class="fbar">
+      <i class="fas fa-search" style="color:var(--muted);font-size:.82rem;flex-shrink:0;"></i>
+      <input class="ff-input" type="text" id="searchInput" placeholder="Search by restaurant or reviewer…" oninput="renderRevs()"/>
+      <select class="ff-select" id="filterRating" onchange="renderRevs()">
+        <option value="all">All Ratings</option>
+        <option value="5">5 Stars</option>
+        <option value="4">4+ Stars</option>
+        <option value="3">3+ Stars</option>
+      </select>
+      <select class="ff-select" id="filterRest" onchange="renderRevs()">
+        <option value="all">All Restaurants</option>
+      </select>
+    </div>
+
+    <div id="revList"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-bottom" style="border-top:1px solid var(--border);padding-top:1.2rem;">
+      <span>© 2026 Fork &amp; Flame</span><a href="/">← Back to Home</a>
+    </div>
+  </div>
+</footer>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/reviews.js"></script>
+{% endblock %}

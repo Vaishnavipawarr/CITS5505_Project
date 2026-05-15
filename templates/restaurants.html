@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Restaurants - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/restaurants.css">
+{% endblock %}
+
+{% block content %}
+
+<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a href="/" class="nav-brand">Fork &amp; Flame<span>Fine Dining Reviews</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/restaurants" class="active">Restaurants</a></li>
+      <li><a href="/reviews">Reviews</a></li>
+    </ul>
+    <div class="nav-right" id="navRight">
+      <a href="/login" class="btn btn-ghost btn-sm">Log In</a>
+      <a href="/signup" class="btn btn-amber btn-sm">Sign Up</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-ov"></div>
+  <div class="wrap page-hero-content">
+    <div class="sec-eye mb-2 reveal">Browse &amp; Discover</div>
+    <h1 class="sec-title reveal d1">Find Your Next <em>Favourite</em> Table</h1>
+  </div>
+</div>
+
+<section style="padding:3rem 0 5rem;">
+  <div class="wrap">
+    <div class="search-wrap">
+      <i class="fas fa-search" style="color:var(--muted);font-size:.85rem;flex-shrink:0;"></i>
+      <input class="ff-input" type="text" id="searchInput" placeholder="Search restaurant or cuisine…" oninput="renderCards()"/>
+      <select class="ff-select" id="filterCuisine" onchange="renderCards()">
+        <option value="all">All Cuisines</option>
+        <option value="Steakhouse">Steakhouse</option>
+        <option value="Indian">Indian</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Italian">Italian</option>
+        <option value="American">American</option>
+        <option value="Seafood">Seafood</option>
+      </select>
+      <select class="ff-select" id="filterPrice" onchange="renderCards()">
+        <option value="all">All Prices</option>
+        <option value="$$">$$ Budget</option>
+        <option value="$$$">$$$ Mid-range</option>
+        <option value="$$$$">$$$$ Fine Dining</option>
+      </select>
+    </div>
+    <div class="row g-4" id="cardGrid"></div>
+    <div id="noResults" class="no-results" style="display:none;"><div class="icon">🔍</div><p>No restaurants match your search.</p></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-bottom" style="border-top:1px solid var(--border);padding-top:1.2rem;">
+      <span>© 2026 Fork &amp; Flame</span><a href="/">← Back to Home</a>
+    </div>
+  </div>
+</footer>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/restaurants.js"></script>
+{% endblock %}

@@ -68,12 +68,12 @@ def signup_page():
 
 @routes.route('/restaurants')
 def restaurants_page():
-    return send_from_directory(FRONTEND_DIR, 'restaurants.html')
+    return render_template('restaurants.html')
 
 
 @routes.route('/reviews')
 def reviews_page():
-    return send_from_directory(FRONTEND_DIR, 'reviews.html')
+    return render_template('reviews.html')
 
 
 # -----------------------------
