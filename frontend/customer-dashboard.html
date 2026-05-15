@@ -1,142 +1,289 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>My Dashboard — Fork &amp; Flame</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="css/shared.css"/>
-  <link rel="stylesheet" href="css/customer-dashboard.css"/>
-</head>
-<body>
-<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
-<div id="toast"></div>
+// customer-dashboard.js
+let currentUser = null;
+let currentRestaurants = [];
+let pendingDeleteId = null;
 
-<!-- NAVBAR -->
-<nav class="nav">
-  <div class="wrap">
-    <a href="/" class="nav-brand">Fork &amp; Flame<span>Fine Dining Reviews</span></a>
-    <ul class="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/customer-dashboard" class="active">My Dashboard</a></li>
-    </ul>
-    <div class="nav-right">
-      <div id="navUser" style="display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:30px;padding:.28rem .85rem .28rem .35rem;font-size:.78rem;color:var(--cream);">
-        <img id="navAvatar" src="https://i.pravatar.cc/40?img=47" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid var(--amber);" alt=""/>
-        <span id="navName"></span>
+window.appReady.then(initCustomerDashboard);
+
+async function initCustomerDashboard() {
+  await window.appReady;
+  const user = requireAuth("customer");
+  if (!user) return;
+  currentUser = user;
+
+  document.getElementById("navName").textContent = user.name;
+  document.getElementById("sbName").textContent = user.name;
+  document.getElementById("headName").textContent = user.name.split(" ")[0];
+  if (user.profilePic) {
+    document.getElementById("sbAvatar").src = user.profilePic;
+    document.getElementById("navAvatar").src = user.profilePic;
+  }
+  const restSelect = document.getElementById("modalRest");
+  const filterRest = document.getElementById("filterRest");
+  currentRestaurants = await getRestaurants();
+  if (restSelect) {
+    restSelect.innerHTML = '<option value="">Select restaurant</option>';
+    currentRestaurants.forEach((r) => {
+      restSelect.innerHTML += `<option value="${r.id}">${r.name}</option>`;
+    });
+  }
+  if (filterRest) {
+    filterRest.innerHTML = '<option value="all">All restaurants</option>';
+    currentRestaurants.forEach((r) => {
+      filterRest.innerHTML += `<option value="${r.id}">${r.name}</option>`;
+    });
+  }
+
+  initStars('spWrap');
+  renderMyReviews();
+}
+
+function showTab(id, linkEl) {
+  document
+    .querySelectorAll(".tab-pane")
+    .forEach((p) => p.classList.remove("active"));
+  document
+    .querySelectorAll(".tab-btn")
+    .forEach((b) => b.classList.remove("active"));
+  document.getElementById("tab-" + id).classList.add("active");
+  if (linkEl && linkEl.classList.contains("tab-btn"))
+    linkEl.classList.add("active");
+  else
+    document.getElementById("tbtn-" + id) &&
+      document.getElementById("tbtn-" + id).classList.add("active");
+  document
+    .querySelectorAll(".sb-nav a")
+    .forEach((a) => a.classList.remove("active"));
+  if (id === "my-reviews")
+    document.querySelectorAll(".sb-nav a")[0].classList.add("active");
+  else if (id === "browse")
+    document.querySelectorAll(".sb-nav a")[1].classList.add("active");
+  if (id === "browse") renderBrowse();
+}
+
+async function renderMyReviews() {
+  if (!currentUser) return;
+  const reviews = await getReviews({ customer_id: currentUser.id });
+  const all = await getReviews();
+  const el = document.getElementById("myRevList");
+  const countEl = document.getElementById("myRevCount");
+  const totalEl = document.getElementById("totalRevCount");
+  const replyEl = document.getElementById("replyCount");
+
+  if (countEl) countEl.textContent = reviews.length;
+  if (totalEl) totalEl.textContent = all.length;
+  if (replyEl)
+    replyEl.textContent = reviews.filter((r) => r.owner_reply).length;
+
+  if (!reviews.length) {
+    if (el) {
+      el.innerHTML = `<div class="empty"><div class="icon">✍️</div><h3>No reviews yet</h3><p>Share your first dining experience!</p><button class="btn btn-amber mt-3" onclick="openWriteModal()"><i class="fas fa-plus"></i> Write Your First Review</button></div>`;
+    }
+    return;
+  }
+
+  if (el) {
+    el.innerHTML = reviews
+      .map(
+        (r) => `
+      <div class="rev-card">
+        <div class="rev-rest-row">
+          <img class="rev-rest-thumb" src="${escapeHtml(r.restaurant_img)}" alt=""/>
+          <div>
+            <div class="rev-rest-name">${escapeHtml(r.restaurant_name)}</div>
+            <div class="rev-rest-meta">${escapeHtml(r.date)}</div>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <button class="btn btn-ghost btn-sm" onclick="openEditModal(${r.id})"><i class="fas fa-pen"></i> Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteReview(${r.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="rev-stars-row">${renderStars(r.rating)}<span style="font-size:.8rem;font-weight:600;color:var(--amber)">${r.rating}.0</span></div>
+        <div class="rev-body">${escapeHtml(r.text)}</div>
+        ${(r.tags || []).length ? `<div class="rev-chips">${r.tags.map((t) => `<span class="rev-chip">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+        ${r.owner_reply ? `<div class="owner-reply"><div class="lbl">✦ Owner's Reply · ${escapeHtml(r.owner_reply_date || "")}</div><p>${escapeHtml(r.owner_reply)}</p></div>` : ""}
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-  </div>
-</nav>
+    `,
+      )
+      .join("");
+  }
+}
 
-<div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sb-user">
-      <img class="sb-avatar" src="https://i.pravatar.cc/80?img=47" alt="" id="sbAvatar"/>
-      <div class="sb-name" id="sbName"></div>
-      <div class="sb-role"><i class="fas fa-utensils" style="color:var(--amber);font-size:.7rem;"></i> Food Lover</div>
-    </div>
-    <ul class="sb-nav">
-      <li><a href="#" class="active" onclick="showTab('my-reviews',this)"><i class="fas fa-star"></i> My Reviews</a></li>
-      <li><a href="#" onclick="showTab('browse',this)"><i class="fas fa-globe"></i> Browse All Reviews</a></li>
-      <li><a href="#" onclick="openWriteModal();return false;"><i class="fas fa-pen"></i> Write a Review</a></li>
-    </ul>
-    <div class="sb-bottom">
-      <button class="btn btn-danger btn-sm btn-full" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-  </aside>
+async function renderBrowse() {
+  const search = (
+    document.getElementById("searchInput")?.value || ""
+  ).toLowerCase();
+  const rFilter = document.getElementById("filterRating")?.value || "all";
+  const restFilter = document.getElementById("filterRest")?.value || "all";
+  let reviews = await getReviews();
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="page-head">
-      <h1>Welcome back, <em id="headName"></em></h1>
-      <p>Manage your reviews and discover new restaurants.</p>
-    </div>
+  if (search)
+    reviews = reviews.filter(
+      (r) =>
+        r.restaurant_name.toLowerCase().includes(search) ||
+        r.text.toLowerCase().includes(search) ||
+        r.customer_name.toLowerCase().includes(search),
+    );
 
-    <!-- STATS -->
-    <div class="c-stats">
-      <div class="c-stat"><div class="n" id="myRevCount">0</div><div class="l">My Reviews</div></div>
-      <div class="c-stat"><div class="n" id="totalRevCount">0</div><div class="l">Total Reviews</div></div>
-      <div class="c-stat"><div class="n" id="replyCount">0</div><div class="l">Owner Replies</div></div>
-    </div>
+  if (rFilter !== "all")
+    reviews = reviews.filter((r) => r.rating >= parseInt(rFilter));
+  if (restFilter !== "all")
+    reviews = reviews.filter((r) => r.restaurant_id === restFilter);
 
-    <!-- TABS -->
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tbtn-my-reviews" onclick="showTab('my-reviews',this)">My Reviews</button>
-      <button class="tab-btn" id="tbtn-browse" onclick="showTab('browse',this)">Browse All Reviews</button>
-    </div>
+  const el = document.getElementById("browseList");
+  if (!reviews.length) {
+    if (el) {
+      el.innerHTML = `<div class="empty"><div class="icon">🔍</div><h3>No reviews found</h3><p>Try adjusting your filters.</p></div>`;
+    }
+    return;
+  }
 
-    <!-- MY REVIEWS TAB -->
-    <div class="tab-pane active" id="tab-my-reviews">
-      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <span style="font-size:.82rem;color:var(--muted);">Your dining stories</span>
-        <button class="btn btn-amber btn-sm" onclick="openWriteModal()"><i class="fas fa-plus"></i> Write Review</button>
+  if (el) {
+    el.innerHTML = reviews
+      .map(
+        (r) => `
+      <div class="pub-rev">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img class="pub-av" src="${escapeHtml(r.customer_avatar)}" alt=""/>
+          <div class="flex-1">
+            <div style="font-weight:600;font-size:.88rem;color:var(--cream)">${escapeHtml(r.customer_name)}</div>
+            <div style="font-size:.72rem;color:var(--muted)">Reviewed ${escapeHtml(r.restaurant_name)} · ${escapeHtml(r.date)}</div>
+          </div>
+          <div class="ms-auto">${renderStars(r.rating)}</div>
+        </div>
+        <div class="rev-rest-tag">
+          <img src="${escapeHtml(r.restaurant_img)}" alt=""/>
+          ${escapeHtml(r.restaurant_name)}
+        </div>
+        <p class="rev-body">${escapeHtml(r.text)}</p>
+        ${(r.tags || []).length ? `<div style="margin-bottom:.8rem">${r.tags.map((t) => `<span class="rev-chip">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+        ${r.owner_reply ? `<div class="owner-reply"><div class="lbl">✦ Owner's Reply</div><p>${escapeHtml(r.owner_reply)}</p></div>` : ""}
       </div>
-      <div id="myRevList"></div>
-    </div>
+    `,
+      )
+      .join("");
+  }
+}
 
-    <!-- BROWSE TAB -->
-    <div class="tab-pane" id="tab-browse">
-      <div class="fbar">
-        <input class="ff-input" id="searchInput" type="text" placeholder="Search reviews…" oninput="renderBrowse()"/>
-        <select class="ff-select" id="filterRating" onchange="renderBrowse()">
-          <option value="all">All Ratings</option>
-          <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
-          <option value="4">⭐⭐⭐⭐ 4+ Stars</option>
-          <option value="3">⭐⭐⭐ 3+ Stars</option>
-        </select>
-        <select class="ff-select" id="filterRest" onchange="renderBrowse()">
-          <option value="all">All Restaurants</option>
-        </select>
-      </div>
-      <div id="browseList"></div>
-    </div>
-  </main>
-</div>
+function openWriteModal() {
+  const editIdInput = document.getElementById("editId");
+  if (editIdInput) editIdInput.value = "";
+  document.getElementById("modalTitle").textContent = "Write a Review";
+  document.getElementById("submitLabel").textContent = "Post Review";
+  document.getElementById("modalText").value = "";
+  document.getElementById("modalRest").value = "";
+  const sp = document.getElementById("spWrap");
+  sp.dataset.v = 0;
+  sp.querySelectorAll(".sp").forEach((s) => s.classList.remove("on"));
+  openModal("writeModal");
+}
 
-<!-- WRITE / EDIT REVIEW MODAL -->
-<div class="modal-bg" id="writeModal">
-  <div class="modal-box">
-    <button class="modal-x" onclick="closeModal('writeModal')">✕</button>
-    <div class="modal-title" id="modalTitle">Write a Review</div>
-    <input type="hidden" id="editId" value=""/>
-    <div class="field"><label class="ff-label">Restaurant</label>
-      <select class="ff-select" id="modalRest"><option value="">Choose a restaurant…</option></select>
-    </div>
-    <div class="field"><label class="ff-label">Your Rating</label>
-      <div class="sp-wrap" id="spWrap" data-v="0">
-        <span class="sp">★</span><span class="sp">★</span><span class="sp">★</span><span class="sp">★</span><span class="sp">★</span>
-      </div>
-    </div>
-    <div class="field"><label class="ff-label">Your Review</label>
-      <textarea class="ff-textarea" id="modalText" rows="5" placeholder="Tell us about your experience — what did you love? What could be better?"></textarea>
-    </div>
-    <div class="d-flex gap-2 justify-content-end mt-2">
-      <button class="btn btn-ghost" onclick="closeModal('writeModal')">Cancel</button>
-      <button class="btn btn-amber" onclick="submitReview()"><i class="fas fa-paper-plane"></i> <span id="submitLabel">Post Review</span></button>
-    </div>
-  </div>
-</div>
+async function openEditModal(id) {
+  const reviews = await getReviews({ customer_id: currentUser?.id });
+  const rev = reviews.find((r) => r.id === id);
+  if (!rev) return;
+  document.getElementById("editId").value = id;
+  document.getElementById("modalTitle").textContent = "Edit Your Review";
+  document.getElementById("submitLabel").textContent = "Save Changes";
+  document.getElementById("modalText").value = rev.text;
+  document.getElementById("modalRest").value = rev.restaurant_id;
+  const sp = document.getElementById("spWrap");
+  sp.dataset.v = rev.rating;
+  sp.querySelectorAll(".sp").forEach((s, i) =>
+    s.classList.toggle("on", i < rev.rating),
+  );
+  openModal("writeModal");
+}
 
-<!-- DELETE CONFIRM MODAL -->
-<div class="modal-bg" id="deleteModal">
-  <div class="modal-box" style="max-width:380px;text-align:center;">
-    <button class="modal-x" onclick="closeModal('deleteModal')">✕</button>
-    <div style="font-size:2.5rem;margin-bottom:.8rem;">🗑️</div>
-    <div class="modal-title" style="font-size:1.25rem;">Delete this review?</div>
-    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;">This action cannot be undone.</p>
-    <div class="d-flex gap-2 justify-content-center">
-      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDelete()"><i class="fas fa-trash"></i> Delete</button>
-    </div>
-  </div>
-</div>
+async function submitReview() {
+  const editId = document.getElementById("editId").value;
+  const restId = document.getElementById("modalRest").value;
+  const text = document.getElementById("modalText").value.trim();
+  const rating = parseInt(document.getElementById("spWrap").dataset.v || 0);
 
-<script src="js/app.js"></script>
-<script src="js/customer-dashboard.js"></script>
-</body>
-</html>
+  if (!restId) {
+    toast("Please select a restaurant", "⚠️");
+    return;
+  }
+  if (!rating) {
+    toast("Please select a rating", "⚠️");
+    return;
+  }
+  if (!text) {
+    toast("Please write your review", "⚠️");
+    return;
+  }
+
+  const rest = currentRestaurants.find((r) => r.id === restId);
+  if (!rest) {
+    toast("Restaurant not found", "⚠️");
+    return;
+  }
+
+  if (editId) {
+    const result = await updateReview(parseInt(editId), {
+      restaurant_id: restId,
+      rating,
+      text,
+      tags: [],
+    });
+    if (!result.success) {
+      toast(result.message || "Unable to update review", "⚠️");
+      return;
+    }
+    toast("Review updated!", "✓");
+  } else {
+    const result = await createReview({
+      restaurantId: restId,
+      rating,
+      text,
+      tags: [],
+    });
+    if (!result.success) {
+      toast(result.message || "Unable to post review", "⚠️");
+      return;
+    }
+    toast("Review posted!", "🌟");
+  }
+
+  closeModal("writeModal");
+  renderMyReviews();
+}
+
+function deleteReview(id) {
+  pendingDeleteId = id;
+  openModal("deleteModal");
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId) return;
+  const success = await deleteReview(pendingDeleteId);
+  if (!success) {
+    toast("Failed to delete review", "⚠️");
+    return;
+  }
+  pendingDeleteId = null;
+  closeModal("deleteModal");
+  toast("Review deleted", "🗑️");
+  renderMyReviews();
+}
+
+async function uploadAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const form = new FormData();
+  form.append('avatar', file);
+  const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('sbAvatar').src = data.profilePic;
+    document.getElementById('navAvatar').src = data.profilePic;
+    // Update cached user
+    const stored = JSON.parse(localStorage.getItem('user') || '{}');
+    stored.profilePic = data.profilePic;
+    localStorage.setItem('user', JSON.stringify(stored));
+    toast('Profile picture updated!', '✅');
+  } else {
+    toast(data.message || 'Upload failed', '❌');
+  }
+}
