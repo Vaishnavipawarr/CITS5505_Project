@@ -58,12 +58,12 @@ def home():
 
 @routes.route('/login')
 def login_page():
-    return send_from_directory(FRONTEND_DIR, 'login.html')
+    return render_template('login.html')
 
 
 @routes.route('/signup')
 def signup_page():
-    return send_from_directory(FRONTEND_DIR, 'signup.html')
+    return render_template('signup.html')
 
 
 @routes.route('/restaurants')
