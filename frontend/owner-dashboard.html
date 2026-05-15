@@ -35,9 +35,21 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-rest">
-      <img class="sb-rest-thumb" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=120&q=70" alt="" id="sbRestImg"/>
+      <div style="position:relative;display:inline-block;cursor:pointer;margin-bottom:.5rem;" onclick="document.getElementById('avatarInput').click()">
+        <img id="ownerAvatar" src="https://i.pravatar.cc/80?img=12" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--ot);" alt=""/>
+        <div style="position:absolute;bottom:0;right:0;background:var(--ot);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-camera" style="font-size:.55rem;color:#fff;"></i>
+        </div>
+      </div>
+        <div style="margin-top:1rem;width:100%;">
+        <p id="restBio" style="font-size:.78rem;color:var(--muted);line-height:1.5;margin:0;white-space:pre-wrap;"></p>
+        <button onclick="openBioModal()" style="margin-top:.5rem;font-size:.72rem;background:transparent;border:1px solid rgba(42,157,143,.3);color:var(--ot);border-radius:20px;padding:.2rem .7rem;cursor:pointer;">
+          <i class="fas fa-pen" style="font-size:.6rem;"></i> Edit Bio
+  </button>
+</div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)"/>
       <div class="sb-rest-name" id="sbRestName">Ember &amp; Oak</div>
-      <div class="sb-rest-type">Steakhouse · The Rocks, Sydney</div>
+      <div class="sb-rest-type" id="sbRestType"></div>
       <div class="open-badge"><div class="open-dot"></div> Open Now</div>
     </div>
     <ul class="sb-nav">
@@ -119,6 +131,18 @@
       <div id="revList"></div>
     </div>
   </main>
+</div>
+<div class="modal-bg" id="bioModal">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeModal('bioModal')">✕</button>
+    <div class="modal-title">Restaurant Bio</div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;">Write a short intro about your restaurant — cuisine style, story, atmosphere, etc.</p>
+    <textarea class="ff-input" id="bioInput" rows="6" style="width:100%;resize:vertical;" placeholder="e.g. A family-run Indian kitchen serving authentic recipes from Perth since 2010..."></textarea>
+    <div class="d-flex gap-2 justify-content-end mt-3">
+      <button class="btn btn-ghost" onclick="closeModal('bioModal')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveBio()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
 </div>
 
 <script src="js/app.js"></script>
