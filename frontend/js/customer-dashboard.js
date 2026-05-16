@@ -3,6 +3,30 @@ let currentUser = null;
 let currentRestaurants = [];
 let pendingDeleteId = null;
 
+// Setup Global Fetch Interceptor for CSRF Protection
+const originalFetch = window.fetch;
+window.fetch = async function (resource, config) {
+  if (
+    config &&
+    ["POST", "PUT", "DELETE", "PATCH"].includes(
+      (config.method || "").toUpperCase(),
+    )
+  ) {
+    if (!window.csrfToken) {
+      try {
+        const res = await originalFetch("/api/csrf-token");
+        const data = await res.json();
+        window.csrfToken = data.csrfToken;
+      } catch (e) {
+        console.error("Failed to fetch CSRF token");
+      }
+    }
+    config.headers = config.headers || {};
+    config.headers["X-CSRFToken"] = window.csrfToken;
+  }
+  return originalFetch(resource, config);
+};
+
 window.appReady.then(initCustomerDashboard);
 
 async function initCustomerDashboard() {
@@ -10,6 +34,10 @@ async function initCustomerDashboard() {
   const user = requireAuth("customer");
   if (!user) return;
   currentUser = user;
+  if (window.location.hash === "#write") {
+    openWriteModal();
+    history.replaceState(null, "", window.location.pathname);
+  }
 
   document.getElementById("navName").textContent = user.name;
   document.getElementById("sbName").textContent = user.name;
@@ -95,7 +123,7 @@ async function renderMyReviews() {
           </div>
           <div class="ms-auto d-flex gap-2">
             <button class="btn btn-ghost btn-sm" onclick="openEditModal(${r.id})"><i class="fas fa-pen"></i> Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="promptDeleteReview(${r.id})"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteReview(${r.id})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
         <div class="rev-stars-row">${renderStars(r.rating)}<span style="font-size:.8rem;font-weight:600;color:var(--amber)">${r.rating}.0</span></div>
@@ -250,7 +278,7 @@ async function submitReview() {
   renderMyReviews();
 }
 
-function promptDeleteReview(id) {
+function deleteReview(id) {
   pendingDeleteId = id;
   openModal("deleteModal");
 }
@@ -266,57 +294,6 @@ async function confirmDelete() {
   closeModal("deleteModal");
   toast("Review deleted", "🗑️");
   renderMyReviews();
-}
-
-function showAvatarUrlInput() {
-  document.getElementById("avatarOptionsMode").style.display = "none";
-  document.getElementById("avatarUrlMode").style.display = "block";
-  document.getElementById("avatarUrlInput").value = "";
-  document.getElementById("avatarUrlInput").focus();
-}
-
-function hideAvatarUrlInput() {
-  document.getElementById("avatarOptionsMode").style.display = "block";
-  document.getElementById("avatarUrlMode").style.display = "none";
-}
-
-async function submitAvatarUrl() {
-  const url = document.getElementById("avatarUrlInput").value.trim();
-  if (!url) {
-    toast("Please enter a valid URL", "⚠️");
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/auth/upload-avatar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ avatar_url: url }),
-    });
-
-    if (!res.ok) {
-      toast("Update failed — server error", "❌");
-      return;
-    }
-
-    const data = await res.json();
-    if (data.success) {
-      const sbAvatar = document.getElementById("sbAvatar");
-      if (sbAvatar) sbAvatar.src = data.profilePic;
-      const navAvatar = document.getElementById("navAvatar");
-      if (navAvatar) navAvatar.src = data.profilePic;
-      if (currentUser) currentUser.profilePic = data.profilePic;
-      toast("Avatar updated!", "✅");
-      closeModal("avatarModal");
-    } else {
-      toast(data.message || "Failed to update avatar", "❌");
-    }
-  } catch (err) {
-    console.error(err);
-    toast("An error occurred", "❌");
-  }
 }
 
 async function uploadAvatar(input) {
@@ -357,8 +334,11 @@ async function uploadAvatar(input) {
     if (data.success) {
       document.getElementById("sbAvatar").src = data.profilePic;
       document.getElementById("navAvatar").src = data.profilePic;
-      // Update Session object in memory
-      if (currentUser) currentUser.profilePic = data.profilePic;
+      if (data.profilePic && data.profilePic.startsWith("/uploads/")) {
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        stored.profilePic = data.profilePic;
+        localStorage.setItem("user", JSON.stringify(stored));
+      }
       toast("Profile picture updated!", "✅");
     } else {
       toast(data.message || "Upload failed", "❌");
