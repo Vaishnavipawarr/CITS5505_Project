@@ -21,9 +21,11 @@ async function initOwnerDashboard() {
   }
 
   const bioEl = document.getElementById("restBio");
-  if (bioEl) bioEl.textContent = ownerRest.bio || "No bio yet. Click Edit Bio to add one.";
-  const cuisine = ownerRest.cuisine || 'Restaurant';
-  const city = ownerRest.city || 'Location not set';
+  if (bioEl)
+    bioEl.textContent =
+      ownerRest.bio || "No bio yet. Click Edit Bio to add one.";
+  const cuisine = ownerRest.cuisine || "Restaurant";
+  const city = ownerRest.city || "Location not set";
   document.getElementById("sbRestType").textContent = `${cuisine} · ${city}`;
   document.getElementById("navName").textContent = ownerRest.name;
   document.getElementById("sbRestName").textContent = ownerRest.name;
@@ -244,53 +246,180 @@ function filterPending() {
   renderReviews();
 }
 
+function showAvatarUrlInput() {
+  document.getElementById("avatarOptionsMode").style.display = "none";
+  document.getElementById("avatarUrlMode").style.display = "block";
+  document.getElementById("avatarUrlInput").value = "";
+  document.getElementById("avatarUrlInput").focus();
+}
+
+function hideAvatarUrlInput() {
+  document.getElementById("avatarOptionsMode").style.display = "block";
+  document.getElementById("avatarUrlMode").style.display = "none";
+}
+
+async function submitAvatarUrl() {
+  const url = document.getElementById("avatarUrlInput").value.trim();
+  if (!url) {
+    toast("Please enter a valid URL", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ avatar_url: url }),
+    });
+
+    if (!res.ok) {
+      toast("Update failed — server error", "❌");
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      const ownerAv = document.getElementById("ownerAvatar");
+      if (ownerAv) ownerAv.src = data.profilePic;
+      if (currentUser) currentUser.profilePic = data.profilePic;
+      toast("Avatar updated!", "✅");
+      closeModal("avatarModal");
+    } else {
+      toast(data.message || "Failed to update avatar", "❌");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("An error occurred", "❌");
+  }
+}
+
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
 
   // Validate file type
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
-    toast('Only JPG, PNG, GIF or WEBP images are allowed', '❌');
-    input.value = '';
+    toast("Only JPG, PNG, GIF or WEBP images are allowed", "❌");
+    input.value = "";
     return;
   }
 
   // Validate file size (max 2MB)
   const maxSize = 2 * 1024 * 1024;
   if (file.size > maxSize) {
-    toast('Image must be smaller than 2MB', '❌');
-    input.value = '';
+    toast("Image must be smaller than 2MB", "❌");
+    input.value = "";
     return;
   }
 
   const form = new FormData();
-  form.append('avatar', file);
+  form.append("avatar", file);
 
   try {
-    const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+    const res = await fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      body: form,
+    });
 
     if (!res.ok) {
-      toast('Upload failed — server error', '❌');
+      toast("Upload failed — server error", "❌");
       return;
     }
 
     const data = await res.json();
     if (data.success) {
-      const ownerAv = document.getElementById('ownerAvatar');
+      const ownerAv = document.getElementById("ownerAvatar");
       if (ownerAv) ownerAv.src = data.profilePic;
-      if (data.profilePic && data.profilePic.startsWith('/uploads/')) {
-      const stored = JSON.parse(localStorage.getItem('user') || '{}');
-      stored.profilePic = data.profilePic;
-      localStorage.setItem('user', JSON.stringify(stored));
-      }
-      toast('Profile picture updated!', '✅');
+      // Update Session object in memory
+      if (currentUser) currentUser.profilePic = data.profilePic;
+      toast("Profile picture updated!", "✅");
     } else {
-      toast(data.message || 'Upload failed', '❌');
+      toast(data.message || "Upload failed", "❌");
     }
   } catch (err) {
-    toast('Upload failed — please check your connection', '❌');
+    toast("Upload failed — please check your connection", "❌");
   } finally {
-    input.value = '';
+    input.value = "";
+  }
+}
+
+function openBioModal() {
+  const bioEl = document.getElementById("restBio");
+  const bioInput = document.getElementById("bioInput");
+  if (bioInput && bioEl) {
+    bioInput.value =
+      bioEl.textContent === "No bio yet. Click Edit Bio to add one."
+        ? ""
+        : bioEl.textContent;
+  }
+  openModal("bioModal");
+}
+
+async function saveBio() {
+  const bioText = document.getElementById("bioInput").value.trim();
+  if (!bioText) {
+    toast("Bio cannot be empty", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/restaurants/${ownerRestId}/bio`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ bio: bioText }),
+    });
+
+    if (!res.ok) {
+      toast("Failed to save bio", "❌");
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("restBio").textContent = bioText;
+      toast("Bio updated successfully!", "✅");
+      closeModal("bioModal");
+    } else {
+      toast(data.message || "Failed to save bio", "❌");
+    }
+  } catch (err) {
+    toast("Error saving bio — check your connection", "❌");
+  }
+}
+
+function openPriceModal() {
+  openModal("priceModal");
+}
+
+async function submitPrice() {
+  const newPrice = document.getElementById("priceSelect").value;
+
+  if (!currentUser || !ownerRestId) {
+    toast("Error: No restaurant linked to this owner", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/restaurants/${ownerRestId}/price`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ price: newPrice }),
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      toast("Budget updated successfully!", "✅");
+      closeModal("priceModal");
+    } else {
+      toast(data.message || "Failed to update budget", "❌");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("An error occurred. Please try again.", "❌");
   }
 }
