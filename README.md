@@ -452,9 +452,75 @@ fetch('/api/auth/status')
 .then(res => res.json())
 .then(console.log)
 ```
+---
+
+# Running Selenium Tests
+
+The project also includes Selenium browser-based tests for frontend authentication flows.
+
+These tests automate real browser interactions using Chrome and require the Flask server to be running locally before execution.
+
+## Selenium Test Coverage
+
+Current Selenium tests include:
+
+- Login page accessibility test
+- Frontend login flow test
+- Frontend signup flow test
+- Frontend logout flow test
+- Protected route redirect test
 
 ---
 
+## Install Selenium Dependencies
+
+Install Selenium and WebDriver Manager:
+
+```bash
+pip install selenium webdriver-manager
+```
+
+---
+
+## Start Flask Server
+
+Before running Selenium tests, start the Flask application:
+
+```bash
+python mainApp.py
+```
+
+Keep the server running while executing the tests.
+
+---
+
+## Run Individual Selenium Tests
+
+Example:
+
+```bash
+pytest selenium_tests/test_login_flow.py
+```
+
+---
+
+## Run All Selenium Tests
+
+```bash
+pytest selenium_tests/
+```
+
+---
+
+## Selenium Testing Notes
+
+- Selenium tests use Chrome browser automation
+- Tests interact with a live Flask server running locally
+- Some tests verify redirects and session-protected routes
+- WebDriverWait can be added in future improvements to reduce dependency on fixed delays
+- Shared fixtures may also be introduced later to simplify repeated browser setup code
+
+---
 # Troubleshooting
 
 ## Flask Server Not Starting
