@@ -34,7 +34,7 @@ async function initCustomerDashboard() {
     });
   }
 
-  initStars('spWrap');
+  initStars("spWrap");
   renderMyReviews();
 }
 
@@ -95,7 +95,7 @@ async function renderMyReviews() {
           </div>
           <div class="ms-auto d-flex gap-2">
             <button class="btn btn-ghost btn-sm" onclick="openEditModal(${r.id})"><i class="fas fa-pen"></i> Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteReview(${r.id})"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="promptDeleteReview(${r.id})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
         <div class="rev-stars-row">${renderStars(r.rating)}<span style="font-size:.8rem;font-weight:600;color:var(--amber)">${r.rating}.0</span></div>
@@ -250,7 +250,7 @@ async function submitReview() {
   renderMyReviews();
 }
 
-function deleteReview(id) {
+function promptDeleteReview(id) {
   pendingDeleteId = id;
   openModal("deleteModal");
 }
@@ -268,53 +268,104 @@ async function confirmDelete() {
   renderMyReviews();
 }
 
+function showAvatarUrlInput() {
+  document.getElementById("avatarOptionsMode").style.display = "none";
+  document.getElementById("avatarUrlMode").style.display = "block";
+  document.getElementById("avatarUrlInput").value = "";
+  document.getElementById("avatarUrlInput").focus();
+}
+
+function hideAvatarUrlInput() {
+  document.getElementById("avatarOptionsMode").style.display = "block";
+  document.getElementById("avatarUrlMode").style.display = "none";
+}
+
+async function submitAvatarUrl() {
+  const url = document.getElementById("avatarUrlInput").value.trim();
+  if (!url) {
+    toast("Please enter a valid URL", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ avatar_url: url }),
+    });
+
+    if (!res.ok) {
+      toast("Update failed — server error", "❌");
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      const sbAvatar = document.getElementById("sbAvatar");
+      if (sbAvatar) sbAvatar.src = data.profilePic;
+      const navAvatar = document.getElementById("navAvatar");
+      if (navAvatar) navAvatar.src = data.profilePic;
+      if (currentUser) currentUser.profilePic = data.profilePic;
+      toast("Avatar updated!", "✅");
+      closeModal("avatarModal");
+    } else {
+      toast(data.message || "Failed to update avatar", "❌");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("An error occurred", "❌");
+  }
+}
+
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
 
   // Validate file type
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
-    toast('Only JPG, PNG, GIF or WEBP images are allowed', '❌');
-    input.value = '';
+    toast("Only JPG, PNG, GIF or WEBP images are allowed", "❌");
+    input.value = "";
     return;
   }
 
   // Validate file size (max 2MB)
   const maxSize = 2 * 1024 * 1024;
   if (file.size > maxSize) {
-    toast('Image must be smaller than 2MB', '❌');
-    input.value = '';
+    toast("Image must be smaller than 2MB", "❌");
+    input.value = "";
     return;
   }
 
   const form = new FormData();
-  form.append('avatar', file);
+  form.append("avatar", file);
 
   try {
-    const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+    const res = await fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      body: form,
+    });
 
     if (!res.ok) {
-      toast('Upload failed — server error', '❌');
+      toast("Upload failed — server error", "❌");
       return;
     }
 
     const data = await res.json();
     if (data.success) {
-      document.getElementById('sbAvatar').src = data.profilePic;
-      document.getElementById('navAvatar').src = data.profilePic;
-      if (data.profilePic && data.profilePic.startsWith('/uploads/')) {
-      const stored = JSON.parse(localStorage.getItem('user') || '{}');
-      stored.profilePic = data.profilePic;
-      localStorage.setItem('user', JSON.stringify(stored));
-    }
-      toast('Profile picture updated!', '✅');
+      document.getElementById("sbAvatar").src = data.profilePic;
+      document.getElementById("navAvatar").src = data.profilePic;
+      // Update Session object in memory
+      if (currentUser) currentUser.profilePic = data.profilePic;
+      toast("Profile picture updated!", "✅");
     } else {
-      toast(data.message || 'Upload failed', '❌');
+      toast(data.message || "Upload failed", "❌");
     }
   } catch (err) {
-    toast('Upload failed — please check your connection', '❌');
+    toast("Upload failed — please check your connection", "❌");
   } finally {
-    input.value = '';
+    input.value = "";
   }
 }
