@@ -423,6 +423,7 @@ def register():
             "restaurantId": restaurant_id
         }
     }), 201
+
 # -----------------------------
 # LOGIN API
 # -----------------------------
@@ -493,7 +494,8 @@ def login():
 
     session["user_id"] = user[0]
     session["username"] = user[2]
-
+    session["role"] = user[4]
+    
     log_info(f"Login successful for username: {username}")
 
     return jsonify({
