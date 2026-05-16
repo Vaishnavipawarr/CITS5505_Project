@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_from_directory, session, redirect
+from flask import Blueprint, request, jsonify, send_from_directory, session, redirect, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
@@ -53,27 +53,27 @@ def serve_js(filename):
 
 @routes.route('/')
 def home():
-    return send_from_directory(FRONTEND_DIR, 'index.html')
+    return render_template('index.html')
 
 
 @routes.route('/login')
 def login_page():
-    return send_from_directory(FRONTEND_DIR, 'login.html')
+    return render_template('login.html')
 
 
 @routes.route('/signup')
 def signup_page():
-    return send_from_directory(FRONTEND_DIR, 'signup.html')
+    return render_template('signup.html')
 
 
 @routes.route('/restaurants')
 def restaurants_page():
-    return send_from_directory(FRONTEND_DIR, 'restaurants.html')
+    return render_template('restaurants.html')
 
 
 @routes.route('/reviews')
 def reviews_page():
-    return send_from_directory(FRONTEND_DIR, 'reviews.html')
+    return render_template('reviews.html')
 
 
 # -----------------------------
@@ -86,7 +86,7 @@ def customer_dashboard():
     if "user_id" not in session:
         return redirect('/login')
 
-    return send_from_directory(FRONTEND_DIR, 'customer-dashboard.html')
+    return render_template('customer-dashboard.html')
 
 
 @routes.route('/owner-dashboard')
@@ -95,10 +95,7 @@ def owner_dashboard():
     if "user_id" not in session:
         return redirect('/login')
 
-    return send_from_directory(
-        FRONTEND_DIR,
-        'owner-dashboard.html'
-    )
+    return render_template('owner-dashboard.html')
 
 # -----------------------------
 # DATABASE
