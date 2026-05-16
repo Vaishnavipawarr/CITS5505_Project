@@ -474,24 +474,58 @@ Run all backend unit tests:
 
 ```bash
 pytest tests/
-```
 
-Run an individual test file:
+---
+
+## Install Selenium Dependencies
+
+Install Selenium and WebDriver Manager:
 
 ```bash
-pytest tests/test_login_api.py
+pip install selenium webdriver-manager
 ```
 
 ---
 
-## Testing Notes
+## Start Flask Server
 
-- Tests validate JSON API responses and authentication behaviour
-- Flask test client is used for backend request simulation
-- Authentication and session-based protected routes are verified automatically
+Before running Selenium tests, start the Flask application:
+
+```bash
+python mainApp.py
+```
+
+Keep the server running while executing the tests.
 
 ---
 
+## Run Individual Selenium Tests
+
+Example:
+
+```bash
+pytest selenium_tests/test_login_flow.py
+```
+
+---
+
+## Run All Selenium Tests
+
+```bash
+pytest selenium_tests/
+```
+
+---
+
+## Selenium Testing Notes
+
+- Selenium tests use Chrome browser automation
+- Tests interact with a live Flask server running locally
+- Some tests verify redirects and session-protected routes
+- WebDriverWait can be added in future improvements to reduce dependency on fixed delays
+- Shared fixtures may also be introduced later to simplify repeated browser setup code
+
+---
 # Troubleshooting
 
 ## Flask Server Not Starting
