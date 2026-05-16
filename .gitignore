@@ -19,3 +19,6 @@ Thumbs.db
 
 # Database
 app/instance/database.db
+
+instance/
+static/uploads/
