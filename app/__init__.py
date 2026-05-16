@@ -3,7 +3,7 @@ from app.routes import routes
 
 app = Flask(
     __name__,
-    template_folder="../frontend",
+    template_folder="../templates",
     static_folder="../frontend",
     static_url_path=""
 )
