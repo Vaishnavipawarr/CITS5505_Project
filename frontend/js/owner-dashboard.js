@@ -22,7 +22,9 @@ async function initOwnerDashboard() {
 
   const bioEl = document.getElementById("restBio");
   if (bioEl) bioEl.textContent = ownerRest.bio || "No bio yet. Click Edit Bio to add one.";
-  document.getElementById("sbRestType").textContent = `${ownerRest.cuisine} · ${ownerRest.city}`;
+  const cuisine = ownerRest.cuisine || 'Restaurant';
+  const city = ownerRest.city || 'Location not set';
+  document.getElementById("sbRestType").textContent = `${cuisine} · ${city}`;
   document.getElementById("navName").textContent = ownerRest.name;
   document.getElementById("sbRestName").textContent = ownerRest.name;
   document.getElementById("ownerHead").innerHTML =
@@ -245,40 +247,50 @@ function filterPending() {
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
+
+  // Validate file type
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    toast('Only JPG, PNG, GIF or WEBP images are allowed', '❌');
+    input.value = '';
+    return;
+  }
+
+  // Validate file size (max 2MB)
+  const maxSize = 2 * 1024 * 1024;
+  if (file.size > maxSize) {
+    toast('Image must be smaller than 2MB', '❌');
+    input.value = '';
+    return;
+  }
+
   const form = new FormData();
   form.append('avatar', file);
-  const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
-  const data = await res.json();
-  if (data.success) {
-    const ownerAv = document.getElementById('ownerAvatar');
-    if (ownerAv) ownerAv.src = data.profilePic;
-    const stored = JSON.parse(localStorage.getItem('user') || '{}');
-    stored.profilePic = data.profilePic;
-    localStorage.setItem('user', JSON.stringify(stored));
-    toast('Profile picture updated!', '✅');
-  } else {
-    toast(data.message || 'Upload failed', '❌');
-  }
-}
-function openBioModal() {
-  const current = document.getElementById("restBio").textContent;
-  document.getElementById("bioInput").value = current === "No bio yet. Click Edit Bio to add one." ? "" : current;
-  document.getElementById("bioModal").classList.add("open");
-}
 
-async function saveBio() {
-  const bio = document.getElementById("bioInput").value.trim();
-  const res = await fetch(`/api/restaurants/${ownerRestId}/bio`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bio })
-  });
-  const data = await res.json();
-  if (data.success) {
-    document.getElementById("restBio").textContent = bio || "No bio yet. Click Edit Bio to add one.";
-    closeModal("bioModal");
-    toast("Bio updated!", "✅");
-  } else {
-    toast(data.message || "Failed to save", "❌");
+  try {
+    const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+
+    if (!res.ok) {
+      toast('Upload failed — server error', '❌');
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      const ownerAv = document.getElementById('ownerAvatar');
+      if (ownerAv) ownerAv.src = data.profilePic;
+      if (data.profilePic && data.profilePic.startsWith('/uploads/')) {
+      const stored = JSON.parse(localStorage.getItem('user') || '{}');
+      stored.profilePic = data.profilePic;
+      localStorage.setItem('user', JSON.stringify(stored));
+      }
+      toast('Profile picture updated!', '✅');
+    } else {
+      toast(data.message || 'Upload failed', '❌');
+    }
+  } catch (err) {
+    toast('Upload failed — please check your connection', '❌');
+  } finally {
+    input.value = '';
   }
 }
