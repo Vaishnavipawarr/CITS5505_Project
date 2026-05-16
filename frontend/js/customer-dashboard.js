@@ -10,6 +10,11 @@ async function initCustomerDashboard() {
   const user = requireAuth("customer");
   if (!user) return;
   currentUser = user;
+  if (window.location.hash === "#write") {
+    openWriteModal();
+    history.replaceState(null, "", window.location.pathname);
+  }
+  
 
   document.getElementById("navName").textContent = user.name;
   document.getElementById("sbName").textContent = user.name;
