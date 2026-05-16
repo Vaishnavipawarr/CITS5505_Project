@@ -271,19 +271,50 @@ async function confirmDelete() {
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
+
+  // Validate file type
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    toast('Only JPG, PNG, GIF or WEBP images are allowed', '❌');
+    input.value = '';
+    return;
+  }
+
+  // Validate file size (max 2MB)
+  const maxSize = 2 * 1024 * 1024;
+  if (file.size > maxSize) {
+    toast('Image must be smaller than 2MB', '❌');
+    input.value = '';
+    return;
+  }
+
   const form = new FormData();
   form.append('avatar', file);
-  const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
-  const data = await res.json();
-  if (data.success) {
-    document.getElementById('sbAvatar').src = data.profilePic;
-    document.getElementById('navAvatar').src = data.profilePic;
-    // Update cached user
-    const stored = JSON.parse(localStorage.getItem('user') || '{}');
-    stored.profilePic = data.profilePic;
-    localStorage.setItem('user', JSON.stringify(stored));
-    toast('Profile picture updated!', '✅');
-  } else {
-    toast(data.message || 'Upload failed', '❌');
+
+  try {
+    const res = await fetch('/api/auth/upload-avatar', { method: 'POST', body: form });
+
+    if (!res.ok) {
+      toast('Upload failed — server error', '❌');
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('sbAvatar').src = data.profilePic;
+      document.getElementById('navAvatar').src = data.profilePic;
+      if (data.profilePic && data.profilePic.startsWith('/uploads/')) {
+      const stored = JSON.parse(localStorage.getItem('user') || '{}');
+      stored.profilePic = data.profilePic;
+      localStorage.setItem('user', JSON.stringify(stored));
+    }
+      toast('Profile picture updated!', '✅');
+    } else {
+      toast(data.message || 'Upload failed', '❌');
+    }
+  } catch (err) {
+    toast('Upload failed — please check your connection', '❌');
+  } finally {
+    input.value = '';
   }
 }
