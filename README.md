@@ -452,9 +452,80 @@ fetch('/api/auth/status')
 .then(res => res.json())
 .then(console.log)
 ```
+---
+
+## Unit Test Coverage
+
+The backend test suite uses `pytest` and Flask’s test client to validate API behaviour and authentication flows.
+
+Current unit tests include:
+
+- Health check API tests
+- User registration tests
+- User login tests
+- Logout/session cleanup tests
+- Protected route access tests
 
 ---
 
+## Running Unit Tests
+
+Run all backend unit tests:
+
+```bash
+pytest tests/
+
+---
+
+## Install Selenium Dependencies
+
+Install Selenium and WebDriver Manager:
+
+```bash
+pip install selenium webdriver-manager
+```
+
+---
+
+## Start Flask Server
+
+Before running Selenium tests, start the Flask application:
+
+```bash
+python mainApp.py
+```
+
+Keep the server running while executing the tests.
+
+---
+
+## Run Individual Selenium Tests
+
+Example:
+
+```bash
+pytest selenium_tests/test_login_flow.py
+```
+
+---
+
+## Run All Selenium Tests
+
+```bash
+pytest selenium_tests/
+```
+
+---
+
+## Selenium Testing Notes
+
+- Selenium tests use Chrome browser automation
+- Tests interact with a live Flask server running locally
+- Some tests verify redirects and session-protected routes
+- WebDriverWait can be added in future improvements to reduce dependency on fixed delays
+- Shared fixtures may also be introduced later to simplify repeated browser setup code
+
+---
 # Troubleshooting
 
 ## Flask Server Not Starting
