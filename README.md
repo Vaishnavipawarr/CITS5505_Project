@@ -452,6 +452,43 @@ fetch('/api/auth/status')
 .then(res => res.json())
 .then(console.log)
 ```
+---
+
+## Unit Test Coverage
+
+The backend test suite uses `pytest` and Flask’s test client to validate API behaviour and authentication flows.
+
+Current unit tests include:
+
+- Health check API tests
+- User registration tests
+- User login tests
+- Logout/session cleanup tests
+- Protected route access tests
+
+---
+
+## Running Unit Tests
+
+Run all backend unit tests:
+
+```bash
+pytest tests/
+```
+
+Run an individual test file:
+
+```bash
+pytest tests/test_login_api.py
+```
+
+---
+
+## Testing Notes
+
+- Tests validate JSON API responses and authentication behaviour
+- Flask test client is used for backend request simulation
+- Authentication and session-based protected routes are verified automatically
 
 ---
 
