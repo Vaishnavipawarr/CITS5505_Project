@@ -229,7 +229,7 @@ def register():
     conn.close()
     
     # SAVE SESSION AFTER REGISTER
-    session["user_id"] = cursor.lastrowid
+    session["user_id"] = user_id
     session["username"] = username
 
     log_info(f"User registered successfully: {username}")
