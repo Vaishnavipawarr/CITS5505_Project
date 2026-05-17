@@ -9,6 +9,19 @@ from pathlib import Path
 
 routes = Blueprint('routes', __name__)
 
+def log_info(message):
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    print(f"[INFO] [{timestamp}] {message}")
+
+
+def log_error(message):
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    print(f"[ERROR] [{timestamp}] {message}")
+
 # -----------------------------
 # API HEALTH CHECK
 # -----------------------------
@@ -76,7 +89,6 @@ def restaurants_page():
 @routes.route('/reviews')
 def reviews_page():
     return render_template('reviews.html')
-
 
 # -----------------------------
 # PROTECTED ROUTES
@@ -338,33 +350,35 @@ def register():
     password = data.get("password")
     role = data.get("role", "customer")
 
+    log_info(f"Registration attempt for username: {username}")
+
     # Validation
     if not name:
         return jsonify({
-        "success": False,
-        "message": "Name is required"
+            "success": False,
+            "message": "Name is required"
         }), 400
 
-    # Input validation
     if not username or not password:
+        log_error("Registration failed due to missing username or password")
         return jsonify({
             "success": False,
             "message": "Username and password are required"
-    }), 400
+        }), 400
 
     username = username.strip()
 
     if len(username) < 3:
         return jsonify({
-        "success": False,
-        "message": "Username must be at least 3 characters"
-    }), 400
+            "success": False,
+            "message": "Username must be at least 3 characters"
+        }), 400
 
     if len(password) < 4:
         return jsonify({
-        "success": False,
-        "message": "Password must be at least 4 characters"
-    }), 400
+            "success": False,
+            "message": "Password must be at least 4 characters"
+        }), 400
 
     conn = get_db()
     cursor = conn.cursor()
@@ -378,6 +392,7 @@ def register():
     existing_user = cursor.fetchone()
 
     if existing_user:
+        log_error(f"Duplicate registration attempt: {username}")
         conn.close()
 
         return jsonify({
@@ -395,17 +410,26 @@ def register():
     )
 
     conn.commit()
+
     user_id = cursor.lastrowid
 
     restaurant_id = None
+
+    # Create restaurant automatically for owner accounts
     if role == "owner":
+
         restaurant_name = data.get("restaurant_name") or f"{name}'s Restaurant"
         cuisine = data.get("cuisine") or ""
         city = data.get("city") or ""
+
         restaurant_id = f"owner{user_id}"
 
         cursor.execute(
-            "INSERT INTO restaurants (id, name, cuisine, price, rating, review_count, city, image, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            """
+            INSERT INTO restaurants
+            (id, name, cuisine, price, rating, review_count, city, image, owner_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
             (
                 restaurant_id,
                 restaurant_name,
@@ -418,12 +442,17 @@ def register():
                 user_id,
             ),
         )
+
         conn.commit()
 
     conn.close()
 
+    # SAVE SESSION AFTER REGISTER
     session["user_id"] = user_id
     session["username"] = username
+    session["role"] = role
+
+    log_info(f"User registered successfully: {username}")
 
     return jsonify({
         "success": True,
@@ -435,9 +464,9 @@ def register():
             "role": role,
             "profilePic": None,
             "restaurantId": restaurant_id,
+}
         }
-    })
-
+    }), 201
 
 # -----------------------------
 # LOGIN API
@@ -451,8 +480,11 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
+    log_info(f"Login attempt for username: {username}")
+
     # Validation
     if not username or not password:
+        log_error("Login failed due to missing username or password")
         return jsonify({
         "success": False,
         "message": "Username and password are required"
@@ -506,6 +538,9 @@ def login():
 
     session["user_id"] = user[0]
     session["username"] = user[2]
+    session["role"] = user[4]
+    
+    log_info(f"Login successful for username: {username}")
 
     profile_pic = user[5] if len(user) > 5 else None
     return jsonify({
@@ -529,6 +564,8 @@ def login():
 @routes.route('/logout')
 def logout():
 
+    log_info(f"User logged out and session cleared")
+    
     session.clear()
 
     return jsonify({

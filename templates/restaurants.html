@@ -54,6 +54,18 @@
         <option value="$$$">$$$ Mid-range</option>
         <option value="$$$$">$$$$ Fine Dining</option>
       </select>
+      <!-- Add after the filterPrice select: -->
+      <select class="ff-select" id="filterCuisine" onchange="applyFilters()">
+        <option value="all">All Cuisines</option>
+        <option value="Italian">🍕 Italian</option>
+        <option value="Indian">🍛 Indian</option>
+        <option value="Japanese">🍣 Japanese</option>
+        <option value="Seafood">🦞 Seafood</option>
+        <option value="Burgers">🍔 Burgers</option>
+        <option value="Steakhouse">🥩 Steakhouse</option>
+        <option value="Thai">🍜 Thai</option>
+        <option value="Chinese">🥢 Chinese</option>
+      </select>
     </div>
     <div class="row g-4" id="cardGrid"></div>
     <div id="noResults" class="no-results" style="display:none;"><div class="icon">🔍</div><p>No restaurants match your search.</p></div>
