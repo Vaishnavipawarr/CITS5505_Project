@@ -140,6 +140,7 @@ def owner_dashboard():
 # -----------------------------
 
 DATABASE = os.path.join(BASE_DIR, 'instance', 'database.db')
+os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
 
 
 def get_db():
@@ -437,6 +438,12 @@ def register():
 
     user_id = cursor.lastrowid
 
+    # Assign a deterministic default avatar to match the review fallback
+    avatar_index = (user_id % 70) + 1
+    profile_pic = f"https://i.pravatar.cc/80?img={avatar_index}"
+    cursor.execute("UPDATE users SET profile_pic = ? WHERE id = ?", (profile_pic, user_id))
+    conn.commit()
+
     restaurant_id = None
 
     # Create restaurant automatically for owner accounts
@@ -486,7 +493,7 @@ def register():
             "username": username,
             "name": name,
             "role": role,
-            "profilePic": None,
+            "profilePic": profile_pic,
             "restaurantId": restaurant_id,
         }
     }), 201
@@ -565,15 +572,15 @@ def login():
     
     log_info(f"Login successful for username: {username}")
 
-    profile_pic = user[5] if len(user) > 5 else None
+    profile_pic = user["profile_pic"] if user["profile_pic"] else f"https://i.pravatar.cc/80?img={(user['id'] % 70) + 1}"
     return jsonify({
         "success": True,
         "message": "Login successful",
         "user": {
-            "id": user[0],
-            "name": user[1],
-            "username": user[2],
-            "role": user[4],
+            "id": user["id"],
+            "name": user["name"],
+            "username": user["username"],
+            "role": user["role"],
             "profilePic": profile_pic,
             "restaurantId": restaurant_id
         }
@@ -621,12 +628,13 @@ def get_current_user():
         restaurant_id = restaurant["id"] if restaurant else None
 
     conn.close()
+    profile_pic = user["profile_pic"] if user["profile_pic"] else f"https://i.pravatar.cc/80?img={(user['id'] % 70) + 1}"
     return {
         "id": user["id"],
         "name": user["name"],
         "username": user["username"],
         "role": user["role"],
-        "profilePic": user["profile_pic"],
+        "profilePic": profile_pic,
         "restaurantId": restaurant_id,
     }
 
