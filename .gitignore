@@ -20,6 +20,8 @@ Thumbs.db
 # Database
 app/instance/database.db
 
+# Environment variables
+.env
 instance/
 static/uploads/
 
