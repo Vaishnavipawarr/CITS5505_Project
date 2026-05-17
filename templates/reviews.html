@@ -1,3 +1,4 @@
+{# Public reviews page — route: GET /reviews — script: reviews.js #}
 {% extends "base.html" %}
 
 {% block title %}Reviews - Fork & Flame{% endblock %}
@@ -43,17 +44,21 @@
         <h3>Share Your Dining Story</h3>
         <p>Your review helps others find their next favourite restaurant.</p>
       </div>
-      <a href="/login" class="btn btn-amber"><i class="fas fa-pen-nib"></i> Write a Review</a>
+      <!-- href updated by reviews.js when user is logged in -->
+      <a href="/login" id="reviewsWriteBtn" class="btn btn-amber"><i class="fas fa-pen-nib"></i> Write a Review</a>
     </div>
 
+    <!-- Review list is filled by reviews.js into #revList -->
     <div class="fbar">
       <i class="fas fa-search" style="color:var(--muted);font-size:.82rem;flex-shrink:0;"></i>
       <input class="ff-input" type="text" id="searchInput" placeholder="Search by restaurant or reviewer…" oninput="renderRevs()"/>
       <select class="ff-select" id="filterRating" onchange="renderRevs()">
         <option value="all">All Ratings</option>
-        <option value="5">5 Stars</option>
-        <option value="4">4+ Stars</option>
-        <option value="3">3+ Stars</option>
+        <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+        <option value="4">⭐⭐⭐⭐ 4+ Stars</option>
+        <option value="3">⭐⭐⭐ 3+ Stars</option>
+        <option value="2">⭐⭐ 2+ Stars</option>
+        <option value="1">⭐ 1+ Stars</option>
       </select>
       <select class="ff-select" id="filterRest" onchange="renderRevs()">
         <option value="all">All Restaurants</option>

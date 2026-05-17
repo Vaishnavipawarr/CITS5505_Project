@@ -1,4 +1,4 @@
-// restaurants.js
+// restaurants.js — Loads restaurants from API, filters, builds card grid
 let currentUser = null;
 
 window.appReady.then(() => {
@@ -9,8 +9,10 @@ window.appReady.then(() => {
       navRight.innerHTML = `<a href="${currentUser.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
     }
   }
+  applyInitialSearchFromUrl();
   renderCards();
 });
+
 const restaurantImages = {
   r1: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
   r2: "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=600&q=80",
@@ -29,7 +31,33 @@ const restaurantDescriptions = {
   r6: "Daily catch from local harbours. Pristine, minimalist preparations.",
 };
 
+function reviewLinkFor(restaurantId) {
+  if (currentUser?.role === "customer") {
+    return `/reviews?restaurant=${encodeURIComponent(restaurantId)}`;
+  }
+  if (currentUser?.role === "owner") {
+    if (currentUser.restaurantId === restaurantId) {
+      return "/owner-dashboard";
+    }
+    return `/reviews?restaurant=${encodeURIComponent(restaurantId)}`;
+  }
+  return "/login";
+}
+
+function reviewLabelFor(restaurantId) {
+  if (currentUser?.role === "owner") {
+    return currentUser.restaurantId === restaurantId
+      ? "Manage Reviews"
+      : "View Reviews";
+  }
+  if (currentUser?.role === "customer") {
+    return "View Reviews";
+  }
+  return "View &amp; Review";
+}
+
 async function renderCards() {
+  await window.appReady;
   const search = document.getElementById("searchInput").value.toLowerCase();
   const cuisine = document.getElementById("filterCuisine").value;
   const price = document.getElementById("filterPrice").value;
@@ -39,7 +67,8 @@ async function renderCards() {
     const matchS =
       !search ||
       r.name.toLowerCase().includes(search) ||
-      (r.cuisine || "").toLowerCase().includes(search);
+      (r.cuisine || "").toLowerCase().includes(search) ||
+      (r.city || "").toLowerCase().includes(search);
     const matchC = cuisine === "all" || r.cuisine === cuisine;
     const matchP = price === "all" || r.price === price;
     return matchS && matchC && matchP;
@@ -74,7 +103,7 @@ async function renderCards() {
             <p class="rdesc">${r.bio || restaurantDescriptions[r.id] || ""}</p>
             <div class="rfoot">
               <span style="font-size:.75rem;color:var(--muted);">${r.city || ""}</span>
-              <a href="${currentUser ? '/customer-dashboard' : '/login'}" class="btn btn-amber btn-sm">View &amp; Review</a>
+              <a href="${reviewLinkFor(r.id)}" class="btn btn-amber btn-sm">${reviewLabelFor(r.id)}</a>
             </div>
           </div>
         </div>
@@ -85,7 +114,12 @@ async function renderCards() {
   }
 }
 
-
+function applyInitialSearchFromUrl() {
+  const q = new URLSearchParams(window.location.search).get("q");
+  if (!q) return;
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) searchInput.value = q;
+}
 
 const filterInputs = [
   document.getElementById("searchInput"),

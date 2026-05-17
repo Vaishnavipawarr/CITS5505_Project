@@ -1,7 +1,13 @@
-{% extends "base.html" %} {% block title %}Restaurant Dashboard - Fork & Flame{%
-endblock %} {% block extra_css %}
-<link rel="stylesheet" href="/css/owner-dashboard.css" />
-{% endblock %} {% block content %}
+{# Owner dashboard (login required) — script: owner-dashboard.js #}
+{% extends "base.html" %}
+
+{% block title %}Restaurant Dashboard - Fork & Flame{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/owner-dashboard.css">
+{% endblock %}
+
+{% block content %}
 
 <div id="loader">
   <div class="ld-brand">Fork &amp; Flame</div>
@@ -241,12 +247,6 @@ endblock %} {% block extra_css %}
               onclick="filterPending()"
             >
               <i class="fas fa-clock"></i> Show Pending Replies
-            </button>
-            <button
-              class="btn btn-ghost-ot btn-sm text-start"
-              onclick="toast('Feature coming soon', '🔔')"
-            >
-              <i class="fas fa-bell"></i> Notification Settings
             </button>
           </div>
         </div>

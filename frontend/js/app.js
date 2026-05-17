@@ -17,6 +17,41 @@ window.addEventListener("load", () => {
   fn();
 })();
 
+/* ── MOBILE NAV (hamburger menu on small screens) ── */
+(function () {
+  document.querySelectorAll(".nav .wrap").forEach((wrap) => {
+    const links = wrap.querySelector(".nav-links");
+    if (!links || wrap.querySelector(".nav-toggle")) return;
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "nav-toggle";
+    toggle.setAttribute("aria-label", "Open menu");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = '<i class="fas fa-bars"></i>';
+
+    toggle.addEventListener("click", () => {
+      const open = links.classList.toggle("open");
+      toggle.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.innerHTML = open
+        ? '<i class="fas fa-times"></i>'
+        : '<i class="fas fa-bars"></i>';
+    });
+
+    links.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => {
+        links.classList.remove("open");
+        toggle.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.innerHTML = '<i class="fas fa-bars"></i>';
+      });
+    });
+
+    wrap.insertBefore(toggle, links);
+  });
+})();
+
 /* ── SCROLL REVEAL ── */
 (function () {
   const els = document.querySelectorAll(".reveal");

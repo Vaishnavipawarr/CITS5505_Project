@@ -1,10 +1,42 @@
-// reviews.js
+// reviews.js — Public review list with search and rating filters
+function writeReviewHref() {
+  const user = Session.load();
+  if (user?.role === "customer") {
+    return "/customer-dashboard?write=1";
+  }
+  if (user?.role === "owner") {
+    return "/owner-dashboard";
+  }
+  return "/login";
+}
+
+function applyInitialRestaurantFromUrl() {
+  const restaurantId = new URLSearchParams(window.location.search).get(
+    "restaurant",
+  );
+  if (!restaurantId) return;
+  const filterRest = document.getElementById("filterRest");
+  if (!filterRest) return;
+  const hasOption = [...filterRest.options].some(
+    (o) => o.value === restaurantId,
+  );
+  if (hasOption) filterRest.value = restaurantId;
+}
+
 window.appReady.then(async () => {
   const user = Session.load();
   if (user) {
     const navRight = document.getElementById("navRight");
     if (navRight) {
       navRight.innerHTML = `<a href="${user.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
+    }
+  }
+
+  const writeBtn = document.getElementById("reviewsWriteBtn");
+  if (writeBtn) {
+    writeBtn.href = writeReviewHref();
+    if (user?.role === "owner") {
+      writeBtn.innerHTML = '<i class="fas fa-store"></i> My Dashboard';
     }
   }
 
@@ -17,6 +49,7 @@ window.appReady.then(async () => {
     });
   }
 
+  applyInitialRestaurantFromUrl();
   renderRevs();
 });
 

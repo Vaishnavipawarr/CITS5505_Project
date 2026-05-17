@@ -1,4 +1,4 @@
-// customer-dashboard.js
+// customer-dashboard.js — Logged-in customer: my reviews, browse, write/edit modal
 let currentUser = null;
 let currentRestaurants = [];
 let pendingDeleteId = null;
@@ -40,6 +40,38 @@ async function initCustomerDashboard() {
 
   initStars("spWrap");
   renderMyReviews();
+  applyDashboardDeepLink();
+}
+
+/** URL params: ?write=1 opens modal; ?tab=browse&restaurant=r1 filters browse tab */
+function applyDashboardDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get("tab");
+  const restaurantId = params.get("restaurant");
+  const shouldWrite = params.get("write") === "1";
+
+  if (shouldWrite) {
+    showTab("my-reviews", document.getElementById("tbtn-my-reviews"));
+    openWriteModal();
+    if (restaurantId) {
+      const modalRest = document.getElementById("modalRest");
+      if (modalRest) {
+        const hasOption = [...modalRest.options].some((o) => o.value === restaurantId);
+        if (hasOption) modalRest.value = restaurantId;
+      }
+    }
+    return;
+  }
+
+  const filterRest = document.getElementById("filterRest");
+  if (restaurantId && filterRest) {
+    const hasOption = [...filterRest.options].some((o) => o.value === restaurantId);
+    if (hasOption) filterRest.value = restaurantId;
+  }
+
+  if (tab === "browse" || restaurantId) {
+    showTab("browse", document.getElementById("tbtn-browse"));
+  }
 }
 
 function showTab(id, linkEl) {

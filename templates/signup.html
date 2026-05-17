@@ -1,3 +1,4 @@
+{# Sign up page — route: GET /signup — script: signup.js #}
 {% extends "base.html" %}
 
 {% block title %}Sign Up - Fork & Flame{% endblock %}
@@ -36,7 +37,7 @@
     <div class="field"><label class="ff-label">Full Name</label><input class="ff-input" type="text" id="name" placeholder="Your full name"/></div>
     <div class="field"><label class="ff-label">Email Address</label><input class="ff-input" type="email" id="email" placeholder="you@example.com"/></div>
 
-    <!-- Owner-specific fields -->
+    <!-- Shown only when signing up as restaurant owner -->
     <div id="ownerFields">
       <div class="field"><label class="ff-label">Restaurant Name</label><input class="ff-input" type="text" id="restName" placeholder="Your restaurant name"/></div>
       <div class="two-col">

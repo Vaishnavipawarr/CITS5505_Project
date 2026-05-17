@@ -1,3 +1,4 @@
+{# Login page — route: GET /login — script: login.js #}
 {% extends "base.html" %}
 
 {% block title %}Login - Fork & Flame{% endblock %}
@@ -8,6 +9,7 @@
 
 {% block content %}
 
+<!-- Left side image -->
 <div class="visual">
   <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85" alt=""/>
   <div class="visual-ov"></div>
@@ -17,6 +19,7 @@
   </div>
 </div>
 
+<!-- Login form: pick role, then submit to API (login.js) -->
 <div class="form-side">
   <div class="form-inner">
     <a href="/" class="brand">Fork &amp; Flame</a>

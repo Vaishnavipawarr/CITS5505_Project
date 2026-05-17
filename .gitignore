@@ -24,3 +24,6 @@ app/instance/database.db
 .env
 instance/
 static/uploads/
+
+# SpecStory explanation file
+.specstory/.what-is-this.md
