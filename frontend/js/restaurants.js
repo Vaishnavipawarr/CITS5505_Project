@@ -1,4 +1,4 @@
-// restaurants.js
+// restaurants.js — Loads restaurants from API, filters, builds card grid
 window.appReady.then(() => {
   const user = Session.load();
   if (user) {
@@ -27,7 +27,16 @@ const restaurantDescriptions = {
   r6: "Daily catch from local harbours. Pristine, minimalist preparations.",
 };
 
+function reviewLinkFor(restaurantId) {
+  const user = Session.load();
+  if (user?.role === "customer") {
+    return `/customer-dashboard?tab=browse&restaurant=${encodeURIComponent(restaurantId)}`;
+  }
+  return "/login";
+}
+
 async function renderCards() {
+  await window.appReady;
   const search = document.getElementById("searchInput").value.toLowerCase();
   const cuisine = document.getElementById("filterCuisine").value;
   const price = document.getElementById("filterPrice").value;
@@ -37,7 +46,8 @@ async function renderCards() {
     const matchS =
       !search ||
       r.name.toLowerCase().includes(search) ||
-      (r.cuisine || "").toLowerCase().includes(search);
+      (r.cuisine || "").toLowerCase().includes(search) ||
+      (r.city || "").toLowerCase().includes(search);
     const matchC = cuisine === "all" || r.cuisine === cuisine;
     const matchP = price === "all" || r.price === price;
     return matchS && matchC && matchP;
@@ -72,7 +82,7 @@ async function renderCards() {
             <p class="rdesc">${restaurantDescriptions[r.id] || ""}</p>
             <div class="rfoot">
               <span style="font-size:.75rem;color:var(--muted);">${r.city || ""}</span>
-              <a href="/login" class="btn btn-amber btn-sm">View &amp; Review</a>
+              <a href="${reviewLinkFor(r.id)}" class="btn btn-amber btn-sm">View &amp; Review</a>
             </div>
           </div>
         </div>
@@ -83,6 +93,14 @@ async function renderCards() {
   }
 }
 
+function applyInitialSearchFromUrl() {
+  const q = new URLSearchParams(window.location.search).get("q");
+  if (!q) return;
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) searchInput.value = q;
+}
+
+applyInitialSearchFromUrl();
 renderCards();
 
 const filterInputs = [

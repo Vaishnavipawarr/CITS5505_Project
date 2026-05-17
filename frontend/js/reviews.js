@@ -1,4 +1,12 @@
-// reviews.js
+// reviews.js — Public review list with search and rating filters
+function writeReviewHref() {
+  const user = Session.load();
+  if (user?.role === "customer") {
+    return "/customer-dashboard?write=1";
+  }
+  return "/login";
+}
+
 window.appReady.then(async () => {
   const user = Session.load();
   if (user) {
@@ -7,6 +15,9 @@ window.appReady.then(async () => {
       navRight.innerHTML = `<a href="${user.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
     }
   }
+
+  const writeBtn = document.getElementById("reviewsWriteBtn");
+  if (writeBtn) writeBtn.href = writeReviewHref();
 
   const restaurants = await getRestaurants();
   const fr = document.getElementById("filterRest");

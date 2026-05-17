@@ -1,3 +1,4 @@
+{# Restaurants page — route: GET /restaurants — script: restaurants.js #}
 {% extends "base.html" %}
 
 {% block title %}Restaurants - Fork & Flame{% endblock %}
@@ -36,6 +37,7 @@
 
 <section style="padding:3rem 0 5rem;">
   <div class="wrap">
+    <!-- Filters; restaurant cards are built into #cardGrid by restaurants.js -->
     <div class="search-wrap">
       <i class="fas fa-search" style="color:var(--muted);font-size:.85rem;flex-shrink:0;"></i>
       <input class="ff-input" type="text" id="searchInput" placeholder="Search restaurant or cuisine…" oninput="renderCards()"/>
@@ -55,6 +57,7 @@
         <option value="$$$$">$$$$ Fine Dining</option>
       </select>
     </div>
+    <!-- Empty until restaurants.js renders cards from the API -->
     <div class="row g-4" id="cardGrid"></div>
     <div id="noResults" class="no-results" style="display:none;"><div class="icon">🔍</div><p>No restaurants match your search.</p></div>
   </div>

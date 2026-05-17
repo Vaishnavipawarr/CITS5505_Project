@@ -1,3 +1,4 @@
+{# Home page — route: GET / — script: frontend/js/home.js #}
 {% extends "base.html" %}
 
 {% block title %}Home - Fork & Flame{% endblock %}
@@ -36,12 +37,14 @@
       <p class="h-sub">Join thousands of food lovers uncovering hidden gems, sharing honest reviews, and finding where the real culinary magic happens.</p>
       <div class="h-btns">
         <a href="/restaurants" class="btn btn-amber btn-lg"><i class="fas fa-utensils"></i> Explore Restaurants</a>
-        <a href="/login" class="btn btn-glass btn-lg" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);"><i class="fas fa-pen-nib"></i> Write a Review</a>
+        <!-- href updated by home.js when user is logged in -->
+        <a href="/login" id="heroWriteReview" class="btn btn-glass btn-lg" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);"><i class="fas fa-pen-nib"></i> Write a Review</a>
       </div>
+      <!-- Search sends user to /restaurants?q=... (see home.js) -->
       <div class="h-search">
         <i class="fas fa-search" style="color:rgba(255,255,255,.35);font-size:.85rem;flex-shrink:0;"></i>
         <input id="heroSearch" type="text" placeholder="Restaurant, cuisine, city…"/>
-        <button class="btn btn-amber" style="border-radius:22px;padding:.52rem 1.15rem;font-size:.8rem;" onclick="window.location='/restaurants'">Search</button>
+        <button type="button" id="heroSearchBtn" class="btn btn-amber" style="border-radius:22px;padding:.52rem 1.15rem;font-size:.8rem;">Search</button>
       </div>
     </div></div>
   </div>
@@ -52,7 +55,7 @@
   </div>
 </section>
 
-<!-- CAT STRIP -->
+<!-- Category pills filter cards below via data-cat (home.js) -->
 <div class="cat-strip">
   <div class="wrap">
     <div class="cat-pills" id="cats">
@@ -74,6 +77,7 @@
       <div class="reveal"><div class="sec-eye mb-2">Top Picks</div><h2 class="sec-title">Highly <em>Rated</em> Right Now</h2></div>
       <a href="/restaurants" class="btn btn-ghost btn-sm reveal d2">View All <i class="fas fa-arrow-right ms-1"></i></a>
     </div>
+    <!-- Sample cards on home; full list loads from API on /restaurants -->
     <div class="row g-4" id="rGrid">
       <div class="col-lg-4 col-md-6 reveal d1" data-cat="italian"><div class="r-card">
         <div class="img-wrap"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" alt=""/><span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">🍕 Italian</span></div>
@@ -137,5 +141,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Page script: search, category filter, button links -->
 <script src="/js/home.js"></script>
 {% endblock %}

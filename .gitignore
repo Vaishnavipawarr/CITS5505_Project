@@ -19,3 +19,9 @@ Thumbs.db
 
 # Database
 app/instance/database.db
+
+instance/
+static/uploads/
+
+# SpecStory explanation file
+.specstory/.what-is-this.md
