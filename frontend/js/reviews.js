@@ -4,7 +4,23 @@ function writeReviewHref() {
   if (user?.role === "customer") {
     return "/customer-dashboard?write=1";
   }
+  if (user?.role === "owner") {
+    return "/owner-dashboard";
+  }
   return "/login";
+}
+
+function applyInitialRestaurantFromUrl() {
+  const restaurantId = new URLSearchParams(window.location.search).get(
+    "restaurant",
+  );
+  if (!restaurantId) return;
+  const filterRest = document.getElementById("filterRest");
+  if (!filterRest) return;
+  const hasOption = [...filterRest.options].some(
+    (o) => o.value === restaurantId,
+  );
+  if (hasOption) filterRest.value = restaurantId;
 }
 
 window.appReady.then(async () => {
@@ -17,7 +33,12 @@ window.appReady.then(async () => {
   }
 
   const writeBtn = document.getElementById("reviewsWriteBtn");
-  if (writeBtn) writeBtn.href = writeReviewHref();
+  if (writeBtn) {
+    writeBtn.href = writeReviewHref();
+    if (user?.role === "owner") {
+      writeBtn.innerHTML = '<i class="fas fa-store"></i> My Dashboard';
+    }
+  }
 
   const restaurants = await getRestaurants();
   const fr = document.getElementById("filterRest");
@@ -28,6 +49,7 @@ window.appReady.then(async () => {
     });
   }
 
+  applyInitialRestaurantFromUrl();
   renderRevs();
 });
 

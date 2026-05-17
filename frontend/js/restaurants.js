@@ -33,9 +33,27 @@ const restaurantDescriptions = {
 
 function reviewLinkFor(restaurantId) {
   if (currentUser?.role === "customer") {
-    return `/customer-dashboard?tab=browse&restaurant=${encodeURIComponent(restaurantId)}`;
+    return `/reviews?restaurant=${encodeURIComponent(restaurantId)}`;
+  }
+  if (currentUser?.role === "owner") {
+    if (currentUser.restaurantId === restaurantId) {
+      return "/owner-dashboard";
+    }
+    return `/reviews?restaurant=${encodeURIComponent(restaurantId)}`;
   }
   return "/login";
+}
+
+function reviewLabelFor(restaurantId) {
+  if (currentUser?.role === "owner") {
+    return currentUser.restaurantId === restaurantId
+      ? "Manage Reviews"
+      : "View Reviews";
+  }
+  if (currentUser?.role === "customer") {
+    return "View Reviews";
+  }
+  return "View &amp; Review";
 }
 
 async function renderCards() {
@@ -85,7 +103,7 @@ async function renderCards() {
             <p class="rdesc">${r.bio || restaurantDescriptions[r.id] || ""}</p>
             <div class="rfoot">
               <span style="font-size:.75rem;color:var(--muted);">${r.city || ""}</span>
-              <a href="${reviewLinkFor(r.id)}" class="btn btn-amber btn-sm">View &amp; Review</a>
+              <a href="${reviewLinkFor(r.id)}" class="btn btn-amber btn-sm">${reviewLabelFor(r.id)}</a>
             </div>
           </div>
         </div>

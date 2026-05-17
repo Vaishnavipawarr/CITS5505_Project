@@ -1,35 +1,73 @@
 // home.js — Home page only (/): search, category filter, nav/button links
-function writeReviewHref() {
-  const user = Session.load();
-  if (user?.role === "customer") {
-    return "/customer-dashboard?write=1";
+
+function dashboardHref(role) {
+  return role === "customer" ? "/customer-dashboard" : "/owner-dashboard";
+}
+
+function restaurantViewLink(user, restaurantId) {
+  if (!user) return "/login";
+  if (user.role === "customer") {
+    return restaurantId
+      ? `/reviews?restaurant=${encodeURIComponent(restaurantId)}`
+      : "/reviews";
+  }
+  if (user.role === "owner") {
+    if (restaurantId && user.restaurantId === restaurantId) {
+      return "/owner-dashboard";
+    }
+    if (restaurantId) {
+      return `/reviews?restaurant=${encodeURIComponent(restaurantId)}`;
+    }
+    return dashboardHref("owner");
   }
   return "/login";
 }
 
+function restaurantViewLabel(user, restaurantId) {
+  if (user?.role === "owner") {
+    return restaurantId && user.restaurantId === restaurantId
+      ? "Manage"
+      : "View Reviews";
+  }
+  if (user?.role === "customer") {
+    return "View Reviews";
+  }
+  return "View";
+}
+
 window.appReady.then(() => {
   const u = Session.load();
-  if (u) {
-    const navRight = document.querySelector(".nav-right");
-    if (navRight) {
-      navRight.innerHTML = `<a href="${u.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
-    }
+  if (!u) return;
 
-    const writeBtn = document.getElementById("writeReviewBtn");
-    if (writeBtn) {
-      writeBtn.href = writeReviewHref();
-      if (u.role !== "customer") {
-        writeBtn.style.display = "none";
-      }
-    }
+  const dash = dashboardHref(u.role);
 
-    document.querySelectorAll(".rest-view-btn").forEach((btn) => {
-      btn.href =
-        u.role === "customer" ? "/customer-dashboard" : "/owner-dashboard";
-    });
-  } else {
-    const writeBtn = document.getElementById("writeReviewBtn");
-    if (writeBtn) writeBtn.href = "/login";
+  const navRight = document.querySelector(".nav-right");
+  if (navRight) {
+    navRight.innerHTML = `<a href="${dash}" class="btn btn-amber btn-sm">Dashboard</a>`;
+  }
+
+  const writeBtn = document.getElementById("writeReviewBtn");
+  if (writeBtn) {
+    writeBtn.style.display = "";
+    if (u.role === "customer") {
+      writeBtn.href = "/customer-dashboard?write=1";
+      writeBtn.innerHTML =
+        '<i class="fas fa-pen-nib"></i> Write a Review';
+    } else {
+      writeBtn.href = dash;
+      writeBtn.innerHTML = '<i class="fas fa-store"></i> My Dashboard';
+    }
+  }
+
+  document.querySelectorAll(".rest-view-btn").forEach((btn) => {
+    const restaurantId = btn.dataset.restaurantId;
+    btn.href = restaurantViewLink(u, restaurantId);
+    btn.textContent = restaurantViewLabel(u, restaurantId);
+  });
+
+  const footerAccount = document.getElementById("footerAccount");
+  if (footerAccount) {
+    footerAccount.innerHTML = `<li><a href="${dash}">Dashboard</a></li>`;
   }
 });
 
