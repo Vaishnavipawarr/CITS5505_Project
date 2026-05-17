@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import os
 import json
+import secrets
 from datetime import datetime
 from pathlib import Path
 
@@ -21,6 +22,29 @@ def log_error(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     print(f"[ERROR] [{timestamp}] {message}")
+
+# -----------------------------
+# CSRF PROTECTION
+# -----------------------------
+
+@routes.before_request
+def csrf_protect():
+    # Require CSRF token for mutating requests, exempting auth to prevent blocking login/signup
+    if request.method in ["POST", "PUT", "DELETE", "PATCH"]:
+        if request.path in ['/api/auth/login', '/api/auth/register']:
+            return
+            
+        token = session.get("csrf_token")
+        request_token = request.headers.get("X-CSRFToken")
+        
+        if not token or not request_token or token != request_token:
+            return jsonify({"success": False, "message": "CSRF token missing or incorrect"}), 403
+
+@routes.route('/api/csrf-token', methods=['GET'])
+def get_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(32)
+    return jsonify({"csrfToken": session["csrf_token"]})
 
 # -----------------------------
 # API HEALTH CHECK
@@ -464,7 +488,6 @@ def register():
             "role": role,
             "profilePic": None,
             "restaurantId": restaurant_id,
-}
         }
     }), 201
 

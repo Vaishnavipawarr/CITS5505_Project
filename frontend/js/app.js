@@ -157,6 +157,43 @@ const Session = {
 
 window.appReady = Session.refresh();
 
+/* CSRF: attach token to POST/PUT/DELETE/PATCH (auth routes exempt on server) */
+(function () {
+  const originalFetch = window.fetch;
+  const authPaths = ["/api/auth/login", "/api/auth/register"];
+
+  window.fetch = async function (resource, config = {}) {
+    const method = (config.method || "GET").toUpperCase();
+    const url =
+      typeof resource === "string"
+        ? resource
+        : resource instanceof Request
+          ? resource.url
+          : "";
+
+    if (
+      ["POST", "PUT", "DELETE", "PATCH"].includes(method) &&
+      !authPaths.some((p) => url.includes(p))
+    ) {
+      if (!window.csrfToken) {
+        try {
+          const res = await originalFetch("/api/csrf-token", {
+            credentials: "same-origin",
+          });
+          const data = await res.json();
+          window.csrfToken = data.csrfToken;
+        } catch (e) {
+          console.error("Failed to fetch CSRF token", e);
+        }
+      }
+      const headers = new Headers(config.headers || {});
+      if (window.csrfToken) headers.set("X-CSRFToken", window.csrfToken);
+      config = { ...config, headers };
+    }
+    return originalFetch(resource, config);
+  };
+})();
+
 async function getRestaurants() {
   try {
     const response = await fetch("/api/restaurants");

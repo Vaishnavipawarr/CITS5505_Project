@@ -15,7 +15,6 @@ async function initCustomerDashboard() {
     history.replaceState(null, "", window.location.pathname);
   }
   
-
   document.getElementById("navName").textContent = user.name;
   document.getElementById("sbName").textContent = user.name;
   document.getElementById("headName").textContent = user.name.split(" ")[0];
@@ -362,8 +361,16 @@ async function uploadAvatar(input) {
     if (data.success) {
       document.getElementById("sbAvatar").src = data.profilePic;
       document.getElementById("navAvatar").src = data.profilePic;
+
+      if (data.profilePic && data.profilePic.startsWith("/uploads/")) {
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        stored.profilePic = data.profilePic;
+        localStorage.setItem("user", JSON.stringify(stored));
+      }
+
       // Update Session object in memory
       if (currentUser) currentUser.profilePic = data.profilePic;
+
       toast("Profile picture updated!", "✅");
     } else {
       toast(data.message || "Upload failed", "❌");
