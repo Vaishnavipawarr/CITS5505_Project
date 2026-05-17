@@ -33,3 +33,26 @@ def test_protected_route_redirect():
     finally:
 
         driver.quit()
+    
+def test_owner_dashboard_redirects_when_not_logged_in():
+
+    chrome_options = Options()
+
+    chrome_options.add_argument("--start-maximized")
+
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()),
+        options=chrome_options
+    )
+
+    try:
+
+        driver.get("http://127.0.0.1:5000/owner-dashboard")
+
+        time.sleep(2)
+
+        assert "/login" in driver.current_url
+
+    finally:
+
+        driver.quit()

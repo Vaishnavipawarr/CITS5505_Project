@@ -1,679 +1,333 @@
 # CITS5505 Project — Fork & Flame
 
+A restaurant review web application built with Flask, SQLite, Jinja2 templates, and vanilla JavaScript.
+
+**Repository:** https://github.com/Vaishnavipawarr/CITS5505_Project
+
+---
+
 ## Team Members
 
-| UWA ID | Name | GitHub |
-|--------|------|---------|
-| 24601375 | Riya Sakhiya | RiyaSakhiya |
-| 24250049 | Li Luo | Lawlee-L |
-| 25014553 | Vaishnavi Satish Pawar | Vaishnavipawarr |
-| 24726476 | Thanh Nguyen | thanhng0209 |
+| UWA ID   | Name                    | GitHub            |
+|----------|-------------------------|-------------------|
+| 24601375 | Riya Sakhiya            | RiyaSakhiya       |
+| 24250049 | Li Luo                  | Lawlee-L          |
+| 25014553 | Vaishnavi Satish Pawar  | Vaishnavipawarr   |
+| 24726476 | Thanh Nguyen            | thanhng0209       |
 
 ---
 
-# Project Overview
+## Project Overview
 
-Fork & Flame is a restaurant review web application built using Flask, SQLite, HTML, CSS, and JavaScript.
+Fork & Flame lets users browse restaurants, read and write reviews, and manage accounts as either a **customer** or a **restaurant owner**.
 
-The platform allows users to:
+- Pages are rendered with **Jinja2** (`templates/`) and served by Flask routes.
+- Static assets (CSS/JS) live under `frontend/` and are served at `/css/...` and `/js/...`.
+- Data is stored in **SQLite** (`instance/database.db`).
+- Authentication uses **Flask sessions** with password hashing (Werkzeug).
+- Mutating API requests are protected with **CSRF tokens**.
 
-- Browse restaurants
-- Read restaurant reviews
-- Register and log in securely
-- Access customer and owner dashboards
-- Manage authentication sessions
-
-The frontend is served through Flask routes instead of opening HTML files directly in the browser.
+Always run the app through Flask (`http://127.0.0.1:5000/`). Do not open HTML files directly in the browser.
 
 ---
 
-# Features
+## Features
 
-- User registration and login
-- Password hashing using Werkzeug
-- Flask session management
-- Logout functionality
-- Authentication status API
-- Protected dashboard routes
-- Restaurant browsing pages
-- Customer and owner dashboards
-- Flask-based frontend routing
-- SQLite database integration
+- User registration and login (customer / owner roles)
+- Session-based authentication and protected dashboards
+- Restaurant listing with search and filters
+- Review browsing, creation, editing, and deletion
+- Owner replies to reviews
+- Owner dashboard: bio, price tier, avatar upload
+- Customer dashboard: write and manage own reviews
+- CSRF protection on state-changing API calls
+- Responsive layout with mobile navigation
+- Unit tests (`pytest`) and browser tests (Selenium)
 
 ---
 
-# Technologies Used
+## Technologies Used
 
-- Python
-- Flask
+- Python 3, Flask, Jinja2
 - SQLite
-- HTML5
-- CSS3
-- JavaScript
+- HTML5, CSS3, JavaScript
 - Bootstrap 5
+- pytest, Selenium, webdriver-manager
+- python-dotenv
 
 ---
 
-# Project Structure
+## Project Structure
 
 ```text
 CITS5505_Project/
-│
 ├── app/
-│   ├── __init__.py
-│   └── routes.py
-│
+│   ├── __init__.py          # Flask app factory, secret key, blueprint
+│   └── routes.py            # Page routes and REST API
+├── templates/               # Jinja2 HTML (extends base.html)
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── restaurants.html
+│   ├── reviews.html
+│   ├── customer-dashboard.html
+│   └── owner-dashboard.html
 ├── frontend/
-│   ├── css/
-│   ├── js/
-│   └── *.html
-│
+│   ├── css/                 # Page and shared styles
+│   └── js/                  # Page scripts + app.js (session, CSRF, nav)
+├── tests/                   # pytest unit tests
+├── selenium_tests/          # End-to-end browser tests
 ├── instance/
-│   └── database.db
-│
-├── venv/
-│
-├── mainApp.py
+│   └── database.db          # SQLite database (local)
+├── mainApp.py               # Entry point
 ├── requirements.txt
+├── .env.example             # Copy to .env for local config
 └── README.md
 ```
 
 ---
 
-# Setup Instructions
+## Setup Instructions
 
-## 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Vaishnavipawarr/CITS5505_Project.git
 cd CITS5505_Project
 ```
 
----
+### 2. Create and activate a virtual environment
 
-## 2. Create Virtual Environment
-
-### Windows
+**Windows**
 
 ```bash
 python -m venv venv
-```
-
-### Mac/Linux
-
-```bash
-python3 -m venv venv
-```
-
----
-
-## 3. Activate Virtual Environment
-
-### Windows
-
-```bash
 venv\Scripts\activate
 ```
 
-### Mac/Linux
+**macOS / Linux**
 
 ```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
----
-
-## 4. Install Dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If requirements.txt is unavailable:
+### 4. Configure environment variables
 
 ```bash
-pip install flask werkzeug
+cp .env.example .env
 ```
 
----
+Edit `.env` and set a strong `SECRET_KEY` (used for Flask sessions):
 
-## 5. Run the Flask Server
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+### 5. Run the application
 
 ```bash
 python mainApp.py
 ```
 
----
-
-## 6. Open the Website
-
-Open this URL in your browser:
+Open in your browser:
 
 ```text
 http://127.0.0.1:5000/
 ```
 
-The project should always be opened through Flask instead of opening HTML files directly.
+---
+
+## Frontend Routes
+
+| Route                  | Page                 |
+|------------------------|----------------------|
+| `/`                    | Home                 |
+| `/login`               | Login                |
+| `/signup`              | Sign up              |
+| `/restaurants`         | Restaurant listings  |
+| `/reviews`             | Reviews              |
+| `/customer-dashboard`  | Customer dashboard   |
+| `/owner-dashboard`     | Owner dashboard      |
+| `/logout`              | Log out              |
+
+Query parameters (examples):
+
+- `/restaurants?q=italian` — search restaurants
+- `/reviews?restaurant=r1` — filter reviews by restaurant
 
 ---
 
-# Frontend Routes
+## API Endpoints
 
-| Route | Page |
-|------|------|
-| `/` | Home Page |
-| `/login` | Login Page |
-| `/signup` | Signup Page |
-| `/restaurants` | Restaurants Page |
-| `/reviews` | Reviews Page |
-| `/customer-dashboard` | Customer Dashboard |
-| `/owner-dashboard` | Owner Dashboard |
+| Method | Endpoint                              | Description                    |
+|--------|---------------------------------------|--------------------------------|
+| GET    | `/api/health`                         | Health check                   |
+| GET    | `/api/csrf-token`                     | CSRF token for mutating calls  |
+| POST   | `/api/auth/register`                  | Register user                  |
+| POST   | `/api/auth/login`                     | Log in                         |
+| GET    | `/api/auth/status`                    | Current session status         |
+| GET    | `/logout`                             | Log out                        |
+| GET    | `/api/restaurants`                    | List restaurants               |
+| GET    | `/api/reviews`                        | List reviews (optional filters)|
+| POST   | `/api/reviews`                        | Create review                  |
+| PUT    | `/api/reviews/<id>`                   | Update review                  |
+| DELETE | `/api/reviews/<id>`                   | Delete review                  |
+| PUT    | `/api/reviews/<id>/reply`             | Owner reply to review          |
+| POST   | `/api/auth/upload-avatar`             | Upload profile avatar          |
+| PUT    | `/api/restaurants/<id>/bio`           | Update restaurant bio          |
+| PUT    | `/api/restaurants/<id>/price`         | Update price tier              |
 
----
-
-# Backend API Endpoints
-
-## Health Check
-
-### GET
-
-```text
-/api/health
-```
-
-### Example Response
+### Example: register
 
 ```json
+POST /api/auth/register
 {
-  "success": true,
-  "message": "Backend server is running"
+  "name": "Test User",
+  "username": "newuser",
+  "password": "1234",
+  "role": "customer"
 }
 ```
 
----
-
-## Register User
-
-### POST
-
-```text
-/api/auth/register
-```
-
-### Example Request Body
+### Example: login
 
 ```json
+POST /api/auth/login
 {
-  "username": "testuser",
-  "password": "1234"
+  "username": "newuser",
+  "password": "1234",
+  "role": "customer"
 }
 ```
 
-### Example Success Response
-
-```json
-{
-  "success": true,
-  "message": "Registration successful"
-}
-```
+Successful responses use `{ "success": true, ... }`. Errors return `{ "success": false, "message": "..." }` with an appropriate HTTP status code.
 
 ---
 
-## Login User
+## Authentication
 
-### POST
+1. User registers via `POST /api/auth/register` (role: `customer` or `owner`).
+2. User logs in via `POST /api/auth/login`; Flask stores the session.
+3. Protected pages (`/customer-dashboard`, `/owner-dashboard`) redirect unauthenticated users to `/login`.
+4. Check session with `GET /api/auth/status`.
+5. Log out with `GET /logout`.
 
-```text
-/api/auth/login
-```
-
-### Example Request Body
-
-```json
-{
-  "username": "testuser",
-  "password": "1234"
-}
-```
-
-### Example Success Response
-
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "user": {
-    "id": 1,
-    "username": "testuser"
-  }
-}
-```
+Passwords are hashed before storage; plain-text passwords are never saved.
 
 ---
 
-# Session-Based Authentication
+## CSRF Protection
 
-The project uses Flask session authentication to manage logged-in users securely.
+State-changing requests (`POST`, `PUT`, `DELETE`) to most API routes require a valid CSRF token.
 
-## Authentication Flow
+1. Fetch a token: `GET /api/csrf-token`
+2. Send it on mutating requests as header: `X-CSRFToken: <token>`
 
-1. User registers using the `/api/auth/register` endpoint
-2. User logs in using the `/api/auth/login` endpoint
-3. Flask stores authenticated user information inside the session
-4. Protected routes verify if the session exists
-5. Unauthenticated users are redirected to the login page
-6. Users can log out using the `/logout` route
+The frontend loads the token in `frontend/js/app.js` and attaches it automatically via a `fetch` interceptor. Auth register/login endpoints are exempt so sign-up still works.
 
 ---
 
-## Protected Routes
+## Running Tests
 
-The following routes require authentication:
+### Unit tests (no browser required)
 
-| Route | Access |
-|------|------|
-| `/customer-dashboard` | Logged-in users only |
-| `/owner-dashboard` | Logged-in users only |
-
-If a user is not authenticated, Flask redirects them to:
-
-```text
-/login
+```bash
+pytest tests/
 ```
+
+Covers health check, registration, login, logout, and protected route access.
+
+### Selenium tests
+
+Selenium is included in `requirements.txt`. Start the Flask server in one terminal:
+
+```bash
+python mainApp.py
+```
+
+Run tests in another terminal:
+
+```bash
+pytest selenium_tests/
+```
+
+Or a single file:
+
+```bash
+pytest selenium_tests/test_login_flow.py
+```
+
+Selenium uses Chrome via `webdriver-manager`. Keep the server running while tests execute.
 
 ---
 
-## Authentication Status Endpoint
+## Manual API Testing
 
-### GET
+You can test endpoints from the browser console (while logged in on the site), Postman, or Thunder Client.
 
-```text
-/api/auth/status
-```
-
-### Example Logged-In Response
-
-```json
-{
-  "authenticated": true,
-  "username": "testuser"
-}
-```
-
-### Example Logged-Out Response
-
-```json
-{
-  "authenticated": false
-}
-```
-
----
-
-## Logout Route
-
-### GET
-
-```text
-/logout
-```
-
-### Example Response
-
-```json
-{
-  "success": true,
-  "message": "Logged out successfully"
-}
-```
-
----
-
-# Authentication Features
-
-The project currently supports:
-
-- Password hashing using Werkzeug
-- Secure login validation
-- Flask session management
-- Protected dashboard routes
-- Logout support
-- Session status endpoint
-- Basic input validation
-
-Passwords are never stored as plain text inside the database.
-
----
-
-## Authentication Validation
-
-The backend authentication system includes validation checks to improve reliability and prevent invalid requests.
-
-Current validation features include:
-
-- Empty username and password validation
-- Minimum username length validation
-- Minimum password length validation
-- Duplicate username detection
-- Invalid login credential handling
-
-All authentication endpoints return consistent JSON responses using the following structure:
-
-```json
-{
-  "success": false,
-  "message": "Error description"
-}
-```
-
-# Frontend Routing
-
-Frontend pages are served using Flask routes.
-
-Example routes:
-
-| Route | Page |
-|------|------|
-| `/` | Home Page |
-| `/login` | Login Page |
-| `/signup` | Signup Page |
-| `/restaurants` | Restaurants Page |
-| `/reviews` | Reviews Page |
-| `/customer-dashboard` | Customer Dashboard |
-| `/owner-dashboard` | Owner Dashboard |
-
----
-
-# Running Backend Tests
-
-Backend APIs can be tested using:
-
-- Browser Developer Console
-- Postman
-- Thunder Client (VS Code)
-
-These tools help verify:
-
-- authentication routes
-- JSON responses
-- session handling
-- backend validation
-
----
-
-## Example Register Test
-
-Open browser console (`F12`) and run:
+Register (from console on the signup page):
 
 ```javascript
 fetch('/api/auth/register', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     name: 'Test User',
     username: 'newuser',
     password: '1234',
     role: 'customer'
   })
-})
-.then(res => res.json())
-.then(console.log)
+}).then(r => r.json()).then(console.log);
 ```
 
----
-
-## Example Login Test
+Check auth status:
 
 ```javascript
-fetch('/api/auth/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    username: 'testuser',
-    password: '1234',
-    role: 'customer'
-  })
-})
-.then(res => res.json())
-.then(console.log)
+fetch('/api/auth/status').then(r => r.json()).then(console.log);
 ```
 
 ---
 
-## Example Authentication Status Test
+## Troubleshooting
 
-```javascript
-fetch('/api/auth/status')
-.then(res => res.json())
-.then(console.log)
-```
----
+**Flask will not start** — Activate the virtual environment, then run `python mainApp.py`.
 
-## Unit Test Coverage
+**ModuleNotFoundError** — Run `pip install -r requirements.txt`.
 
-The backend test suite uses `pytest` and Flask’s test client to validate API behaviour and authentication flows.
+**Port 5000 in use** — Stop the other process (`Ctrl+C`) and restart the server.
 
-Current unit tests include:
+**CSS or JS not loading** — Use `http://127.0.0.1:5000/`, not `file://` paths to HTML.
 
-- Health check API tests
-- User registration tests
-- User login tests
-- Logout/session cleanup tests
-- Protected route access tests
+**Database errors** — Ensure `instance/database.db` exists (created on first run if the app initializes the DB).
+
+**Login loops back to login** — Restart Flask after code changes; confirm `SECRET_KEY` is set in `.env`; check `/api/auth/status`.
+
+**CSRF 403 on API calls** — Ensure `GET /api/csrf-token` succeeds and mutating requests include `X-CSRFToken`.
+
+**Git merge conflicts** — Before new work: `git checkout main && git pull`, then branch: `git checkout -b your-branch-name`.
 
 ---
 
-## Running Unit Tests
-
-Run all backend unit tests:
-
-```bash
-pytest tests/
-
----
-
-## Install Selenium Dependencies
-
-Install Selenium and WebDriver Manager:
-
-```bash
-pip install selenium webdriver-manager
-```
-
----
-
-## Start Flask Server
-
-Before running Selenium tests, start the Flask application:
-
-```bash
-python mainApp.py
-```
-
-Keep the server running while executing the tests.
-
----
-
-## Run Individual Selenium Tests
-
-Example:
-
-```bash
-pytest selenium_tests/test_login_flow.py
-```
-
----
-
-## Run All Selenium Tests
-
-```bash
-pytest selenium_tests/
-```
-
----
-
-## Selenium Testing Notes
-
-- Selenium tests use Chrome browser automation
-- Tests interact with a live Flask server running locally
-- Some tests verify redirects and session-protected routes
-- WebDriverWait can be added in future improvements to reduce dependency on fixed delays
-- Shared fixtures may also be introduced later to simplify repeated browser setup code
-
----
-# Troubleshooting
-
-## Flask Server Not Starting
-
-Make sure the virtual environment is activated before running the project.
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-### Mac/Linux
-
-```bash
-source venv/bin/activate
-```
-
-Then run:
-
-```bash
-python mainApp.py
-```
-
----
-
-## ModuleNotFoundError
-
-If Flask or Werkzeug is missing, reinstall dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Or install manually:
-
-```bash
-pip install flask werkzeug
-```
-
----
-
-## Port Already in Use
-
-If port 5000 is already occupied:
-
-Stop the currently running Flask server:
-
-```bash
-CTRL + C
-```
-
-Then restart:
-
-```bash
-python mainApp.py
-```
-
----
-
-## CSS or JavaScript Not Loading
-
-Do not open HTML files directly in the browser.
-
-Always access the project through Flask:
-
-```text
-http://127.0.0.1:5000/
-```
-
-Opening files directly may break:
-
-- navigation
-- CSS loading
-- JavaScript functionality
-
----
-
-## Database Errors
-
-If SQLite database errors occur, ensure the `instance/` folder exists.
-
-Example:
-
-```text
-CITS5505_Project/
-└── instance/
-    └── database.db
-```
-
----
-
-## Login Always Redirects Back to Login Page
-
-Make sure:
-
-- the Flask server is restarted after code changes
-- login requests are sent to `/api/auth/login`
-- the frontend uses Flask routes such as `/login`
-- sessions are enabled using `app.secret_key`
-
-You can verify authentication status here:
-
-```text
-http://127.0.0.1:5000/api/auth/status
-```
-
----
-
-## Git Merge Conflicts
-
-Before starting new work:
-
-```bash
-git checkout main
-git pull
-```
-
-Then create a new branch:
-
-```bash
-git checkout -b branch-name
-```
-
-This helps reduce merge conflicts between team members.
-
----
-
-# Future Improvements
-
-Potential future enhancements:
-
-- Persistent login sessions
-- Restaurant database integration
-- Review CRUD functionality
-- User profile management
-- Role-based authentication
-- Better frontend validation
-- Responsive mobile improvements
+## Future Improvements
+
+- Separate test database from development data
+- Auto-start Flask in Selenium test fixtures
+- Password reset flow
 - Admin dashboard
-- Password reset functionality
+- Expanded automated test coverage
 
 ---
 
-# Notes
+## Notes
 
-- SQLite is currently used for local development.
-- Flask sessions manage authentication state.
-- Frontend assets are served through Flask routes.
-- Passwords are securely hashed before storage.
-- Protected routes require active user sessions.
+- SQLite is for local development only.
+- Do not commit `.env` or secrets; use `.env.example` as a template.
+- `instance/database.db` may contain local test data; coordinate with the team before resetting it.
