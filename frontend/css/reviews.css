@@ -1,28 +1,37 @@
 /* reviews.css */
-    .page-hero{min-height:260px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding-top:60px;}
-    .page-hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1400&q=80') center/cover;}
-    .page-hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(14,12,9,.35) 0%,rgba(14,12,9,.88) 100%);}
-    .page-hero-content{position:relative;z-index:1;padding:3rem 0 2rem;}
-    .sec-eye{font-size:.69rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);display:inline-flex;align-items:center;gap:.6rem;}
-    .sec-eye::before{content:'';width:22px;height:1px;background:var(--amber);}
-    .sec-title{font-family:var(--font-d);font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:600;color:var(--cream);}
-    .sec-title em{font-style:italic;color:var(--amber-light);}
 
-    .fbar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:.8rem 1rem;margin-bottom:2rem;}
-    .fbar .ff-input{flex:1;min-width:180px;padding:.45rem .9rem;font-size:.83rem;background:var(--card);}
-    .fbar .ff-select{width:auto;padding:.45rem 2rem .45rem .85rem;font-size:.81rem;background:var(--card);}
+/* PAGE HERO — short hero banner with background image and gradient overlay */
+.page-hero{min-height:260px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding-top:60px;}
+.page-hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1400&q=80') center/cover;}
+.page-hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(14,12,9,.35) 0%,rgba(14,12,9,.88) 100%);}
+.page-hero-content{position:relative;z-index:1;padding:3rem 0 2rem;}
 
-    .rev-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:1.4rem;margin-bottom:1rem;transition:all .28s;}
-    .rev-card:hover{border-color:rgba(212,134,58,.18);transform:translateY(-2px);box-shadow:0 6px 26px rgba(0,0,0,.3);}
-    .reviewer-av{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--border);}
-    .rev-rest-tag{display:inline-flex;align-items:center;gap:.5rem;background:var(--surface);border-radius:var(--r-sm);padding:.28rem .7rem;margin-bottom:.85rem;font-size:.77rem;color:var(--text);}
-    .rev-rest-tag img{width:20px;height:20px;border-radius:4px;object-fit:cover;}
-    .rev-body{font-size:.86rem;line-height:1.72;color:var(--text);margin-bottom:.85rem;}
-    .rev-chip{background:rgba(212,134,58,.1);border:1px solid rgba(212,134,58,.18);color:var(--amber-light);border-radius:20px;padding:.17rem .6rem;font-size:.69rem;display:inline-block;margin:0 .2rem .2rem 0;}
-    .owner-reply{background:rgba(212,134,58,.05);border-left:3px solid var(--amber);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.82rem 1rem;margin-top:.9rem;}
-    .owner-reply .lbl{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:.25rem;}
-    .owner-reply p{font-size:.83rem;color:var(--muted);line-height:1.65;}
+/* SECTION HEADINGS — eyebrow label and large title used inside the hero */
+.sec-eye{font-size:.69rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);display:inline-flex;align-items:center;gap:.6rem;}
+.sec-eye::before{content:'';width:22px;height:1px;background:var(--amber);}
+.sec-title{font-family:var(--font-d);font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:600;color:var(--cream);}
+.sec-title em{font-style:italic;color:var(--amber-light);}
 
-    .cta-band{background:linear-gradient(135deg,var(--card) 0%,var(--surface) 100%);border:1px solid rgba(212,134,58,.18);border-radius:var(--r-md);padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap;}
-    .cta-band h3{font-family:var(--font-d);font-size:1.35rem;color:var(--cream);margin-bottom:.25rem;}
-    .cta-band p{font-size:.84rem;color:var(--muted);margin:0;}
+/* FILTER BAR — search and dropdown filters above the reviews list */
+.fbar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:.8rem 1rem;margin-bottom:2rem;}
+.fbar .ff-input{flex:1;min-width:180px;padding:.45rem .9rem;font-size:.83rem;background:var(--card);}
+.fbar .ff-select{width:auto;padding:.45rem 2rem .45rem .85rem;font-size:.81rem;background:var(--card);}
+
+/* REVIEW CARD — individual review block with hover lift and amber border accent */
+.rev-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:1.4rem;margin-bottom:1rem;transition:all .28s;}
+.rev-card:hover{border-color:rgba(212,134,58,.18);transform:translateY(-2px);box-shadow:0 6px 26px rgba(0,0,0,.3);}
+.reviewer-av{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--border);}
+.rev-rest-tag{display:inline-flex;align-items:center;gap:.5rem;background:var(--surface);border-radius:var(--r-sm);padding:.28rem .7rem;margin-bottom:.85rem;font-size:.77rem;color:var(--text);}
+.rev-rest-tag img{width:20px;height:20px;border-radius:4px;object-fit:cover;}
+.rev-body{font-size:.86rem;line-height:1.72;color:var(--text);margin-bottom:.85rem;}
+.rev-chip{background:rgba(212,134,58,.1);border:1px solid rgba(212,134,58,.18);color:var(--amber-light);border-radius:20px;padding:.17rem .6rem;font-size:.69rem;display:inline-block;margin:0 .2rem .2rem 0;}
+
+/* OWNER REPLY — amber left-border block shown below a review */
+.owner-reply{background:rgba(212,134,58,.05);border-left:3px solid var(--amber);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.82rem 1rem;margin-top:.9rem;}
+.owner-reply .lbl{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:.25rem;}
+.owner-reply p{font-size:.83rem;color:var(--muted);line-height:1.65;}
+
+/* CTA BAND — gradient prompt band encouraging users to write a review */
+.cta-band{background:linear-gradient(135deg,var(--card) 0%,var(--surface) 100%);border:1px solid rgba(212,134,58,.18);border-radius:var(--r-md);padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap;}
+.cta-band h3{font-family:var(--font-d);font-size:1.35rem;color:var(--cream);margin-bottom:.25rem;}
+.cta-band p{font-size:.84rem;color:var(--muted);margin:0;}
