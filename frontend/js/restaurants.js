@@ -61,7 +61,7 @@ async function renderCards() {
       <div class="col-lg-4 col-md-6">
         <div class="r-card">
           <div class="img-wrap">
-            <img src="${restaurantImages[r.id] || r.image || restaurantImages.r1}" alt="${r.name}"/>
+            <img src="${r.image || restaurantImages[r.id] || restaurantImages.r1}" alt="${r.name}"/>
             <span class="badge badge-amber" style="position:absolute;top:.7rem;left:.7rem;">${r.cuisine || ""}</span>
           </div>
           <div class="body">
@@ -71,7 +71,7 @@ async function renderCards() {
               <span class="dot"></span><span>${(r.rating || 0).toFixed(1)} · ${r.review_count || 0} reviews</span>
               <span class="dot"></span><span>${r.price || ""}</span>
             </div>
-            <p class="rdesc">${restaurantDescriptions[r.id] || ""}</p>
+            <p class="rdesc">${r.bio || restaurantDescriptions[r.id] || ""}</p>
             <div class="rfoot">
               <span style="font-size:.75rem;color:var(--muted);">${r.city || ""}</span>
               <a href="${currentUser ? '/customer-dashboard' : '/login'}" class="btn btn-amber btn-sm">View &amp; Review</a>
