@@ -140,6 +140,7 @@ def owner_dashboard():
 # -----------------------------
 
 DATABASE = os.path.join(BASE_DIR, 'instance', 'database.db')
+os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
 
 
 def get_db():
