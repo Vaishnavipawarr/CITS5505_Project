@@ -50,7 +50,7 @@ async function doSignup() {
   // Basic fields
   const name = document.getElementById("name")?.value.trim() || "";
 
-  const username = document.getElementById("email")?.value.trim() || "";
+  const username = document.getElementById("username")?.value.trim() || "";
 
   const password = document.getElementById("pw")?.value || "";
 

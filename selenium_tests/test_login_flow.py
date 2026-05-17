@@ -28,13 +28,13 @@ def test_login_form_elements_exist():
 
         time.sleep(2)
 
-        email_input = driver.find_element(By.ID, "email")
+        username_input = driver.find_element(By.ID, "username")
 
         password_input = driver.find_element(By.ID, "password")
 
         buttons = driver.find_elements(By.TAG_NAME, "button")
 
-        assert email_input is not None
+        assert username_input is not None
 
         assert password_input is not None
 

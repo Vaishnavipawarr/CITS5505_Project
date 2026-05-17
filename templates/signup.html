@@ -1,19 +1,20 @@
-{# Sign up page — route: GET /signup — script: signup.js #}
-{% extends "base.html" %}
-
-{% block title %}Sign Up - Fork & Flame{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="/css/signup.css">
-{% endblock %}
-
-{% block content %}
+{# Sign up page — route: GET /signup — script: signup.js #} {% extends
+"base.html" %} {% block title %}Sign Up - Fork & Flame{% endblock %} {% block
+extra_css %}
+<link rel="stylesheet" href="/css/signup.css" />
+{% endblock %} {% block content %}
 
 <div class="visual">
-  <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=85" alt=""/>
+  <img
+    src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=85"
+    alt=""
+  />
   <div class="visual-ov"></div>
   <div class="visual-txt">
-    <blockquote>"Join a community of <em>passionate palates</em> who believe every meal deserves to be remembered."</blockquote>
+    <blockquote>
+      "Join a community of <em>passionate palates</em> who believe every meal
+      deserves to be remembered."
+    </blockquote>
     <cite>— 31,000+ members &amp; counting</cite>
   </div>
 </div>
@@ -21,38 +22,102 @@
   <div class="form-inner">
     <a href="/" class="brand">Fork &amp; Flame</a>
     <h1 class="auth-h1">Create account</h1>
-    <p class="auth-sub">Join thousands discovering remarkable dining experiences.</p>
+    <p class="auth-sub">
+      Join thousands discovering remarkable dining experiences.
+    </p>
 
     <div class="role-tabs">
       <div class="role-tab active" id="tab-c" onclick="selectRole('customer')">
-        <div class="icon">🍽️</div><div class="label">Food Lover</div><div class="desc">Browse &amp; write reviews</div>
+        <div class="icon">🍽️</div>
+        <div class="label">Food Lover</div>
+        <div class="desc">Browse &amp; write reviews</div>
       </div>
       <div class="role-tab" id="tab-o" onclick="selectRole('owner')">
-        <div class="icon">🏠</div><div class="label">Restaurant Owner</div><div class="desc">Manage your restaurant</div>
+        <div class="icon">🏠</div>
+        <div class="label">Restaurant Owner</div>
+        <div class="desc">Manage your restaurant</div>
       </div>
     </div>
 
-    <div id="errMsg" class="err"><i class="fas fa-exclamation-circle"></i> <span id="errTxt"></span></div>
+    <div id="errMsg" class="err">
+      <i class="fas fa-exclamation-circle"></i> <span id="errTxt"></span>
+    </div>
 
-    <div class="field"><label class="ff-label">Full Name</label><input class="ff-input" type="text" id="name" placeholder="Your full name"/></div>
-    <div class="field"><label class="ff-label">Email Address</label><input class="ff-input" type="email" id="email" placeholder="you@example.com"/></div>
+    <div class="field">
+      <label class="ff-label">Full Name</label
+      ><input
+        class="ff-input"
+        type="text"
+        id="name"
+        placeholder="Your full name"
+      />
+    </div>
+    <div class="field">
+      <label class="ff-label">Username</label
+      ><input
+        class="ff-input"
+        type="text"
+        id="username"
+        placeholder="Your username"
+      />
+    </div>
 
     <!-- Shown only when signing up as restaurant owner -->
     <div id="ownerFields">
-      <div class="field"><label class="ff-label">Restaurant Name</label><input class="ff-input" type="text" id="restName" placeholder="Your restaurant name"/></div>
+      <div class="field">
+        <label class="ff-label">Restaurant Name</label
+        ><input
+          class="ff-input"
+          type="text"
+          id="restName"
+          placeholder="Your restaurant name"
+        />
+      </div>
       <div class="two-col">
-        <div class="field"><label class="ff-label">Cuisine Type</label><input class="ff-input" type="text" id="cuisine" placeholder="e.g. Italian"/></div>
-        <div class="field"><label class="ff-label">City</label><input class="ff-input" type="text" id="city" placeholder="e.g. Sydney"/></div>
+        <div class="field">
+          <label class="ff-label">Cuisine Type</label
+          ><input
+            class="ff-input"
+            type="text"
+            id="cuisine"
+            placeholder="e.g. Italian"
+          />
+        </div>
+        <div class="field">
+          <label class="ff-label">City</label
+          ><input
+            class="ff-input"
+            type="text"
+            id="city"
+            placeholder="e.g. Sydney"
+          />
+        </div>
       </div>
     </div>
 
     <div class="two-col">
       <div class="field">
         <label class="ff-label">Password</label>
-        <input class="ff-input" type="password" id="pw" placeholder="Min. 6 chars" oninput="checkStr(this.value)"/>
-        <div class="pw-strength"><div class="pw-strength-fill" id="pwBar"></div></div>
+        <input
+          class="ff-input"
+          type="password"
+          id="pw"
+          placeholder="Min. 6 chars"
+          oninput="checkStr(this.value)"
+        />
+        <div class="pw-strength">
+          <div class="pw-strength-fill" id="pwBar"></div>
+        </div>
       </div>
-      <div class="field"><label class="ff-label">Confirm</label><input class="ff-input" type="password" id="pw2" placeholder="Repeat password"/></div>
+      <div class="field">
+        <label class="ff-label">Confirm</label
+        ><input
+          class="ff-input"
+          type="password"
+          id="pw2"
+          placeholder="Repeat password"
+        />
+      </div>
     </div>
 
     <button class="submit-btn" onclick="doSignup()">Create Account</button>
@@ -60,8 +125,6 @@
   </div>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script src="/js/signup.js"></script>
 {% endblock %}

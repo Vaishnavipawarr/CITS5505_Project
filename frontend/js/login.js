@@ -25,7 +25,7 @@ function togglePw() {
 }
 
 async function doLogin() {
-  const username = document.getElementById("email").value.trim();
+  const username = document.getElementById("username").value.trim();
 
   const password = document.getElementById("password").value;
 
@@ -55,6 +55,7 @@ async function doLogin() {
       body: JSON.stringify({
         username: username,
         password: password,
+        role: selectedRole,
       }),
     });
 

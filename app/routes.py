@@ -123,6 +123,9 @@ def customer_dashboard():
 
     if "user_id" not in session:
         return redirect('/login')
+        
+    if session.get("role") != "customer":
+        return redirect('/owner-dashboard')
 
     return render_template('customer-dashboard.html')
 
@@ -132,6 +135,9 @@ def owner_dashboard():
 
     if "user_id" not in session:
         return redirect('/login')
+        
+    if session.get("role") != "owner":
+        return redirect('/customer-dashboard')
 
     return render_template('owner-dashboard.html')
 
@@ -509,6 +515,7 @@ def login():
 
     username = data.get("username")
     password = data.get("password")
+    requested_role = data.get("role")
 
     log_info(f"Login attempt for username: {username}")
 
@@ -544,6 +551,13 @@ def login():
         return jsonify({
             "success": False,
             "message": "Invalid username or password"
+        }), 401
+        
+    if requested_role and user[4] != requested_role:
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": f"Account type mismatch. Please log in as a {user[4]}."
         }), 401
 
     stored_password = user[3]  # Password is the 4th column on table users (index 3)

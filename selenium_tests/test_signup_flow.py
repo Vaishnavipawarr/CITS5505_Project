@@ -34,7 +34,7 @@ def test_signup_flow():
         # Fill signup form
         driver.find_element(By.ID, "name").send_keys("Selenium User")
 
-        driver.find_element(By.ID, "email").send_keys(unique_username)
+        driver.find_element(By.ID, "username").send_keys(unique_username)
 
         driver.find_element(By.ID, "pw").send_keys("1234")
 
