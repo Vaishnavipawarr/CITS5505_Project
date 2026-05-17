@@ -9,22 +9,41 @@
 
 {% block content %}
 
-<div id="loader"><div class="ld-brand">Fork &amp; Flame</div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+<div id="loader">
+  <div class="ld-brand">Fork &amp; Flame</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+</div>
 <div id="toast"></div>
 
 <!-- NAVBAR -->
 <nav class="nav">
   <div class="wrap">
-    <a href="/" class="nav-brand">Fork &amp; Flame<span>Restaurant Portal</span></a>
+    <a href="/" class="nav-brand"
+      >Fork &amp; Flame<span>Restaurant Portal</span></a
+    >
     <ul class="nav-links">
       <li><a href="/owner-dashboard" class="active">Dashboard</a></li>
     </ul>
     <div class="nav-right">
-      <div style="display:flex;align-items:center;gap:.55rem;background:rgba(42,157,143,.08);border:1px solid rgba(42,157,143,.2);border-radius:30px;padding:.28rem .85rem .28rem .55rem;font-size:.78rem;color:var(--ot-cr);">
-        <i class="fas fa-store" style="color:var(--ot);font-size:.8rem;"></i>
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 0.55rem;
+          background: rgba(42, 157, 143, 0.08);
+          border: 1px solid rgba(42, 157, 143, 0.2);
+          border-radius: 30px;
+          padding: 0.28rem 0.85rem 0.28rem 0.55rem;
+          font-size: 0.78rem;
+          color: var(--ot-cr);
+        "
+      >
+        <i class="fas fa-store" style="color: var(--ot); font-size: 0.8rem"></i>
         <span id="navName">Owner</span>
       </div>
-      <button class="btn btn-ghost-ot btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      <button class="btn btn-ghost-ot btn-sm" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
     </div>
   </div>
 </nav>
@@ -33,29 +52,118 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-rest">
-      <div style="position:relative;display:inline-block;cursor:pointer;margin-bottom:.5rem;" onclick="document.getElementById('avatarInput').click()">
-        <img id="ownerAvatar" src="https://i.pravatar.cc/80?img=12" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--ot);" alt=""/>
-        <div style="position:absolute;bottom:0;right:0;background:var(--ot);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">
-          <i class="fas fa-camera" style="font-size:.55rem;color:#fff;"></i>
+      <div
+        style="
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+          margin-bottom: 0.5rem;
+        "
+        onclick="openModal('avatarModal')"
+      >
+        <img
+          id="ownerAvatar"
+          src="https://i.pravatar.cc/80?img=12"
+          style="
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ot);
+          "
+          alt=""
+        />
+        <div
+          style="
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--ot);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <i class="fas fa-camera" style="font-size: 0.55rem; color: #fff"></i>
         </div>
       </div>
-        <div style="margin-top:1rem;width:100%;">
-        <p id="restBio" style="font-size:.78rem;color:var(--muted);line-height:1.5;margin:0;white-space:pre-wrap;"></p>
-        <button onclick="openBioModal()" style="margin-top:.5rem;font-size:.72rem;background:transparent;border:1px solid rgba(42,157,143,.3);color:var(--ot);border-radius:20px;padding:.2rem .7rem;cursor:pointer;">
-          <i class="fas fa-pen" style="font-size:.6rem;"></i> Edit Bio
-  </button>
-</div>
-      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)"/>
+      <div style="margin-top: 1rem; width: 100%">
+        <p
+          id="restBio"
+          style="
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.5;
+            margin: 0;
+            white-space: pre-wrap;
+          "
+        ></p>
+        <button
+          onclick="openBioModal()"
+          style="
+            margin-top: 0.5rem;
+            font-size: 0.72rem;
+            background: transparent;
+            border: 1px solid rgba(42, 157, 143, 0.3);
+            color: var(--ot);
+            border-radius: 20px;
+            padding: 0.2rem 0.7rem;
+            cursor: pointer;
+          "
+        >
+          <i class="fas fa-pen" style="font-size: 0.6rem"></i> Edit Bio
+        </button>
+        <button
+          onclick="openPriceModal()"
+          style="
+            margin-top: 0.5rem;
+            font-size: 0.72rem;
+            background: transparent;
+            border: 1px solid rgba(42, 157, 143, 0.3);
+            color: var(--ot);
+            border-radius: 20px;
+            padding: 0.2rem 0.7rem;
+            cursor: pointer;
+          "
+        >
+          <i class="fas fa-dollar-sign" style="font-size: 0.6rem"></i> Edit
+          Budget
+        </button>
+      </div>
+      <input
+        type="file"
+        id="avatarInput"
+        accept="image/*"
+        style="display: none"
+        onchange="uploadAvatar(this)"
+      />
       <div class="sb-rest-name" id="sbRestName">Ember &amp; Oak</div>
       <div class="sb-rest-type" id="sbRestType"></div>
-      <div class="open-badge"><div class="open-dot"></div> Open Now</div>
+      <div class="open-badge">
+        <div class="open-dot"></div>
+        Open Now
+      </div>
     </div>
     <ul class="sb-nav">
-      <li><a href="#" class="active" onclick="showTab('overview',this)"><i class="fas fa-chart-bar"></i> Overview</a></li>
-      <li><a href="#" onclick="showTab('reviews',this)" id="reviewsLink"><i class="fas fa-comments"></i> Reviews <div class="notif-dot"></div></a></li>
+      <li>
+        <a href="#" class="active" onclick="showTab('overview', this)"
+          ><i class="fas fa-chart-bar"></i> Overview</a
+        >
+      </li>
+      <li>
+        <a href="#" onclick="showTab('reviews', this)" id="reviewsLink"
+          ><i class="fas fa-comments"></i> Reviews
+          <div class="notif-dot"></div
+        ></a>
+      </li>
     </ul>
     <div class="sb-bottom">
-      <button class="btn btn-danger btn-sm btn-full" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      <button class="btn btn-danger btn-sm btn-full" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
     </div>
   </aside>
 
@@ -68,16 +176,40 @@
 
     <!-- KPIs -->
     <div class="kpis">
-      <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Total Reviews</div></div>
-      <div class="kpi"><div class="n" id="kpiAvg">0</div><div class="l">Average Rating</div></div>
-      <div class="kpi"><div class="n" id="kpiReplied">0</div><div class="l">Replied</div></div>
-      <div class="kpi"><div class="n" id="kpiPending">0</div><div class="l">Awaiting Reply</div></div>
+      <div class="kpi">
+        <div class="n" id="kpiTotal">0</div>
+        <div class="l">Total Reviews</div>
+      </div>
+      <div class="kpi">
+        <div class="n" id="kpiAvg">0</div>
+        <div class="l">Average Rating</div>
+      </div>
+      <div class="kpi">
+        <div class="n" id="kpiReplied">0</div>
+        <div class="l">Replied</div>
+      </div>
+      <div class="kpi">
+        <div class="n" id="kpiPending">0</div>
+        <div class="l">Awaiting Reply</div>
+      </div>
     </div>
 
     <!-- TABS -->
     <div class="tab-bar">
-      <button class="tab-btn active" id="tbtn-overview" onclick="showTab('overview',this)">Overview</button>
-      <button class="tab-btn" id="tbtn-reviews" onclick="showTab('reviews',this)">All Reviews</button>
+      <button
+        class="tab-btn active"
+        id="tbtn-overview"
+        onclick="showTab('overview', this)"
+      >
+        Overview
+      </button>
+      <button
+        class="tab-btn"
+        id="tbtn-reviews"
+        onclick="showTab('reviews', this)"
+      >
+        All Reviews
+      </button>
     </div>
 
     <!-- OVERVIEW TAB -->
@@ -90,7 +222,7 @@
             <div class="big-stars" id="ovStars">★★★★★</div>
             <div class="review-count" id="ovCount">based on 0 reviews</div>
           </div>
-          <div style="flex:1;min-width:180px;" id="ovBars"></div>
+          <div style="flex: 1; min-width: 180px" id="ovBars"></div>
         </div>
       </div>
       <div class="analytics-grid">
@@ -101,9 +233,27 @@
         <div class="a-card">
           <h4>Quick Actions</h4>
           <div class="d-flex flex-column gap-2">
-            <button class="btn btn-teal btn-sm text-start" onclick="showTab('reviews',document.getElementById('tbtn-reviews'));scrollTo(0,0)"><i class="fas fa-comments"></i> View All Reviews</button>
-            <button class="btn btn-teal-outline btn-sm text-start" onclick="filterPending()"><i class="fas fa-clock"></i> Show Pending Replies</button>
-            <button class="btn btn-ghost-ot btn-sm text-start" onclick="toast('Feature coming soon','🔔')"><i class="fas fa-bell"></i> Notification Settings</button>
+            <button
+              class="btn btn-teal btn-sm text-start"
+              onclick="
+                showTab('reviews', document.getElementById('tbtn-reviews'));
+                scrollTo(0, 0);
+              "
+            >
+              <i class="fas fa-comments"></i> View All Reviews
+            </button>
+            <button
+              class="btn btn-teal-outline btn-sm text-start"
+              onclick="filterPending()"
+            >
+              <i class="fas fa-clock"></i> Show Pending Replies
+            </button>
+            <button
+              class="btn btn-ghost-ot btn-sm text-start"
+              onclick="toast('Feature coming soon', '🔔')"
+            >
+              <i class="fas fa-bell"></i> Notification Settings
+            </button>
           </div>
         </div>
       </div>
@@ -112,15 +262,29 @@
     <!-- REVIEWS TAB -->
     <div class="tab-pane" id="tab-reviews">
       <div class="fbar">
-        <input class="ff-input" type="text" id="revSearch" placeholder="Search reviews…" oninput="renderReviews()"/>
-        <select class="ff-select" id="revFilterRating" onchange="renderReviews()">
+        <input
+          class="ff-input"
+          type="text"
+          id="revSearch"
+          placeholder="Search reviews…"
+          oninput="renderReviews()"
+        />
+        <select
+          class="ff-select"
+          id="revFilterRating"
+          onchange="renderReviews()"
+        >
           <option value="all">All Ratings</option>
           <option value="5">★★★★★ 5 Stars</option>
           <option value="4">★★★★ 4 Stars</option>
           <option value="3">★★★ 3 Stars</option>
           <option value="1">★★ 1-2 Stars</option>
         </select>
-        <select class="ff-select" id="revFilterStatus" onchange="renderReviews()">
+        <select
+          class="ff-select"
+          id="revFilterStatus"
+          onchange="renderReviews()"
+        >
           <option value="all">All Replies</option>
           <option value="pending">Needs Reply</option>
           <option value="replied">Already Replied</option>
@@ -134,17 +298,112 @@
   <div class="modal-box">
     <button class="modal-x" onclick="closeModal('bioModal')">✕</button>
     <div class="modal-title">Restaurant Bio</div>
-    <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;">Write a short intro about your restaurant — cuisine style, story, atmosphere, etc.</p>
-    <textarea class="ff-input" id="bioInput" rows="6" style="width:100%;resize:vertical;" placeholder="e.g. A family-run Indian kitchen serving authentic recipes from Perth since 2010..."></textarea>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem">
+      Write a short intro about your restaurant — cuisine style, story,
+      atmosphere, etc.
+    </p>
+    <textarea
+      class="ff-input"
+      id="bioInput"
+      rows="6"
+      style="width: 100%; resize: vertical"
+      placeholder="e.g. A family-run Indian kitchen serving authentic recipes from Perth since 2010..."
+    ></textarea>
     <div class="d-flex gap-2 justify-content-end mt-3">
-      <button class="btn btn-ghost" onclick="closeModal('bioModal')">Cancel</button>
-      <button class="btn btn-teal" onclick="saveBio()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn btn-ghost" onclick="closeModal('bioModal')">
+        Cancel
+      </button>
+      <button class="btn btn-teal" onclick="saveBio()">
+        <i class="fas fa-save"></i> Save
+      </button>
     </div>
   </div>
 </div>
 
-{% endblock %}
+<!-- BUDGET/PRICE MODAL -->
+<div class="modal-bg" id="priceModal">
+  <div class="modal-box" style="max-width: 380px">
+    <button class="modal-x" onclick="closeModal('priceModal')">✕</button>
+    <div class="modal-title">Restaurant Budget</div>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem">
+      Select the price range for your restaurant.
+    </p>
+    <select class="ff-select" id="priceSelect" style="width: 100%">
+      <option value="$">$ (Cheap)</option>
+      <option value="$$">$$ (Moderate)</option>
+      <option value="$$$">$$$ (Expensive)</option>
+      <option value="$$$$">$$$$ (Luxury)</option>
+    </select>
+    <div class="d-flex gap-2 justify-content-end mt-3">
+      <button class="btn btn-ghost" onclick="closeModal('priceModal')">
+        Cancel
+      </button>
+      <button class="btn btn-teal" onclick="submitPrice()">
+        <i class="fas fa-save"></i> Save
+      </button>
+    </div>
+  </div>
+</div>
 
-{% block extra_js %}
+<!-- AVATAR UPLOAD MODAL -->
+<div class="modal-bg" id="avatarModal">
+  <div class="modal-box" style="max-width: 380px; text-align: center">
+    <button class="modal-x" onclick="closeModal('avatarModal')">✕</button>
+    <div class="modal-title" style="font-size: 1.25rem">Change Avatar</div>
+
+    <div id="avatarOptionsMode">
+      <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem">
+        How would you like to update your avatar?
+      </p>
+      <div class="d-flex gap-2 justify-content-center flex-column">
+        <button
+          class="btn btn-teal"
+          onclick="
+            closeModal('avatarModal');
+            document.getElementById('avatarInput').click();
+          "
+          style="width: 100%"
+        >
+          <i class="fas fa-upload"></i> Upload Local File
+        </button>
+        <button
+          class="btn btn-ghost"
+          onclick="showAvatarUrlInput()"
+          style="width: 100%"
+        >
+          <i class="fas fa-link"></i> Enter Image URL
+        </button>
+      </div>
+    </div>
+
+    <div id="avatarUrlMode" style="display: none; text-align: left">
+      <p
+        style="
+          font-size: 0.85rem;
+          color: var(--muted);
+          margin-bottom: 1rem;
+          text-align: center;
+        "
+      >
+        Enter the URL of your new avatar.
+      </p>
+      <input
+        type="text"
+        class="ff-input"
+        id="avatarUrlInput"
+        placeholder="https://example.com/avatar.jpg"
+        style="width: 100%; margin-bottom: 1rem"
+      />
+      <div class="d-flex gap-2 justify-content-end">
+        <button class="btn btn-ghost" onclick="hideAvatarUrlInput()">
+          Back
+        </button>
+        <button class="btn btn-teal" onclick="submitAvatarUrl()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
 <script src="/js/owner-dashboard.js"></script>
 {% endblock %}

@@ -10,12 +10,27 @@ function writeReviewHref() {
 window.appReady.then(() => {
   const u = Session.load();
   if (u) {
-    const logInBtn = document.querySelector(".nav-right");
-    if (logInBtn)
-      logInBtn.innerHTML = `<a href="${u.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
+    const navRight = document.querySelector(".nav-right");
+    if (navRight) {
+      navRight.innerHTML = `<a href="${u.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
+    }
+
+    const writeBtn = document.getElementById("writeReviewBtn");
+    if (writeBtn) {
+      writeBtn.href = writeReviewHref();
+      if (u.role !== "customer") {
+        writeBtn.style.display = "none";
+      }
+    }
+
+    document.querySelectorAll(".rest-view-btn").forEach((btn) => {
+      btn.href =
+        u.role === "customer" ? "/customer-dashboard" : "/owner-dashboard";
+    });
+  } else {
+    const writeBtn = document.getElementById("writeReviewBtn");
+    if (writeBtn) writeBtn.href = "/login";
   }
-  const writeBtn = document.getElementById("heroWriteReview");
-  if (writeBtn) writeBtn.href = writeReviewHref();
 });
 
 function goToRestaurantSearch() {

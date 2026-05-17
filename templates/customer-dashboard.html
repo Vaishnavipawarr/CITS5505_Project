@@ -35,15 +35,14 @@
 <div class="layout">
   <aside class="sidebar">
    <div class="sb-user">
-      <div style="position:relative;display:inline-block;cursor:pointer;" onclick="document.getElementById('avatarInput').click()">
-        <img class="sb-avatar" src="https://i.pravatar.cc/80?img=47" alt="" id="sbAvatar"/>
-        <div style="position:absolute;bottom:0;right:0;background:var(--amber);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;">
-          <i class="fas fa-camera" style="font-size:.6rem;color:#000;"></i>
-        </div>
-      </div>
-      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)"/>
-      <div class="sb-name" id="sbName"></div>
-      <div class="sb-role"><i class="fas fa-utensils" style="color:var(--amber);font-size:.7rem;"></i> Food Lover</div>
+     <div style="position:relative;display:inline-block;cursor:pointer;" onclick="openModal('avatarModal')">
+       <img class="sb-avatar" src="https://i.pravatar.cc/80?img=47" alt="" id="sbAvatar"/>
+       <div style="position:absolute;bottom:0;right:0;background:var(--amber);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;">
+         <i class="fas fa-camera" style="font-size:.6rem;color:#000;"></i>
+       </div>
+     </div>
+     <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)"/>
+     <div class="sb-name" id="sbName"></div>      <div class="sb-role"><i class="fas fa-utensils" style="color:var(--amber);font-size:.7rem;"></i> Food Lover</div>
     </div>
     <ul class="sb-nav">
       <li><a href="#" class="active" onclick="showTab('my-reviews',this)"><i class="fas fa-star"></i> My Reviews</a></li>
@@ -137,6 +136,31 @@
     <div class="d-flex gap-2 justify-content-center">
       <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
       <button class="btn btn-danger" onclick="confirmDelete()"><i class="fas fa-trash"></i> Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- AVATAR UPLOAD MODAL -->
+<div class="modal-bg" id="avatarModal">
+  <div class="modal-box" style="max-width:380px;text-align:center;">
+    <button class="modal-x" onclick="closeModal('avatarModal')">✕</button>
+    <div class="modal-title" style="font-size:1.25rem;">Change Avatar</div>
+    
+    <div id="avatarOptionsMode">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;">How would you like to update your avatar?</p>
+      <div class="d-flex gap-2 justify-content-center flex-column">
+        <button class="btn btn-amber" onclick="closeModal('avatarModal'); document.getElementById('avatarInput').click();" style="width:100%"><i class="fas fa-upload"></i> Upload Local File</button>
+        <button class="btn btn-ghost" onclick="showAvatarUrlInput();" style="width:100%"><i class="fas fa-link"></i> Enter Image URL</button>
+      </div>
+    </div>
+
+    <div id="avatarUrlMode" style="display:none; text-align:left;">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;text-align:center;">Enter the URL of your new avatar.</p>
+      <input type="text" class="ff-input" id="avatarUrlInput" placeholder="https://example.com/avatar.jpg" style="width:100%;margin-bottom:1rem;" />
+      <div class="d-flex gap-2 justify-content-end">
+        <button class="btn btn-ghost" onclick="hideAvatarUrlInput()">Back</button>
+        <button class="btn btn-amber" onclick="submitAvatarUrl()">Save</button>
+      </div>
     </div>
   </div>
 </div>

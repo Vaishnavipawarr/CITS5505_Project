@@ -454,21 +454,26 @@ fetch('/api/auth/status')
 ```
 ---
 
-# Running Selenium Tests
+## Unit Test Coverage
 
-The project also includes Selenium browser-based tests for frontend authentication flows.
+The backend test suite uses `pytest` and Flask’s test client to validate API behaviour and authentication flows.
 
-These tests automate real browser interactions using Chrome and require the Flask server to be running locally before execution.
+Current unit tests include:
 
-## Selenium Test Coverage
+- Health check API tests
+- User registration tests
+- User login tests
+- Logout/session cleanup tests
+- Protected route access tests
 
-Current Selenium tests include:
+---
 
-- Login page accessibility test
-- Frontend login flow test
-- Frontend signup flow test
-- Frontend logout flow test
-- Protected route redirect test
+## Running Unit Tests
+
+Run all backend unit tests:
+
+```bash
+pytest tests/
 
 ---
 
