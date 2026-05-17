@@ -270,6 +270,55 @@ function filterPending() {
   renderReviews();
 }
 
+function showAvatarUrlInput() {
+  document.getElementById("avatarOptionsMode").style.display = "none";
+  document.getElementById("avatarUrlMode").style.display = "block";
+  document.getElementById("avatarUrlInput").value = "";
+  document.getElementById("avatarUrlInput").focus();
+}
+
+function hideAvatarUrlInput() {
+  document.getElementById("avatarOptionsMode").style.display = "block";
+  document.getElementById("avatarUrlMode").style.display = "none";
+}
+
+async function submitAvatarUrl() {
+  const url = document.getElementById("avatarUrlInput").value.trim();
+  if (!url) {
+    toast("Please enter a valid URL", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ avatar_url: url }),
+    });
+
+    if (!res.ok) {
+      toast("Update failed — server error", "❌");
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      const ownerAv = document.getElementById("ownerAvatar");
+      if (ownerAv) ownerAv.src = data.profilePic;
+      if (currentUser) currentUser.profilePic = data.profilePic;
+      toast("Avatar updated!", "✅");
+      closeModal("avatarModal");
+    } else {
+      toast(data.message || "Failed to update avatar", "❌");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("An error occurred", "❌");
+  }
+}
+
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
@@ -308,11 +357,16 @@ async function uploadAvatar(input) {
     if (data.success) {
       const ownerAv = document.getElementById("ownerAvatar");
       if (ownerAv) ownerAv.src = data.profilePic;
+
       if (data.profilePic && data.profilePic.startsWith("/uploads/")) {
         const stored = JSON.parse(localStorage.getItem("user") || "{}");
         stored.profilePic = data.profilePic;
         localStorage.setItem("user", JSON.stringify(stored));
       }
+
+      // Update Session object in memory
+      if (currentUser) currentUser.profilePic = data.profilePic;
+
       toast("Profile picture updated!", "✅");
     } else {
       toast(data.message || "Upload failed", "❌");
@@ -321,5 +375,83 @@ async function uploadAvatar(input) {
     toast("Upload failed — please check your connection", "❌");
   } finally {
     input.value = "";
+  }
+}
+
+function openBioModal() {
+  const bioEl = document.getElementById("restBio");
+  const bioInput = document.getElementById("bioInput");
+  if (bioInput && bioEl) {
+    bioInput.value =
+      bioEl.textContent === "No bio yet. Click Edit Bio to add one."
+        ? ""
+        : bioEl.textContent;
+  }
+  openModal("bioModal");
+}
+
+async function saveBio() {
+  const bioText = document.getElementById("bioInput").value.trim();
+  if (!bioText) {
+    toast("Bio cannot be empty", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/restaurants/${ownerRestId}/bio`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ bio: bioText }),
+    });
+
+    if (!res.ok) {
+      toast("Failed to save bio", "❌");
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("restBio").textContent = bioText;
+      toast("Bio updated successfully!", "✅");
+      closeModal("bioModal");
+    } else {
+      toast(data.message || "Failed to save bio", "❌");
+    }
+  } catch (err) {
+    toast("Error saving bio — check your connection", "❌");
+  }
+}
+
+function openPriceModal() {
+  openModal("priceModal");
+}
+
+async function submitPrice() {
+  const newPrice = document.getElementById("priceSelect").value;
+
+  if (!currentUser || !ownerRestId) {
+    toast("Error: No restaurant linked to this owner", "⚠️");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/restaurants/${ownerRestId}/price`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ price: newPrice }),
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      toast("Budget updated successfully!", "✅");
+      closeModal("priceModal");
+    } else {
+      toast(data.message || "Failed to update budget", "❌");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("An error occurred. Please try again.", "❌");
   }
 }
