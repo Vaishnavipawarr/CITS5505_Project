@@ -38,7 +38,7 @@ async function initCustomerDashboard() {
     openWriteModal();
     history.replaceState(null, "", window.location.pathname);
   }
-
+  
   document.getElementById("navName").textContent = user.name;
   document.getElementById("sbName").textContent = user.name;
   document.getElementById("headName").textContent = user.name.split(" ")[0];

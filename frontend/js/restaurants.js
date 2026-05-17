@@ -1,14 +1,16 @@
 // restaurants.js
+let currentUser = null;
+
 window.appReady.then(() => {
-  const user = Session.load();
-  if (user) {
+  currentUser = Session.load();
+  if (currentUser) {
     const navRight = document.getElementById("navRight");
     if (navRight) {
-      navRight.innerHTML = `<a href="${user.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
+      navRight.innerHTML = `<a href="${currentUser.role === "customer" ? "/customer-dashboard" : "/owner-dashboard"}" class="btn btn-amber btn-sm">Dashboard</a>`;
     }
   }
+  renderCards();
 });
-
 const restaurantImages = {
   r1: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
   r2: "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=600&q=80",
@@ -72,7 +74,7 @@ async function renderCards() {
             <p class="rdesc">${r.bio || restaurantDescriptions[r.id] || ""}</p>
             <div class="rfoot">
               <span style="font-size:.75rem;color:var(--muted);">${r.city || ""}</span>
-              <a href="/login" class="btn btn-amber btn-sm">View &amp; Review</a>
+              <a href="${currentUser ? '/customer-dashboard' : '/login'}" class="btn btn-amber btn-sm">View &amp; Review</a>
             </div>
           </div>
         </div>
@@ -83,7 +85,7 @@ async function renderCards() {
   }
 }
 
-renderCards();
+
 
 const filterInputs = [
   document.getElementById("searchInput"),
