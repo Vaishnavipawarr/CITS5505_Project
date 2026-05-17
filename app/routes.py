@@ -488,7 +488,6 @@ def register():
             "role": role,
             "profilePic": None,
             "restaurantId": restaurant_id,
-}
         }
     }), 201
 

@@ -3,30 +3,6 @@ let currentUser = null;
 let currentRestaurants = [];
 let pendingDeleteId = null;
 
-// Setup Global Fetch Interceptor for CSRF Protection
-const originalFetch = window.fetch;
-window.fetch = async function (resource, config) {
-  if (
-    config &&
-    ["POST", "PUT", "DELETE", "PATCH"].includes(
-      (config.method || "").toUpperCase(),
-    )
-  ) {
-    if (!window.csrfToken) {
-      try {
-        const res = await originalFetch("/api/csrf-token");
-        const data = await res.json();
-        window.csrfToken = data.csrfToken;
-      } catch (e) {
-        console.error("Failed to fetch CSRF token");
-      }
-    }
-    config.headers = config.headers || {};
-    config.headers["X-CSRFToken"] = window.csrfToken;
-  }
-  return originalFetch(resource, config);
-};
-
 window.appReady.then(initCustomerDashboard);
 
 async function initCustomerDashboard() {
