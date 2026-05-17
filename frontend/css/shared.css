@@ -1,5 +1,9 @@
+/* shared.css — Global styles, variables and shared components used across all pages */
+
+/* GOOGLE FONTS — imports Playfair Display (decorative) and DM Sans (body) */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
 
+/* CSS VARIABLES — global colour palette, typography and spacing tokens */
 :root {
   --bg:      #0e0c09;
   --surface: #161310;
@@ -21,6 +25,7 @@
   --spring: cubic-bezier(.34,1.56,.64,1);
 }
 
+/* RESET — box sizing, margin and padding reset applied to all elements */
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 html { scroll-behavior:smooth; }
 body { font-family:var(--font-b); background:var(--bg); color:var(--text); line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
@@ -29,15 +34,16 @@ img { display:block; max-width:100%; }
 button { font-family:inherit; cursor:pointer; border:none; }
 input,textarea,select { font-family:inherit; }
 
+/* SCROLLBAR — custom thin scrollbar styled with amber hover accent */
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:var(--bg); }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 ::-webkit-scrollbar-thumb:hover { background:var(--amber); }
 
-/* LAYOUT */
+/* LAYOUT — centred content wrapper with max width and horizontal padding */
 .wrap { max-width:1200px; margin:0 auto; padding:0 1.5rem; }
 
-/* NAVBAR */
+/* NAVBAR — fixed top navigation bar with frosted glass background */
 .nav {
   position:fixed; top:0; left:0; right:0; z-index:900;
   height:60px; display:flex; align-items:center;
@@ -53,6 +59,8 @@ input,textarea,select { font-family:inherit; }
 .nav-links a { font-size:.75rem; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.42); padding:.42rem .82rem; border-radius:4px; transition:color .2s; white-space:nowrap; }
 .nav-links a:hover, .nav-links a.active { color:var(--amber-light); }
 .nav-right { display:flex; gap:.6rem; flex-shrink:0; align-items:center; }
+
+/* MOBILE NAV TOGGLE — hamburger button shown on small screens */
 .nav-toggle {
   display:none; align-items:center; justify-content:center;
   width:38px; height:38px; margin-left:auto;
@@ -62,7 +70,7 @@ input,textarea,select { font-family:inherit; }
 }
 .nav-toggle:hover { border-color:var(--amber); color:var(--amber-light); }
 
-/* BUTTONS */
+/* BUTTONS — amber, ghost and danger button variants with hover lift effect */
 .btn { display:inline-flex; align-items:center; gap:.45rem; font-size:.82rem; font-weight:500; letter-spacing:.05em; padding:.6rem 1.35rem; border-radius:var(--r-sm); cursor:pointer; transition:all .25s var(--ease); white-space:nowrap; }
 .btn-amber { background:var(--amber); color:#fff; box-shadow:0 4px 16px rgba(212,134,58,.3); }
 .btn-amber:hover { background:var(--amber-light); transform:translateY(-2px); box-shadow:0 8px 24px rgba(212,134,58,.45); }
@@ -74,17 +82,17 @@ input,textarea,select { font-family:inherit; }
 .btn-lg { padding:.82rem 2rem; font-size:.9rem; }
 .btn-full { width:100%; justify-content:center; }
 
-/* BADGES */
+/* BADGES — small coloured pill labels for cuisine type and status indicators */
 .badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.66rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .62rem; border-radius:20px; }
 .badge-amber { background:var(--amber-dim); color:var(--amber-light); border:1px solid rgba(212,134,58,.22); }
 .badge-green { background:rgba(90,140,82,.15); color:#7db86e; border:1px solid rgba(90,140,82,.22); }
 .badge-red   { background:rgba(192,74,46,.15); color:#e07060; border:1px solid rgba(192,74,46,.2); }
 
-/* STARS */
+/* STARS — gold star rating display with dimmed empty stars */
 .stars { color:var(--gold); }
 .stars .dim { color:var(--border); }
 
-/* FORM */
+/* FORM ELEMENTS — shared input, select and textarea styles with amber focus ring */
 .ff-label { display:block; font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
 .ff-input, .ff-select, .ff-textarea {
   width:100%; background:var(--surface); border:1.5px solid var(--border);
@@ -99,7 +107,7 @@ input,textarea,select { font-family:inherit; }
 .ff-textarea { resize:vertical; min-height:100px; }
 .field { margin-bottom:.95rem; }
 
-/* MODAL */
+/* MODAL — centred overlay dialog with spring animation on open */
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(5px); z-index:2000; align-items:center; justify-content:center; padding:1rem; }
 .modal-bg.open { display:flex; }
 .modal-box { background:var(--card); border:1px solid var(--border); border-radius:var(--r-lg); padding:2.2rem; width:100%; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,.5); position:relative; animation:mIn .3s var(--spring) both; }
@@ -108,11 +116,11 @@ input,textarea,select { font-family:inherit; }
 .modal-x { position:absolute; top:1.2rem; right:1.2rem; background:rgba(255,255,255,.06); border:none; border-radius:50%; width:30px; height:30px; color:var(--muted); font-size:.9rem; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; }
 .modal-x:hover { background:rgba(212,134,58,.15); color:var(--amber-light); transform:rotate(90deg); }
 
-/* TOAST */
+/* TOAST — slide-in notification shown bottom right after user actions */
 #toast { position:fixed; bottom:1.8rem; right:1.8rem; background:var(--card); border:1px solid var(--border); border-left:3px solid var(--amber); color:var(--text); padding:.82rem 1.3rem; border-radius:var(--r-md); font-size:.83rem; box-shadow:0 8px 30px rgba(0,0,0,.4); z-index:9999; transform:translateX(120%); transition:transform .4s var(--spring); display:flex; align-items:center; gap:.55rem; max-width:280px; }
 #toast.show { transform:translateX(0); }
 
-/* LOADER */
+/* LOADER — full screen loading overlay shown until the app is ready */
 #loader { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity .5s, visibility .5s; }
 #loader.done { opacity:0; visibility:hidden; pointer-events:none; }
 .ld-brand { font-family:var(--font-d); font-size:2.4rem; font-style:italic; color:var(--amber-light); margin-bottom:1.2rem; }
@@ -120,13 +128,13 @@ input,textarea,select { font-family:inherit; }
 .ld-fill { height:100%; background:linear-gradient(90deg,var(--amber),var(--amber-light)); width:0; animation:ldFill .9s ease forwards; }
 @keyframes ldFill { to{width:100%;} }
 
-/* SCROLL REVEAL */
+/* SCROLL REVEAL — fades and slides elements in as they enter the viewport */
 .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .reveal.in { opacity:1; transform:none; }
 .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
 .d4{transition-delay:.32s}.d5{transition-delay:.4s}.d6{transition-delay:.48s}
 
-/* FOOTER */
+/* FOOTER — dark surface footer with four column link grid */
 .footer { background:var(--surface); border-top:1px solid var(--border); padding:2.5rem 0 1.5rem; }
 .footer-grid { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:2rem; margin-bottom:2rem; }
 .footer-brand { font-family:var(--font-d); font-size:1.4rem; font-style:italic; color:var(--amber-light); margin-bottom:.5rem; }
@@ -138,6 +146,7 @@ input,textarea,select { font-family:inherit; }
 .footer-col a:hover { color:var(--amber-light); }
 .footer-bottom { display:flex; justify-content:space-between; align-items:center; padding-top:1.2rem; border-top:1px solid var(--border); font-size:.74rem; color:var(--muted); }
 
+/* RESPONSIVE — tablet breakpoint collapses footer and shrinks navbar */
 @media(max-width:991px) {
   .footer-grid{grid-template-columns:1fr 1fr;}
   .nav-brand{font-size:1.2rem;}
@@ -146,6 +155,8 @@ input,textarea,select { font-family:inherit; }
   .nav-links a{font-size:.68rem;padding:.38rem .55rem;}
   .nav-right .btn{padding:.35rem .7rem;font-size:.7rem;}
 }
+
+/* RESPONSIVE — mobile breakpoint enables hamburger menu and stacks footer */
 @media(max-width:768px) {
   .nav{height:auto;min-height:60px;}
   .nav .wrap{flex-wrap:wrap;padding-top:.55rem;padding-bottom:.55rem;}

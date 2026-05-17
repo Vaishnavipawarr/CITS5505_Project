@@ -1,4 +1,6 @@
 // reviews.js — Public review list with search and rating filters
+
+// Returns the correct href for the write review button based on user role
 function writeReviewHref() {
   const user = Session.load();
   if (user?.role === "customer") {
@@ -10,6 +12,7 @@ function writeReviewHref() {
   return "/login";
 }
 
+// Reads the ?restaurant= param from the URL and pre-selects it in the filter dropdown
 function applyInitialRestaurantFromUrl() {
   const restaurantId = new URLSearchParams(window.location.search).get(
     "restaurant",
@@ -23,8 +26,11 @@ function applyInitialRestaurantFromUrl() {
   if (hasOption) filterRest.value = restaurantId;
 }
 
+// Runs after app is ready — sets up nav, write button and restaurant filter dropdown
 window.appReady.then(async () => {
   const user = Session.load();
+
+  // Update nav bar with dashboard link if user is logged in
   if (user) {
     const navRight = document.getElementById("navRight");
     if (navRight) {
@@ -32,6 +38,7 @@ window.appReady.then(async () => {
     }
   }
 
+  // Update write review button href and label based on role
   const writeBtn = document.getElementById("reviewsWriteBtn");
   if (writeBtn) {
     writeBtn.href = writeReviewHref();
@@ -40,6 +47,7 @@ window.appReady.then(async () => {
     }
   }
 
+  // Populate restaurant filter dropdown with all restaurants
   const restaurants = await getRestaurants();
   const fr = document.getElementById("filterRest");
   if (fr) {
@@ -53,12 +61,14 @@ window.appReady.then(async () => {
   renderRevs();
 });
 
+// Fetches and renders reviews with search, rating and restaurant filters applied
 async function renderRevs() {
   const search = document.getElementById("searchInput").value.toLowerCase();
   const rFilter = document.getElementById("filterRating").value;
   const restFilt = document.getElementById("filterRest").value;
   let reviews = await getReviews();
 
+  // Apply search filter across customer name, restaurant name and review text
   if (search)
     reviews = reviews.filter(
       (r) =>
@@ -66,12 +76,16 @@ async function renderRevs() {
         r.restaurant_name.toLowerCase().includes(search) ||
         r.text.toLowerCase().includes(search),
     );
+
+  // Apply rating and restaurant filters
   if (rFilter !== "all")
     reviews = reviews.filter((r) => r.rating >= parseInt(rFilter));
   if (restFilt !== "all")
     reviews = reviews.filter((r) => r.restaurant_id === restFilt);
 
   const el = document.getElementById("revList");
+
+  // Show empty state if no reviews match
   if (!reviews.length) {
     if (el) {
       el.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fas fa-search" style="font-size:2rem;margin-bottom:.8rem;opacity:.4;display:block;"></i>No reviews match your search.</div>`;
@@ -106,10 +120,15 @@ async function renderRevs() {
   }
 }
 
+// Re-render reviews when search input changes
 const reviewInput = document.getElementById("searchInput");
 if (reviewInput) reviewInput.addEventListener("input", renderRevs);
+
+// Re-render reviews when rating filter changes
 const reviewFilter = document.getElementById("filterRating");
 if (reviewFilter) reviewFilter.addEventListener("change", renderRevs);
+
+// Re-render reviews when restaurant filter changes
 const reviewRestaurantFilter = document.getElementById("filterRest");
 if (reviewRestaurantFilter)
   reviewRestaurantFilter.addEventListener("change", renderRevs);

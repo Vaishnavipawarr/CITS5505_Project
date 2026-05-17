@@ -1,9 +1,13 @@
 // owner-dashboard.js
+
+// Current logged-in owner user object
 let currentUser = null;
+// Restaurant ID linked to the current owner
 let ownerRestId = null;
 
 window.appReady.then(initOwnerDashboard);
 
+// Initialises the owner dashboard — loads user, restaurant info and KPIs
 async function initOwnerDashboard() {
   await window.appReady;
   const user = requireAuth("owner");
@@ -15,11 +19,13 @@ async function initOwnerDashboard() {
   const ownerRest = restaurants.find((r) => r.id === ownerRestId) ||
     restaurants[0] || { name: "Your Restaurant" };
 
+  // Set owner avatar if profile picture exists
   if (user.profilePic) {
     const ownerAv = document.getElementById("ownerAvatar");
     if (ownerAv) ownerAv.src = user.profilePic;
   }
 
+  // Populate restaurant info in sidebar and header
   const bioEl = document.getElementById("restBio");
   if (bioEl)
     bioEl.textContent =
@@ -37,6 +43,7 @@ async function initOwnerDashboard() {
   loadKPIs();
 }
 
+// Switches the active tab and updates sidebar and tab button states
 function showTab(id, el) {
   document
     .querySelectorAll(".tab-pane")
@@ -58,11 +65,13 @@ function showTab(id, el) {
   }
 }
 
+// Returns all reviews for the owner's restaurant
 async function getMyReviews() {
   if (!ownerRestId) return [];
   return await getReviews({ restaurant_id: ownerRestId });
 }
 
+// Loads and renders KPI stats — total reviews, average rating, replied and pending counts
 async function loadKPIs() {
   const reviews = await getMyReviews();
   const total = reviews.length;
@@ -71,6 +80,8 @@ async function loadKPIs() {
     : "0";
   const replied = reviews.filter((r) => r.owner_reply).length;
   const pending = total - replied;
+
+  // Update KPI counter elements
   document.getElementById("kpiTotal").textContent = total;
   document.getElementById("kpiAvg").textContent = avg;
   document.getElementById("kpiReplied").textContent = replied;
@@ -83,6 +94,7 @@ async function loadKPIs() {
   document.getElementById("ovStars").textContent =
     "★".repeat(full) + "☆".repeat(5 - full);
 
+  // Render rating distribution bars (5 down to 1 star)
   const bars = document.getElementById("ovBars");
   if (bars) {
     bars.innerHTML = [5, 4, 3, 2, 1]
@@ -94,6 +106,7 @@ async function loadKPIs() {
       .join("");
   }
 
+  // Render top 6 tags by frequency
   const tagCount = {};
   reviews.forEach((r) =>
     (r.tags || []).forEach((t) => (tagCount[t] = (tagCount[t] || 0) + 1)),
@@ -115,6 +128,7 @@ async function loadKPIs() {
   }
 }
 
+// Fetches and renders the reviews list with search, rating and status filters applied
 async function renderReviews() {
   const search = (
     document.getElementById("revSearch")?.value || ""
@@ -123,12 +137,16 @@ async function renderReviews() {
   const stFilter = document.getElementById("revFilterStatus")?.value || "all";
 
   let reviews = await getMyReviews();
+
+  // Apply search filter across customer name and review text
   if (search)
     reviews = reviews.filter(
       (r) =>
         r.customer_name.toLowerCase().includes(search) ||
         r.text.toLowerCase().includes(search),
     );
+
+  // Apply rating and reply status filters
   if (rFilter !== "all")
     reviews = reviews.filter((r) =>
       rFilter === "1" ? r.rating <= 2 : r.rating === parseInt(rFilter),
@@ -207,6 +225,7 @@ async function renderReviews() {
   }
 }
 
+// Validates and posts a reply to a specific review
 async function submitReply(id) {
   const text = document.getElementById(`replyInput-${id}`).value.trim();
   if (!text) {
@@ -225,6 +244,7 @@ async function submitReply(id) {
   renderReviews();
 }
 
+// Shows the reply compose box and hides the displayed reply
 function editReply(id) {
   const comp = document.getElementById(`compose-${id}`);
   const disp = document.getElementById(`reply-display-${id}`);
@@ -232,6 +252,7 @@ function editReply(id) {
   if (disp) disp.style.display = "none";
 }
 
+// Hides the reply compose box and restores the displayed reply
 function cancelEdit(id) {
   const comp = document.getElementById(`compose-${id}`);
   const disp = document.getElementById(`reply-display-${id}`);
@@ -239,6 +260,7 @@ function cancelEdit(id) {
   if (disp) disp.style.display = "";
 }
 
+// Switches to the reviews tab and sets the status filter to pending
 function filterPending() {
   showTab("reviews", document.getElementById("tbtn-reviews"));
   const statusFilter = document.getElementById("revFilterStatus");
@@ -246,6 +268,7 @@ function filterPending() {
   renderReviews();
 }
 
+// Shows the URL input field for setting a custom avatar
 function showAvatarUrlInput() {
   document.getElementById("avatarOptionsMode").style.display = "none";
   document.getElementById("avatarUrlMode").style.display = "block";
@@ -253,11 +276,13 @@ function showAvatarUrlInput() {
   document.getElementById("avatarUrlInput").focus();
 }
 
+// Hides the URL input and returns to the default avatar options view
 function hideAvatarUrlInput() {
   document.getElementById("avatarOptionsMode").style.display = "block";
   document.getElementById("avatarUrlMode").style.display = "none";
 }
 
+// Submits a URL as the owner's new avatar via the API
 async function submitAvatarUrl() {
   const url = document.getElementById("avatarUrlInput").value.trim();
   if (!url) {
@@ -281,6 +306,7 @@ async function submitAvatarUrl() {
 
     const data = await res.json();
     if (data.success) {
+      // Update avatar image in the dashboard
       const ownerAv = document.getElementById("ownerAvatar");
       if (ownerAv) ownerAv.src = data.profilePic;
       if (currentUser) currentUser.profilePic = data.profilePic;
@@ -295,6 +321,7 @@ async function submitAvatarUrl() {
   }
 }
 
+// Handles file upload for owner profile picture with type and size validation
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
@@ -350,10 +377,12 @@ async function uploadAvatar(input) {
   } catch (err) {
     toast("Upload failed — please check your connection", "❌");
   } finally {
+    // Clear file input after upload attempt
     input.value = "";
   }
 }
 
+// Opens the bio edit modal pre-filled with the current bio text
 function openBioModal() {
   const bioEl = document.getElementById("restBio");
   const bioInput = document.getElementById("bioInput");
@@ -366,6 +395,7 @@ function openBioModal() {
   openModal("bioModal");
 }
 
+// Saves the updated restaurant bio via the API
 async function saveBio() {
   const bioText = document.getElementById("bioInput").value.trim();
   if (!bioText) {
@@ -399,10 +429,12 @@ async function saveBio() {
   }
 }
 
+// Opens the price/budget edit modal
 function openPriceModal() {
   openModal("priceModal");
 }
 
+// Submits the updated price range for the restaurant via the API
 async function submitPrice() {
   const newPrice = document.getElementById("priceSelect").value;
 

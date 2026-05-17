@@ -1,10 +1,15 @@
 // customer-dashboard.js — Logged-in customer: my reviews, browse, write/edit modal
+
+// Current logged-in user object
 let currentUser = null;
+// List of all restaurants loaded from the API
 let currentRestaurants = [];
+// Holds the review ID waiting for delete confirmation
 let pendingDeleteId = null;
 
 window.appReady.then(initCustomerDashboard);
 
+// Initialises the dashboard — loads user, restaurants and reviews
 async function initCustomerDashboard() {
   await window.appReady;
   const user = requireAuth("customer");
@@ -14,7 +19,8 @@ async function initCustomerDashboard() {
     openWriteModal();
     history.replaceState(null, "", window.location.pathname);
   }
-  
+
+  // Populate name and avatar in nav and sidebar
   document.getElementById("navName").textContent = user.name;
   document.getElementById("sbName").textContent = user.name;
   document.getElementById("headName").textContent = user.name.split(" ")[0];
@@ -22,6 +28,8 @@ async function initCustomerDashboard() {
     document.getElementById("sbAvatar").src = user.profilePic;
     document.getElementById("navAvatar").src = user.profilePic;
   }
+
+  // Populate restaurant dropdowns in modal and filter bar
   const restSelect = document.getElementById("modalRest");
   const filterRest = document.getElementById("filterRest");
   currentRestaurants = await getRestaurants();
@@ -44,6 +52,7 @@ async function initCustomerDashboard() {
 }
 
 /** URL params: ?write=1 opens modal; ?tab=browse&restaurant=r1 filters browse tab */
+// Handles URL query params to deep-link into a tab or open the write modal
 function applyDashboardDeepLink() {
   const params = new URLSearchParams(window.location.search);
   const tab = params.get("tab");
@@ -74,6 +83,7 @@ function applyDashboardDeepLink() {
   }
 }
 
+// Switches the visible tab and updates active states in nav and tab buttons
 function showTab(id, linkEl) {
   document
     .querySelectorAll(".tab-pane")
@@ -97,6 +107,7 @@ function showTab(id, linkEl) {
   if (id === "browse") renderBrowse();
 }
 
+// Fetches and renders the current user's reviews and updates summary stats
 async function renderMyReviews() {
   if (!currentUser) return;
   const reviews = await getReviews({ customer_id: currentUser.id });
@@ -106,6 +117,7 @@ async function renderMyReviews() {
   const totalEl = document.getElementById("totalRevCount");
   const replyEl = document.getElementById("replyCount");
 
+  // Update stat counters
   if (countEl) countEl.textContent = reviews.length;
   if (totalEl) totalEl.textContent = all.length;
   if (replyEl)
@@ -145,6 +157,7 @@ async function renderMyReviews() {
   }
 }
 
+// Fetches all reviews and renders them with search and filter applied
 async function renderBrowse() {
   const search = (
     document.getElementById("searchInput")?.value || ""
@@ -153,6 +166,7 @@ async function renderBrowse() {
   const restFilter = document.getElementById("filterRest")?.value || "all";
   let reviews = await getReviews();
 
+  // Apply search filter across restaurant name, review text and customer name
   if (search)
     reviews = reviews.filter(
       (r) =>
@@ -161,6 +175,7 @@ async function renderBrowse() {
         r.customer_name.toLowerCase().includes(search),
     );
 
+  // Apply rating and restaurant filters
   if (rFilter !== "all")
     reviews = reviews.filter((r) => r.rating >= parseInt(rFilter));
   if (restFilter !== "all")
@@ -201,6 +216,7 @@ async function renderBrowse() {
   }
 }
 
+// Opens the write modal with empty fields for a new review
 function openWriteModal() {
   const editIdInput = document.getElementById("editId");
   if (editIdInput) editIdInput.value = "";
@@ -214,6 +230,7 @@ function openWriteModal() {
   openModal("writeModal");
 }
 
+// Opens the write modal pre-filled with an existing review for editing
 async function openEditModal(id) {
   const reviews = await getReviews({ customer_id: currentUser?.id });
   const rev = reviews.find((r) => r.id === id);
@@ -231,12 +248,14 @@ async function openEditModal(id) {
   openModal("writeModal");
 }
 
+// Validates and submits a new or edited review to the API
 async function submitReview() {
   const editId = document.getElementById("editId").value;
   const restId = document.getElementById("modalRest").value;
   const text = document.getElementById("modalText").value.trim();
   const rating = parseInt(document.getElementById("spWrap").dataset.v || 0);
 
+  // Validate required fields before submitting
   if (!restId) {
     toast("Please select a restaurant", "⚠️");
     return;
@@ -286,11 +305,13 @@ async function submitReview() {
   renderMyReviews();
 }
 
+// Shows the delete confirmation modal for a given review ID
 function promptDeleteReview(id) {
   pendingDeleteId = id;
   openModal("deleteModal");
 }
 
+// Confirms and sends the delete request for the pending review
 async function confirmDelete() {
   if (!pendingDeleteId) return;
   const success = await deleteReview(pendingDeleteId);
@@ -304,6 +325,7 @@ async function confirmDelete() {
   renderMyReviews();
 }
 
+// Shows the URL input field for setting a custom avatar
 function showAvatarUrlInput() {
   document.getElementById("avatarOptionsMode").style.display = "none";
   document.getElementById("avatarUrlMode").style.display = "block";
@@ -311,11 +333,13 @@ function showAvatarUrlInput() {
   document.getElementById("avatarUrlInput").focus();
 }
 
+// Hides the URL input and returns to the default avatar options view
 function hideAvatarUrlInput() {
   document.getElementById("avatarOptionsMode").style.display = "block";
   document.getElementById("avatarUrlMode").style.display = "none";
 }
 
+// Submits a URL as the user's new avatar via the API
 async function submitAvatarUrl() {
   const url = document.getElementById("avatarUrlInput").value.trim();
   if (!url) {
@@ -339,6 +363,7 @@ async function submitAvatarUrl() {
 
     const data = await res.json();
     if (data.success) {
+      // Update avatar images in sidebar and nav
       const sbAvatar = document.getElementById("sbAvatar");
       if (sbAvatar) sbAvatar.src = data.profilePic;
       const navAvatar = document.getElementById("navAvatar");
@@ -355,6 +380,7 @@ async function submitAvatarUrl() {
   }
 }
 
+// Handles file upload for profile picture with type and size validation
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
@@ -410,6 +436,7 @@ async function uploadAvatar(input) {
   } catch (err) {
     toast("Upload failed — please check your connection", "❌");
   } finally {
+    // Clear file input after upload attempt
     input.value = "";
   }
 }
