@@ -45,7 +45,7 @@ def test_logout_flow():
         time.sleep(2)
 
         # Login
-        driver.find_element(By.ID, "email").send_keys(unique_username)
+        driver.find_element(By.ID, "username").send_keys(unique_username)
 
         driver.find_element(By.ID, "password").send_keys("1234")
 

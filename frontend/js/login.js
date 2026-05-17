@@ -29,7 +29,8 @@ function togglePw() {
 
 // Sends login credentials to the API and redirects to dashboard on success
 async function doLogin() {
-  const username = document.getElementById("email").value.trim();
+  const username = document.getElementById("username").value.trim();
+
   const password = document.getElementById("password").value;
   const errBox = document.getElementById("errMsg");
   const errTxt = document.getElementById("errTxt");
@@ -51,6 +52,7 @@ async function doLogin() {
       body: JSON.stringify({
         username: username,
         password: password,
+        role: selectedRole,
       }),
     });
 

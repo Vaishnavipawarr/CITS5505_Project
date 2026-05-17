@@ -1,20 +1,19 @@
-{# Login page — route: GET /login — script: login.js #}
-{% extends "base.html" %}
-
-{% block title %}Login - Fork & Flame{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="/css/login.css">
-{% endblock %}
-
-{% block content %}
+{# Login page — route: GET /login — script: login.js #} {% extends "base.html"
+%} {% block title %}Login - Fork & Flame{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="/css/login.css" />
+{% endblock %} {% block content %}
 
 <!-- Left side image -->
 <div class="visual">
-  <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85" alt=""/>
+  <img
+    src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85"
+    alt=""
+  />
   <div class="visual-ov"></div>
   <div class="visual-txt">
-    <blockquote>"Every great meal begins with a <em>moment of intention.</em>"</blockquote>
+    <blockquote>
+      "Every great meal begins with a <em>moment of intention.</em>"
+    </blockquote>
     <cite>— Fork &amp; Flame</cite>
   </div>
 </div>
@@ -27,7 +26,11 @@
     <p class="auth-sub">Sign in to your account to continue.</p>
 
     <div class="role-tabs">
-      <div class="role-tab active" id="tab-customer" onclick="selectRole('customer')">
+      <div
+        class="role-tab active"
+        id="tab-customer"
+        onclick="selectRole('customer')"
+      >
         <div class="icon">🍽️</div>
         <div class="label">Food Lover</div>
         <div class="desc">Browse &amp; review restaurants</div>
@@ -41,19 +44,44 @@
 
     <div id="errMsg" class="err">
       <i class="fas fa-exclamation-circle"></i>
-      <span id="errTxt">Invalid email or password.</span>
+      <span id="errTxt">Invalid username or password.</span>
     </div>
 
     <div class="field">
-      <label class="ff-label">Email Address</label>
-      <input class="ff-input" type="email" id="email" placeholder="you@example.com"/>
+      <label class="ff-label">Username</label>
+      <input
+        class="ff-input"
+        type="text"
+        id="username"
+        placeholder="Your username"
+      />
     </div>
 
     <div class="field">
       <label class="ff-label">Password</label>
-      <div style="position:relative;">
-        <input class="ff-input" type="password" id="password" placeholder="Your password" style="padding-right:2.8rem;"/>
-        <button onclick="togglePw()" style="position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;color:var(--muted);font-size:.9rem;transition:color .2s;" onmouseenter="this.style.color='var(--amber-light)'" onmouseleave="this.style.color='var(--muted)'">
+      <div style="position: relative">
+        <input
+          class="ff-input"
+          type="password"
+          id="password"
+          placeholder="Your password"
+          style="padding-right: 2.8rem"
+        />
+        <button
+          onclick="togglePw()"
+          style="
+            position: absolute;
+            right: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            transition: color 0.2s;
+          "
+          onmouseenter="this.style.color = 'var(--amber-light)'"
+          onmouseleave="this.style.color = 'var(--muted)'"
+        >
           <i class="far fa-eye" id="eyeIcon"></i>
         </button>
       </div>
@@ -65,8 +93,6 @@
   </div>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script src="/js/login.js"></script>
 {% endblock %}
